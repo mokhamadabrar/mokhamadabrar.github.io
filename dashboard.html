@@ -237,6 +237,7 @@
 		<div class="header">
 			<h1 data-key="dashboardTitle">Admin Dashboard</h1>
 			<div class="header-controls">
+				<button id="observation-form-btn" style="background-color: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: background-color 0.3s ease;" data-key="observationFormButton">Go to Observation Form</button>
 				<div class="language-buttons">
 					<div class="language-button" id="lang-id" data-lang="id">
 						<img src="img/ID.svg" alt="Bahasa Indonesia" />
@@ -325,10 +326,14 @@
 			</div>
 		</div>
 
-		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-functions.js"></script>
+		<!-- Firebase Scripts -->
+		<!-- These scripts are now served by Firebase Hosting -->
+		<script src="/__/firebase/8.6.1/firebase-app.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-functions.js"></script>
+		<script src="/__/firebase/init.js"></script>
 		<script src="js/firebase-init.js"></script>
 
 		<script>
@@ -387,12 +392,15 @@
 						statusUnverified: "Belum Diverifikasi",
 						actionSuccess: "Berhasil!",
 						actionError: "Terjadi kesalahan.",
+						observationFormButton: "Kembali ke Form Observasi",
+						modalPhotoLink: "Lihat Foto",
+						modalNoPhotoPlaceholder: "Tidak ada foto dokumentasi."
 					},
 					en: {
 						dashboardTitle: "Admin Dashboard",
 						logoutButton: "Logout",
 						filterByDate: "Filter by date",
-						loading: "Loading data...",
+						loading: "Memuat data...",
 						colDate: "Date",
 						colObserver: "Observer",
 						colLocation: "Location",
@@ -432,27 +440,30 @@
 						statusUnverified: "Unverified",
 						actionSuccess: "Success!",
 						actionError: "An error occurred.",
+						observationFormButton: "Go to Observation Form",
+						modalPhotoLink: "View Photo",
+						modalNoPhotoPlaceholder: "No documentation photo provided."
 					},
 				};
 				let currentLang = "en";
 
-				// --- DOM ELEMENTS ---
-				const langButtons = document.querySelectorAll(".language-button");
-				const tabButtons = document.querySelectorAll(".tab-button");
-				const tabContents = document.querySelectorAll(".tab-content");
-				const contentDiv = document.getElementById("dashboard-content");
-				const loadingDiv = document.getElementById("loading");
-				const modal = document.getElementById("detailsModal");
-				const modalBody = document.getElementById("modal-body-content");
-				const closeModalBtn = document.querySelector(".modal-close");
-				const dateFilterInput = document.getElementById("dateFilter");
-				const filterCheckbox = document.getElementById("filterCheckbox");
-				const dateFilterContainer = document.getElementById(
-					"dateFilterContainer"
-				);
-				const usersTableBody = document.getElementById("users-table-content");
-				const loadingUsersDiv = document.getElementById("loading-users");
-
+				                // --- DOM ELEMENTS ---
+								const langButtons = document.querySelectorAll(".language-button");
+								const tabButtons = document.querySelectorAll(".tab-button");
+								const tabContents = document.querySelectorAll(".tab-content");
+								const contentDiv = document.getElementById("dashboard-content");
+								const loadingDiv = document.getElementById("loading");
+								const modal = document.getElementById("detailsModal");
+								const modalBody = document.getElementById("modal-body-content");
+								const closeModalBtn = document.querySelector(".modal-close");
+								const dateFilterInput = document.getElementById("dateFilter");
+								const filterCheckbox = document.getElementById("filterCheckbox");
+								const dateFilterContainer = document.getElementById(
+									"dateFilterContainer"
+								);
+								const usersTableBody = document.getElementById("users-table-content");
+								const loadingUsersDiv = document.getElementById("loading-users");
+								const observationFormBtn = document.getElementById('observation-form-btn');
 				// --- GLOBAL STATE ---
 				let allReports = [];
 				let allUsers = [];
@@ -742,13 +753,65 @@
 					}
 				});
 
+				// Event delegation for Details buttons
+				contentDiv.addEventListener('click', (e) => {
+					if (e.target && e.target.classList.contains('details-btn')) {
+						const reportId = e.target.dataset.id;
+						const report = allReports.find(r => r.id === reportId);
+						if (report) {
+							showDetailsModal(report);
+						}
+					}
+				});
+
 				closeModalBtn.onclick = () => (modal.style.display = "none");
 				window.onclick = (event) => {
 					if (event.target == modal) modal.style.display = "none";
 				};
 
+				// Helper function to show details modal
+				function showDetailsModal(report) {
+					const date = report.submittedAt
+						? report.submittedAt.toDate().toLocaleDateString()
+						: "N/A";
+					
+					let photoContent;
+					if (report.photoURL) {
+						photoContent = `<p><strong data-key="modalPhoto">Photo:</strong></p><img src="${report.photoURL}" alt="${translations[currentLang].modalPhoto}" style="max-width: 100%; height: auto; display: block; margin-top: 10px; border-radius: 8px;">`;
+					} else {
+						// Placeholder SVG as data URL
+						const placeholderSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Crect width='150' height='100' fill='%23e0e0e0'/%3E%3Ctext x='75' y='55' font-family='Arial' font-size='12' fill='%23757575' text-anchor='middle'%3E${encodeURIComponent(translations[currentLang].modalNoPhotoPlaceholder)}%3C/text%3E%3C/svg%3E`;
+						photoContent = `<p><strong data-key="modalPhoto">Photo:</strong></p><img src="${placeholderSvg}" alt="${translations[currentLang].modalNoPhotoPlaceholder}" style="max-width: 100%; height: auto; display: block; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc;">`;
+					}
+
+					modalBody.innerHTML = `
+						<h2>${translations[currentLang].modalTitle}</h2>
+						<p><strong data-key="modalDate">Date:</strong> ${date}</p>
+						<p><strong data-key="modalObserver">Observer:</strong> ${report.observerName || 'N/A'}</p>
+						<p><strong data-key="modalCompany">Company:</strong> ${report.observerCompany || 'N/A'}</p>
+						<p><strong data-key="modalPosition">Position:</strong> ${report.observerPosition || 'N/A'}</p>
+						<p><strong data-key="modalLocation">Location:</strong> ${report.obsLocation || 'N/A'}</p>
+						
+						<h3>${translations[currentLang].modalHeaderObservation}</h3>
+						<p><strong data-key="modalCategory">Category:</strong> ${report.category || 'N/A'}</p>
+						<p><strong data-key="modalType">Type:</strong> ${report.obsType || 'N/A'}</p>
+						<p><strong data-key="modalDescription">Description:</strong> ${report.description || 'N/A'}</p>
+						
+						<h3>${translations[currentLang].modalHeaderFollowUp}</h3>
+						<p><strong data-key="modalImmediateAction">Immediate Action:</strong> ${report.immediateAction || 'N/A'}</p>
+						<p><strong data-key="modalRecommendation">Recommendation:</strong> ${report.recommendation || 'N/A'}</p>
+						${photoContent}
+					`;
+					modal.style.display = "flex";
+				}
+
 				// Initial Load
 				applyTranslation(currentLang);
+
+				// Add event listener for the new observation form button AFTER initial load
+				observationFormBtn.addEventListener('click', () => {
+					window.location.href = 'index.html';
+				});
 			});
 		</script>
 	</body>

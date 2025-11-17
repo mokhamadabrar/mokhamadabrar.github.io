@@ -169,9 +169,12 @@
     </div>
 
     <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <!-- These scripts are now served by Firebase Hosting -->
+    <script src="/__/firebase/8.6.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+    <script src="/__/firebase/init.js"></script>
     <script src="js/firebase-init.js"></script>
 
     <script>
@@ -187,7 +190,11 @@
                     noAccount: "Belum punya akun?",
                     registerLink: "Daftar di sini",
                     errorGeneric: "Terjadi kesalahan. Silakan coba lagi.",
-                    loginError: "Email atau kata sandi tidak sesuai, atau akun Anda belum disetujui oleh admin."
+                    loginError: "Email atau kata sandi tidak sesuai, atau akun Anda belum disetujui oleh admin.",
+                    errorEmailNotVerified: "Email Anda belum diverifikasi. Silakan periksa kotak masuk Anda.",
+                    errorPendingApproval: "Akun Anda menunggu persetujuan admin.",
+                    errorInvalidRole: "Akun Anda memiliki peran yang tidak valid. Silakan hubungi dukungan.",
+                    errorNotRegistered: "Pengguna tidak ditemukan. Silakan daftar atau hubungi dukungan."
                 },
                 'en': {
                     loginTitle: "Login",
@@ -199,7 +206,11 @@
                     noAccount: "Don't have an account?",
                     registerLink: "Register here",
                     errorGeneric: "An error occurred. Please try again.",
-                    loginError: "Email or password is incorrect, or your account has not been approved by an admin."
+                    loginError: "Email or password is incorrect, or your account has not been approved by an admin.",
+                    errorEmailNotVerified: "Your email address is not verified. Please check your inbox.",
+                    errorPendingApproval: "Your account is pending admin approval.",
+                    errorInvalidRole: "Your account has an invalid role. Please contact support.",
+                    errorNotRegistered: "User not found. Please register or contact support."
                 }
             };
 
@@ -231,6 +242,8 @@
 
             applyTranslation(currentLang); // Apply default language on load
 
+            let currentUser = null; // Declare currentUser in a broader scope
+
             document.getElementById('loginForm').addEventListener('submit', function(event) {
                 event.preventDefault();
 
@@ -239,33 +252,62 @@
                 const messageDiv = document.getElementById('message');
                 messageDiv.style.display = 'none';
 
-                let currentUser;
-
                 firebase.auth().signInWithEmailAndPassword(email, password)
                     .then((userCredential) => {
-                        currentUser = userCredential.user;
-                        if (!currentUser.emailVerified) {
-                            // Throw an error if email is not verified
-                            throw new Error('auth/email-not-verified');
-                        }
-                        // If email is verified, check Firestore status
+                        currentUser = userCredential.user; // Assign to broader scope currentUser
                         return db.collection('users').doc(currentUser.uid).get();
                     })
                     .then((doc) => {
-                        if (doc.exists && doc.data().status === 'approved') {
-                            // User is approved, proceed to login
-                            sessionStorage.setItem('loggedInUser', JSON.stringify({ email: currentUser.email, displayName: currentUser.displayName }));
-                            window.location.href = 'index.html';
-                        } else if (doc.exists && doc.data().status !== 'approved') {
-                            // User exists but is not approved
-                            throw new Error('auth/pending-approval');
+                        if (doc.exists) {
+                            const userData = doc.data();
+
+                            if (userData.role === 'admin') {
+                                // Admins bypass email verification
+                                sessionStorage.setItem('adminUser', JSON.stringify({ email: currentUser.email, displayName: currentUser.displayName, uid: currentUser.uid }));
+                                sessionStorage.setItem('loggedInUser', JSON.stringify({ email: currentUser.email, displayName: currentUser.displayName, uid: currentUser.uid }));
+                                window.location.href = 'index.html';
+                            } else if (userData.role === 'user') {
+                                // For regular users, enforce email verification and approval
+                                if (!currentUser.emailVerified) {
+                                    throw new Error('auth/email-not-verified');
+                                }
+                                if (userData.status === 'approved') {
+                                    sessionStorage.setItem('loggedInUser', JSON.stringify({ email: currentUser.email, displayName: currentUser.displayName, uid: currentUser.uid }));
+                                    window.location.href = 'index.html';
+                                } else {
+                                    throw new Error('auth/pending-approval');
+                                }
+                            } else {
+                                throw new Error('auth/invalid-role');
+                            }
                         } else {
-                            // User authenticated but does not exist in 'users' collection
                             throw new Error('auth/not-registered');
                         }
                     })
                     .catch((error) => {
-                        messageDiv.textContent = translations[currentLang].loginError;
+                        let errorMessage = translations[currentLang].loginError; // Default generic error
+                        switch (error.code) {
+                            case 'auth/email-not-verified':
+                                errorMessage = translations[currentLang].errorEmailNotVerified || "Please verify your email address.";
+                                break;
+                            case 'auth/pending-approval':
+                                errorMessage = translations[currentLang].errorPendingApproval || "Your account is pending admin approval.";
+                                break;
+                            case 'auth/invalid-role':
+                                errorMessage = translations[currentLang].errorInvalidRole || "Your account has an invalid role. Please contact support.";
+                                break;
+                            case 'auth/not-registered':
+                                errorMessage = translations[currentLang].errorNotRegistered || "User not found. Please register or contact support.";
+                                break;
+                            case 'auth/user-not-found':
+                            case 'auth/wrong-password':
+                                errorMessage = translations[currentLang].loginError; // Generic for incorrect credentials
+                                break;
+                            default:
+                                errorMessage = translations[currentLang].errorGeneric;
+                                break;
+                        }
+                        messageDiv.textContent = errorMessage;
                         messageDiv.className = 'message error';
                         messageDiv.style.display = 'block';
                         firebase.auth().signOut(); // Ensure user is signed out on any login failure

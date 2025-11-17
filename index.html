@@ -354,6 +354,7 @@
     <div class="container">
         <div class="header-banner">
             <button id="logout-btn">Logout</button>
+            <button id="admin-dashboard-btn" style="display: none; position: absolute; top: 15px; right: 100px; background-color: rgba(52, 152, 219, 0.8); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; backdrop-filter: blur(3px); transition: background-color 0.3s ease;">Go to Admin Dashboard</button>
             <div class="language-buttons">
                 <div class="language-button" id="lang-id" data-lang="id">
                     <img src="https://mokhamadabrar.github.io/img/ID.svg" alt="Bahasa Indonesia">
@@ -477,10 +478,14 @@
     </div>
 
     <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-storage.js"></script>
+    <!-- These scripts are now served by Firebase Hosting -->
+    <script src="/__/firebase/8.6.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+    <script src="/__/firebase/init.js"></script>
+
+    <!-- Other scripts -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
     <script src="js/firebase-init.js"></script>
 
@@ -494,21 +499,49 @@
             
             document.getElementById('logout-btn').addEventListener('click', function() {
                 sessionStorage.removeItem('loggedInUser');
+                sessionStorage.removeItem('adminUser'); // Clear admin session as well
                 window.location.href = 'login.html';
             });
 
-            function loadReporterInfo() {
+            // Admin Dashboard Button Logic
+            const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
+            const adminUser = JSON.parse(sessionStorage.getItem('adminUser'));
+            if (adminUser) {
+                adminDashboardBtn.style.display = 'block'; // Show the button
+                adminDashboardBtn.addEventListener('click', function() {
+                    window.location.href = 'dashboard.html';
+                });
+            }
+
+            async function loadReporterInfo() {
                 // Try to get name from localStorage first
                 let name = localStorage.getItem(`${loggedInUser.uid}_reporterName`);
+                let company = localStorage.getItem(`${loggedInUser.uid}_reporterCompany`);
+                let position = localStorage.getItem(`${loggedInUser.uid}_reporterPosition`);
+                const location = localStorage.getItem(`${loggedInUser.uid}_reporterLocation`);
+
+                // If company or position are not in localStorage, try getting them from Firestore
+                if (!company || !position) {
+                    try {
+                        const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            if (!company && userData.company) {
+                                company = userData.company;
+                            }
+                            if (!position && userData.position) {
+                                position = userData.position;
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error fetching user data from Firestore:", error);
+                    }
+                }
                 
                 // If name is not in localStorage, try getting it from the logged-in user's session
                 if (!name && loggedInUser && loggedInUser.displayName) {
                     name = loggedInUser.displayName;
                 }
-
-                const company = localStorage.getItem(`${loggedInUser.uid}_reporterCompany`);
-                const position = localStorage.getItem(`${loggedInUser.uid}_reporterPosition`);
-                const location = localStorage.getItem(`${loggedInUser.uid}_reporterLocation`);
 
                 if (name) document.getElementById('observerName').value = name;
                 if (company) document.getElementById('observerCompany').value = company;

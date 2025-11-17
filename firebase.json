@@ -1,7 +1,6 @@
 {
 	"hosting": {
-		"site": "observationform",
-		"public": "public",
+		"public": ".",
 		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
 	}
 }

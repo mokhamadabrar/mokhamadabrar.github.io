@@ -74,6 +74,16 @@
             margin-bottom: 6px;
             font-size: 14px;
         }
+        .radio-group div {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .register-radio-group div {
+            display: flex;
+            align-items: center;
+        }
         input[type="text"],
         input[type="password"],
         input[type="email"] {
@@ -210,6 +220,20 @@
                 <input type="text" id="observerName" name="observerName" required>
             </div>
             <div class="form-group">
+                <label for="observerCompany" data-key="companyLabel">Company</label>
+                <input type="text" id="observerCompany" name="observerCompany" required>
+            </div>
+            <div class="form-group">
+                <label for="observerPosition" data-key="positionLabel">Position</label>
+                <div class="radio-group register-radio-group" id="observerPosition">
+                    <div><input type="radio" id="reg-pos-cm" name="observerPosition" value="Construction Manager" required><label for="reg-pos-cm">Construction Manager</label></div>
+                    <div><input type="radio" id="reg-pos-sm" name="observerPosition" value="Site Manager"><label for="pos-sm">Site Manager</label></div>
+                    <div><input type="radio" id="reg-pos-cs" name="observerPosition" value="Construction Supervisor"><label for="pos-cs">Construction Supervisor</label></div>
+                    <div><input type="radio" id="reg-pos-ss" name="observerPosition" value="Safety Supervisor"><label for="pos-ss">Safety Supervisor</label></div>
+                    <div><input type="radio" id="reg-pos-sem" name="observerPosition" value="Safety Manager"><label for="pos-sem">Safety Manager</label></div>
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="email" data-key="emailLabel">Email</label>
                 <input type="email" id="email" name="email" required>
             </div>
@@ -229,9 +253,12 @@
     </div>
 
     <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <!-- These scripts are now served by Firebase Hosting -->
+    <script src="/__/firebase/8.6.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+    <script src="/__/firebase/init.js"></script>
     <script src="js/firebase-init.js"></script>
 
     <script>
@@ -240,6 +267,8 @@
                 'id': {
                     registerTitle: "Registrasi",
                     nameLabel: "Nama Observer",
+                    companyLabel: "Perusahaan",
+                    positionLabel: "Jabatan",
                     emailLabel: "Email",
                     passwordLabel: "Kata Sandi",
                     confirmPasswordLabel: "Konfirmasi Kata Sandi",
@@ -341,22 +370,26 @@
                 messageDiv.style.display = 'none';
 
                 const observerName = document.getElementById('observerName').value;
+                const observerCompany = document.getElementById('observerCompany').value;
+                const observerPosition = document.querySelector('input[name="observerPosition"]:checked');
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
 
                 // Check if all fields are filled
-                if (!observerName || !email || !password || !confirmPassword) {
+                if (!observerName || !observerCompany || !observerPosition || !email || !password || !confirmPassword) {
                     messageDiv.textContent = translations[currentLang].errorFieldsRequired;
                     messageDiv.className = 'message error';
-                    messageDiv.style.display = 'block'; // Added this line
+                    messageDiv.style.display = 'block';
                     return;
                 }
+
+                const positionValue = observerPosition ? observerPosition.value : '';
 
                 if (password !== confirmPassword) {
                     messageDiv.textContent = translations[currentLang].passwordMismatch;
                     messageDiv.className = 'message error';
-                    messageDiv.style.display = 'block'; // Added this line
+                    messageDiv.style.display = 'block';
                     return;
                 }
 
@@ -374,6 +407,8 @@
                             return db.collection('users').doc(user.uid).set({
                                 displayName: observerName,
                                 email: user.email,
+                                company: observerCompany,
+                                position: positionValue,
                                 role: 'user',
                                 status: 'unverified', // 'unverified' -> 'pending' -> 'approved'
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp()

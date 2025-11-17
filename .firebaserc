@@ -1,5 +1,7 @@
 {
-  "projects": {
-    "default": "observationform-e6977"
-  }
+	"projects": {
+		"default": "observationform-e6977"
+	},
+	"targets": {},
+	"etags": {}
 }
