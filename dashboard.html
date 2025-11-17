@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Admin Dashboard</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<style>
+			body {
+				font-family: "Inter", sans-serif;
+				padding: 20px;
+				background-color: #f4f7f6;
+				margin: 0;
+			}
+			.header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 20px;
+				position: relative;
+			}
+			.header-controls {
+				display: flex;
+				align-items: center;
+				gap: 20px;
+			}
+			.language-buttons {
+				display: flex;
+				gap: 10px;
+			}
+			.language-button {
+				cursor: pointer;
+				width: 28px;
+				height: 28px;
+				border-radius: 50%;
+				overflow: hidden;
+				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				border: 2px solid transparent;
+			}
+			.language-button:hover {
+				transform: scale(1.1);
+			}
+			.language-button.active {
+				border-color: #34495e;
+			}
+			.language-button img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+			h1 {
+				color: #2c3e50;
+			}
+			#logout-btn {
+				background-color: #e74c3c;
+				color: white;
+				border: none;
+				padding: 10px 15px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: bold;
+				transition: background-color 0.3s ease;
+			}
+			#logout-btn:hover {
+				background-color: #c0392b;
+			}
+
+			/* Tab Navigation */
+			.tab-nav {
+				display: flex;
+				border-bottom: 2px solid #dee2e6;
+				margin-bottom: 20px;
+			}
+			.tab-button {
+				padding: 10px 20px;
+				cursor: pointer;
+				border: none;
+				background-color: transparent;
+				font-size: 16px;
+				font-weight: 600;
+				color: #495057;
+				border-bottom: 2px solid transparent;
+				margin-bottom: -2px;
+			}
+			.tab-button.active {
+				color: #007bff;
+				border-color: #007bff;
+			}
+			.tab-content {
+				display: none;
+			}
+			.tab-content.active {
+				display: block;
+			}
+
+			.dashboard-controls {
+				background-color: #fff;
+				padding: 20px;
+				border-radius: 8px;
+				margin-bottom: 20px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+			}
+			.filter-container {
+				display: flex;
+				gap: 20px;
+				align-items: center;
+				margin-bottom: 20px;
+			}
+			.filter-group label {
+				font-weight: 600;
+				margin-right: 10px;
+				font-size: 14px;
+				color: #555;
+			}
+			#dateFilter {
+				padding: 8px;
+				border-radius: 4px;
+				border: 1px solid #ccc;
+			}
+			.charts-container {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: 20px;
+				padding: 10px 0;
+			}
+			.chart-box {
+				width: 100%;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				background-color: #fff;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			th,
+			td {
+				padding: 12px 15px;
+				text-align: left;
+				border-bottom: 1px solid #e0e0e0;
+			}
+			th {
+				background-color: #34495e;
+				color: white;
+				font-weight: 600;
+			}
+			tr:nth-child(even) {
+				background-color: #f9fafb;
+			}
+			tr:hover {
+				background-color: #f1f1f1;
+			}
+			.details-btn,
+			.approve-btn {
+				color: white;
+				border: none;
+				padding: 8px 12px;
+				border-radius: 4px;
+				cursor: pointer;
+				font-weight: bold;
+			}
+			.details-btn {
+				background-color: #3498db;
+			}
+			.approve-btn {
+				background-color: #2ecc71;
+			}
+			.approve-btn:disabled {
+				background-color: #95a5a6;
+				cursor: not-allowed;
+			}
+			.status-badge {
+				padding: 4px 8px;
+				border-radius: 12px;
+				font-size: 12px;
+				font-weight: bold;
+				color: white;
+			}
+			.status-approved {
+				background-color: #27ae60;
+			}
+			.status-pending {
+				background-color: #f39c12;
+			}
+			.status-unverified {
+				background-color: #7f8c8d;
+			}
+
+			#loading,
+			#loading-users {
+				text-align: center;
+				padding: 20px;
+				font-size: 18px;
+				color: #7f8c8d;
+			}
+			.modal-overlay {
+				display: none;
+				position: fixed;
+				z-index: 1000;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+				background-color: rgba(0, 0, 0, 0.5);
+				justify-content: center;
+				align-items: center;
+			}
+			.modal-content {
+				background-color: #fefefe;
+				margin: auto;
+				padding: 20px;
+				border: 1px solid #888;
+				width: 80%;
+				max-width: 600px;
+				border-radius: 8px;
+			}
+			.modal-close {
+				color: #aaa;
+				float: right;
+				font-size: 28px;
+				font-weight: bold;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header">
+			<h1 data-key="dashboardTitle">Admin Dashboard</h1>
+			<div class="header-controls">
+				<div class="language-buttons">
+					<div class="language-button" id="lang-id" data-lang="id">
+						<img src="img/ID.svg" alt="Bahasa Indonesia" />
+					</div>
+					<div class="language-button active" id="lang-en" data-lang="en">
+						<img src="img/EN.svg" alt="English" />
+					</div>
+				</div>
+				<button id="logout-btn" data-key="logoutButton">Logout</button>
+			</div>
+		</div>
+
+		<div class="tab-nav">
+			<button
+				class="tab-button active"
+				data-tab="observations"
+				data-key="tabObservations"
+			>
+				Observations
+			</button>
+			<button class="tab-button" data-tab="users" data-key="tabUserManagement">
+				User Management
+			</button>
+		</div>
+
+		<div id="observations-content" class="tab-content active">
+			<div class="dashboard-controls">
+				<div class="filter-container">
+					<div class="filter-group">
+						<label for="filterCheckbox"
+							><input type="checkbox" id="filterCheckbox" />
+							<span data-key="filterByDate">Filter by date</span></label
+						>
+					</div>
+					<div
+						class="filter-group"
+						id="dateFilterContainer"
+						style="display: none"
+					>
+						<input type="date" id="dateFilter" />
+					</div>
+				</div>
+				<div class="charts-container">
+					<div class="chart-box"><canvas id="positionChart"></canvas></div>
+					<div class="chart-box"><canvas id="categoryChart"></canvas></div>
+					<div class="chart-box"><canvas id="typeChart"></canvas></div>
+				</div>
+			</div>
+			<div id="table-container">
+				<div id="loading" data-key="loading">Loading data...</div>
+				<table>
+					<thead>
+						<tr>
+							<th data-key="colDate">Date</th>
+							<th data-key="colObserver">Observer</th>
+							<th data-key="colLocation">Location</th>
+							<th data-key="colCategory">Category</th>
+							<th data-key="colActions">Actions</th>
+						</tr>
+					</thead>
+					<tbody id="dashboard-content"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<div id="users-content" class="tab-content">
+			<div id="loading-users" data-key="loadingUsers">Loading users...</div>
+			<table>
+				<thead>
+					<tr>
+						<th data-key="colUserName">Name</th>
+						<th data-key="colUserEmail">Email</th>
+						<th data-key="colUserRegistered">Registered</th>
+						<th data-key="colUserStatus">Status</th>
+						<th data-key="colUserActions">Actions</th>
+					</tr>
+				</thead>
+				<tbody id="users-table-content"></tbody>
+			</table>
+		</div>
+
+		<div id="detailsModal" class="modal-overlay">
+			<div class="modal-content">
+				<span class="modal-close">&times;</span>
+				<div id="modal-body-content" class="modal-body"></div>
+			</div>
+		</div>
+
+		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-functions.js"></script>
+		<script src="js/firebase-init.js"></script>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				// --- AUTH CHECK ---
+				const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
+				if (!adminUser) {
+					window.location.href = "admin-login.html";
+				}
+
+				// --- TRANSLATIONS ---
+				const translations = {
+					id: {
+						dashboardTitle: "Dasbor Admin",
+						logoutButton: "Keluar",
+						filterByDate: "Filter berdasarkan tanggal",
+						loading: "Memuat data...",
+						colDate: "Tanggal",
+						colObserver: "Observer",
+						colLocation: "Lokasi",
+						colCategory: "Kategori",
+						colActions: "Aksi",
+						detailsButton: "Detail",
+						noReports: "Tidak ada laporan.",
+						chartTitlePosition: "Observasi berdasarkan Jabatan",
+						chartTitleCategory: "Observasi berdasarkan Kategori",
+						chartTitleType: "Observasi berdasarkan Jenis",
+						modalTitle: "Detail Observasi",
+						modalDate: "Tanggal",
+						modalObserver: "Observer",
+						modalCompany: "Perusahaan",
+						modalPosition: "Jabatan",
+						modalLocation: "Lokasi",
+						modalHeaderObservation: "Observasi",
+						modalCategory: "Kategori",
+						modalType: "Jenis",
+						modalDescription: "Deskripsi",
+						modalHeaderFollowUp: "Tindak Lanjut",
+						modalImmediateAction: "Tindakan Segera",
+						modalRecommendation: "Rekomendasi",
+						modalPhoto: "Foto",
+						modalNoPhoto: "Tidak ada foto.",
+						tabObservations: "Observasi",
+						tabUserManagement: "Manajemen Pengguna",
+						loadingUsers: "Memuat pengguna...",
+						colUserName: "Nama",
+						colUserEmail: "Email",
+						colUserRegistered: "Terdaftar",
+						colUserStatus: "Status",
+						colUserActions: "Aksi",
+						approveButton: "Setujui",
+						disapproveButton: "Tolak",
+						deleteButton: "Hapus",
+						statusApproved: "Disetujui",
+						statusPending: "Menunggu",
+						statusUnverified: "Belum Diverifikasi",
+						actionSuccess: "Berhasil!",
+						actionError: "Terjadi kesalahan.",
+					},
+					en: {
+						dashboardTitle: "Admin Dashboard",
+						logoutButton: "Logout",
+						filterByDate: "Filter by date",
+						loading: "Loading data...",
+						colDate: "Date",
+						colObserver: "Observer",
+						colLocation: "Location",
+						colCategory: "Category",
+						colActions: "Actions",
+						detailsButton: "Details",
+						noReports: "No reports found.",
+						chartTitlePosition: "Observations by Position",
+						chartTitleCategory: "Observations by Category",
+						chartTitleType: "Observations by Type",
+						modalTitle: "Observation Details",
+						modalDate: "Date",
+						modalObserver: "Observer",
+						modalCompany: "Company",
+						modalPosition: "Position",
+						modalLocation: "Location",
+						modalHeaderObservation: "Observation",
+						modalCategory: "Category",
+						modalType: "Type",
+						modalDescription: "Description",
+						modalHeaderFollowUp: "Follow-up",
+						modalImmediateAction: "Immediate Action",
+						modalRecommendation: "Recommendation",
+						modalPhoto: "Photo",
+						modalNoPhoto: "No photo submitted.",
+						tabObservations: "Observations",
+						tabUserManagement: "User Management",
+						loadingUsers: "Loading users...",
+						colUserName: "Name",
+						colUserEmail: "Email",
+						colUserRegistered: "Registered",
+						colUserStatus: "Status",
+						colUserActions: "Actions",
+						approveButton: "Approve",
+						statusApproved: "Approved",
+						statusPending: "Pending",
+						statusUnverified: "Unverified",
+						actionSuccess: "Success!",
+						actionError: "An error occurred.",
+					},
+				};
+				let currentLang = "en";
+
+				// --- DOM ELEMENTS ---
+				const langButtons = document.querySelectorAll(".language-button");
+				const tabButtons = document.querySelectorAll(".tab-button");
+				const tabContents = document.querySelectorAll(".tab-content");
+				const contentDiv = document.getElementById("dashboard-content");
+				const loadingDiv = document.getElementById("loading");
+				const modal = document.getElementById("detailsModal");
+				const modalBody = document.getElementById("modal-body-content");
+				const closeModalBtn = document.querySelector(".modal-close");
+				const dateFilterInput = document.getElementById("dateFilter");
+				const filterCheckbox = document.getElementById("filterCheckbox");
+				const dateFilterContainer = document.getElementById(
+					"dateFilterContainer"
+				);
+				const usersTableBody = document.getElementById("users-table-content");
+				const loadingUsersDiv = document.getElementById("loading-users");
+
+				// --- GLOBAL STATE ---
+				let allReports = [];
+				let allUsers = [];
+				let positionChart, categoryChart, typeChart;
+				let currentView = "observations";
+				let currentConfirmCallback = null; // Callback for confirmation modal
+
+				// --- TRANSLATION LOGIC ---
+				function applyTranslation(lang) {
+					document.querySelectorAll("[data-key]").forEach((el) => {
+						const key = el.getAttribute("data-key");
+						if (translations[lang][key]) {
+							el.textContent = translations[lang][key];
+						}
+					});
+					document.title = lang === "id" ? "Dasbor Admin" : "Admin Dashboard";
+					currentLang = lang;
+					langButtons.forEach((btn) => {
+						btn.classList.remove("active");
+						if (btn.dataset.lang === lang) {
+							btn.classList.add("active");
+						}
+					});
+					// Re-render dynamic content with new language
+					if (currentView === "observations") updateObservationsDashboard();
+					else renderUsersTable();
+				}
+
+				// --- VIEW SWITCHING ---
+				function switchView(view) {
+					currentView = view;
+					tabContents.forEach((content) => content.classList.remove("active"));
+					tabButtons.forEach((button) => button.classList.remove("active"));
+					document.getElementById(`${view}-content`).classList.add("active");
+					document
+						.querySelector(`.tab-button[data-tab="${view}"]`)
+						.classList.add("active");
+
+					if (view === "observations") {
+						updateObservationsDashboard();
+					} else if (view === "users") {
+						renderUsersTable();
+					}
+				}
+
+				// --- USER MANAGEMENT ---
+				function renderUsersTable() {
+					if (allUsers.length === 0) {
+						usersTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>`;
+						return;
+					}
+					let html = "";
+					allUsers.forEach((user) => {
+						const registeredDate = user.createdAt
+							? user.createdAt.toDate().toLocaleDateString()
+							: "N/A";
+						const statusKey = `status${
+							user.status.charAt(0).toUpperCase() + user.status.slice(1)
+						}`;
+						const statusText =
+							translations[currentLang][statusKey] || user.status;
+						const statusClass = `status-${user.status}`;
+
+						// Don't allow deleting the currently logged-in admin
+						const canDelete = user.uid !== adminUser.uid;
+
+						html += `
+                        <tr>
+                            <td>${user.displayName || "N/A"}</td>
+                            <td>${user.email || "N/A"}</td>
+                            <td>${registeredDate}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>
+                                ${
+																	user.status !== "approved"
+																		? `<button class="approve-btn" data-uid="${user.uid}">${translations[currentLang].approveButton}</button>`
+																		: ""
+																}
+                            </td>
+                        </tr>
+                    `;
+					});
+					usersTableBody.innerHTML = html;
+				}
+
+				// --- OBSERVATIONS DASHBOARD ---
+				function updateObservationsDashboard() {
+					const useDateFilter = filterCheckbox.checked;
+					const selectedDate = dateFilterInput.value;
+					let filteredReports = allReports;
+
+					if (useDateFilter && selectedDate) {
+						filteredReports = allReports.filter((report) => {
+							if (!report.submittedAt) return false;
+							return (
+								report.submittedAt.toDate().toISOString().split("T")[0] ===
+								selectedDate
+							);
+						});
+					}
+					renderObservationsTable(filteredReports);
+					updatePieChart(
+						filteredReports,
+						"observerPosition",
+						"positionChart",
+						translations[currentLang].chartTitlePosition,
+						positionChart,
+						(c) => (positionChart = c)
+					);
+					updatePieChart(
+						filteredReports,
+						"category",
+						"categoryChart",
+						translations[currentLang].chartTitleCategory,
+						categoryChart,
+						(c) => (categoryChart = c)
+					);
+					updatePieChart(
+						filteredReports,
+						"obsType",
+						"typeChart",
+						translations[currentLang].chartTitleType,
+						typeChart,
+						(c) => (typeChart = c)
+					);
+				}
+
+				function renderObservationsTable(reports) {
+					if (reports.length === 0) {
+						contentDiv.innerHTML = `<tr><td colspan="5" style="text-align: center;">${translations[currentLang].noReports}</td></tr>`;
+						return;
+					}
+					let html = "";
+					reports.forEach((report) => {
+						const date = report.submittedAt
+							? report.submittedAt.toDate().toLocaleDateString()
+							: "N/A";
+						html += `
+                        <tr>
+                            <td>${date}</td><td>${
+							report.observerName || "N/A"
+						}</td>
+                            <td>${report.obsLocation || "N/A"}</td><td>${
+							report.category || "N/A"
+						}</td>
+                            <td><button class="details-btn" data-id="${
+															report.id
+														}">${
+							translations[currentLang].detailsButton
+						}</button></td>
+                        </tr>
+                    `;
+					});
+					contentDiv.innerHTML = html;
+				}
+
+				function updatePieChart(
+					reports,
+					field,
+					canvasId,
+					title,
+					chartInstance,
+					setChartInstance
+				) {
+					const counts = reports.reduce((acc, report) => {
+						const key = report[field] || "Unknown";
+						acc[key] = (acc[key] || 0) + 1;
+						return acc;
+					}, {});
+					if (chartInstance) {
+						chartInstance.destroy();
+					}
+					const newChart = new Chart(document.getElementById(canvasId), {
+						type: "pie",
+						data: {
+							labels: Object.keys(counts),
+							datasets: [
+								{
+									data: Object.values(counts),
+									backgroundColor: [
+										"#3498db",
+										"#e74c3c",
+										"#9b59b6",
+										"#f1c40f",
+										"#2ecc71",
+										"#1abc9c",
+										"#34495e",
+										"#e67e22",
+										"#7f8c8d",
+									],
+								},
+							],
+						},
+						options: {
+							responsive: true,
+							plugins: {
+								legend: { display: true, position: "top" },
+								title: { display: true, text: title },
+							},
+						},
+					});
+					setChartInstance(newChart);
+				}
+
+				// --- DATA FETCHING ---
+				db.collection("observations")
+					.orderBy("submittedAt", "desc")
+					.onSnapshot(
+						(snapshot) => {
+							loadingDiv.style.display = "none";
+							allReports = snapshot.docs.map((doc) => ({
+								id: doc.id,
+								...doc.data(),
+							}));
+							if (currentView === "observations") applyTranslation(currentLang);
+						},
+						(error) => {
+							console.error("Error fetching observations: ", error);
+							loadingDiv.textContent = "Error loading data.";
+						}
+					);
+
+				db.collection("users")
+					.where("status", "in", ["approved", "pending", "unverified"]) // Filter users by status
+					.orderBy("createdAt", "desc")
+					.onSnapshot(
+						(snapshot) => {
+							loadingUsersDiv.style.display = "none";
+							allUsers = snapshot.docs.map((doc) => ({
+								uid: doc.id,
+								...doc.data(),
+							}));
+							if (currentView === "users") applyTranslation(currentLang);
+						},
+						(error) => {
+							console.error("Error fetching users: ", error);
+							loadingUsersDiv.textContent = "Error loading users.";
+						}
+					);
+
+				// --- EVENT LISTENERS ---
+				langButtons.forEach((button) =>
+					button.addEventListener("click", function () {
+						applyTranslation(this.dataset.lang);
+					})
+				);
+				tabButtons.forEach((button) =>
+					button.addEventListener("click", function () {
+						switchView(this.dataset.tab);
+					})
+				);
+				document.getElementById("logout-btn").addEventListener("click", () => {
+					sessionStorage.removeItem("adminUser");
+					window.location.href = "admin-login.html";
+				});
+				filterCheckbox.addEventListener("change", () => {
+					dateFilterContainer.style.display = filterCheckbox.checked
+						? "block"
+						: "none";
+					if (!filterCheckbox.checked) {
+						dateFilterInput.value = "";
+					}
+					updateObservationsDashboard();
+				});
+				dateFilterInput.addEventListener("change", updateObservationsDashboard);
+				usersTableBody.addEventListener("click", async (e) => {
+					if (e.target && e.target.classList.contains("approve-btn")) {
+						const button = e.target;
+						const uid = button.dataset.uid;
+						button.disabled = true; // Disable button to prevent multiple clicks
+						button.textContent = translations[currentLang].disapproving; // Use disapproving as a temporary text
+
+						try {
+							await db
+								.collection("users")
+								.doc(uid)
+								.update({ status: "approved" });
+							console.log(`User ${uid} approved successfully.`);
+						} catch (error) {
+							console.error("Error approving user: ", error);
+							button.disabled = false; // Re-enable button on error
+							button.textContent = translations[currentLang].approveButton; // Restore button text
+							alert(
+								`${translations[currentLang].actionError}: ${error.message}`
+							); // Simple error feedback
+						}
+					}
+				});
+
+				closeModalBtn.onclick = () => (modal.style.display = "none");
+				window.onclick = (event) => {
+					if (event.target == modal) modal.style.display = "none";
+				};
+
+				// Initial Load
+				applyTranslation(currentLang);
+			});
+		</script>
+	</body>
+</html>
