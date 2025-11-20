@@ -147,9 +147,24 @@
       align-items: flex-start;
     }
 
+    /* Flyer / Sticky Right Column Styles */
+    .flyer-container {
+      position: sticky;
+      top: 24px; /* Jarak dari atas saat scroll */
+      height: fit-content;
+    }
+
+    .flyer-card {
+      border-top: 5px solid var(--accent); /* Aksen warna di atas seperti kop flyer */
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.01); /* Shadow lebih tebal */
+      background: linear-gradient(to bottom, #ffffff, #f8fafc);
+    }
+
     @media (max-width: 880px) {
       .layout { grid-template-columns: 1fr; }
       .header-banner { height: 140px; }
+      /* Matikan efek sticky di mobile agar tidak mengganggu */
+      .flyer-container { position: static; }
     }
 
     @media (max-width: 480px) {
@@ -580,10 +595,11 @@
           </div>
       </div>
 
-      <!-- RIGHT COLUMN (Literature) -->
-      <div>
-          <div class="card">
-            <h2 data-i18n="litTitle">Theoretical basis & Referensi</h2>
+      <!-- RIGHT COLUMN (Literature / Flyer) -->
+      <div class="flyer-container">
+          <div class="card flyer-card">
+            <!-- Update text statis dan pastikan data-i18n ada -->
+            <h2 data-i18n="litTitle">Theoretical Basis & References</h2>
             <div class="ref-content" id="litContent">
                 <!-- Content injected by JS based on language -->
             </div>
@@ -651,6 +667,7 @@
         safeDesc: "<strong>Kesimpulan:</strong> Konfigurasi scaffolding <strong>AMAN</strong>.<br>Tekanan kontak lebih kecil dari kapasitas ijin tanah. Pastikan pemadatan tanah di lapangan sesuai dengan nilai CBR yang diasumsikan.",
         unsafeDesc: "<strong>Kesimpulan:</strong> Konfigurasi scaffolding <strong>BERISIKO</strong>.<br>Tekanan kontak melebihi kapasitas ijin tanah. <br><strong>Saran:</strong> Perbesar ukuran base plate (gunakan sole board / papan alas), kurangi jarak antar tiang, atau lakukan perbaikan tanah.",
         // Literature
+        litTitle: "Landasan Teori & Referensi", // Tambahkan translation key ini
         litContent: `
             <p>Perhitungan dalam kalkulator ini didasarkan pada prinsip-prinsip berikut:</p>
             <h3>1. Estimasi Berat Struktur (Dead Load)</h3>
@@ -732,6 +749,7 @@
         safeDesc: "<strong>Conclusion:</strong> Scaffolding configuration is <strong>SAFE</strong>.<br>Contact pressure is less than allowable soil capacity. Ensure field soil compaction meets the assumed CBR value.",
         unsafeDesc: "<strong>Conclusion:</strong> Scaffolding configuration is <strong>AT RISK</strong>.<br>Contact pressure exceeds allowable soil capacity. <br><strong>Recommendation:</strong> Increase base plate size (use sole boards), reduce span between standards, or perform soil improvement.",
         // Literature
+        litTitle: "Theoretical Basis & References", // Tambahkan translation key ini
         litContent: `
             <p>Calculations in this tool are based on the following principles:</p>
             <h3>1. Structural Weight Estimation (Dead Load)</h3>
