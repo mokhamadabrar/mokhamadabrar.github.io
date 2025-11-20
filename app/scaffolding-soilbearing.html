@@ -29,12 +29,16 @@
       --card: #ffffff;
       --accent: #2563eb;
       --accent-soft: #dbeafe;
-      --danger: #dc2626;
-      --danger-soft: #fee2e2;
-      --success: #16a34a;
-      --success-soft: #dcfce7;
+      
+      /* PERBAIKAN KONTRAS: Warna teks digelapkan, background dicerahkan */
+      --danger: #b91c1c;       /* Merah lebih tua (High Contrast) */
+      --danger-soft: #fef2f2;  /* Merah sangat muda */
+      
+      --success: #15803d;      /* Hijau lebih tua (High Contrast) */
+      --success-soft: #f0fdf4; /* Hijau sangat muda */
+      
       --text: #111827;
-      --muted: #6b7280;
+      --muted: #4b5563;        /* Abu-abu lebih tua agar terbaca */
       --border: #e5e7eb;
       --radius: 12px;
     }
@@ -379,7 +383,7 @@
 
     .explanation {
       font-size: 0.85rem;
-      color: #475569;
+      color: #334155; /* Digelapkan sedikit agar lebih jelas */
       margin-top: 16px;
       line-height: 1.6;
       background: #eff6ff;
@@ -390,7 +394,7 @@
 
     .tagline {
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: #475569; /* PERBAIKAN: Digelapkan dari #94a3b8 menjadi Slate-600 */
       margin-top: 16px;
       font-style: italic;
     }
