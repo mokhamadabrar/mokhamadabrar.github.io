@@ -394,7 +394,7 @@
 
     .tagline {
       font-size: 0.75rem;
-      color: #475569; /* PERBAIKAN: Digelapkan dari #94a3b8 menjadi Slate-600 */
+      color: #475569; /* Digelapkan dari #94a3b8 menjadi Slate-600 */
       margin-top: 16px;
       font-style: italic;
     }
@@ -432,7 +432,8 @@
   </style>
 </head>
 <body>
-  <div class="wrapper">
+  <!-- Mengubah div wrapper menjadi main -->
+  <main class="wrapper">
     <!-- HEADER CONTAINER -->
     <div class="header-container">
         <!-- LANGUAGE TOGGLE -->
@@ -602,7 +603,6 @@
       <!-- RIGHT COLUMN (Literature / Flyer) -->
       <div class="flyer-container">
           <div class="card flyer-card">
-            <!-- Update text statis dan pastikan data-i18n ada -->
             <h2 data-i18n="litTitle">Theoretical Basis & References</h2>
             <div class="ref-content" id="litContent">
                 <!-- Content injected by JS based on language -->
@@ -610,7 +610,7 @@
           </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <footer>
       Created design calculation @ 2025<br>
