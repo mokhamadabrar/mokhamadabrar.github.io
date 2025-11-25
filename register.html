@@ -148,303 +148,375 @@
             margin-top: 20px;
             font-size: 14px;
         }
-        .switch-form a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* Email Confirmation Modal */
-        #emailConfirmationModal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
-        }
-        #emailConfirmationModal .modal-content {
-            background-color: #fefefe;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            max-width: 400px;
-        }
-        #emailConfirmationModal h3 {
-            margin-top: 0;
-            color: #333;
-            font-size: 22px;
-        }
-        #emailConfirmationModal p {
-            margin-bottom: 25px;
-            color: #555;
-            font-size: 16px;
-        }
-        #emailConfirmationModal button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            background-color: #007bff;
-            color: white;
-            transition: background-color 0.3s ease;
-        }
-        #emailConfirmationModal button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="language-buttons">
-            <div class="language-button" id="lang-id" data-lang="id">
-                <img src="img/ID.svg" alt="Bahasa Indonesia">
-            </div>
-            <div class="language-button active" id="lang-en" data-lang="en">
-                <img src="img/EN.svg" alt="English">
-            </div>
-        </div>
-        <form id="registerForm">
-            <h1 data-key="registerTitle">Register</h1>
-            <div id="message" class="message"></div>
-            <div class="form-group">
-                <label for="observerName" data-key="nameLabel">Observer Name</label>
-                <input type="text" id="observerName" name="observerName" required>
-            </div>
-            <div class="form-group">
-                <label for="observerCompany" data-key="companyLabel">Company</label>
-                <input type="text" id="observerCompany" name="observerCompany" required>
-            </div>
-            <div class="form-group">
-                <label for="observerPosition" data-key="positionLabel">Position</label>
-                <div class="radio-group register-radio-group" id="observerPosition">
-                    <div><input type="radio" id="reg-pos-cm" name="observerPosition" value="Construction Manager" required><label for="reg-pos-cm">Construction Manager</label></div>
-                    <div><input type="radio" id="reg-pos-sm" name="observerPosition" value="Site Manager"><label for="pos-sm">Site Manager</label></div>
-                    <div><input type="radio" id="reg-pos-cs" name="observerPosition" value="Construction Supervisor"><label for="pos-cs">Construction Supervisor</label></div>
-                    <div><input type="radio" id="reg-pos-ss" name="observerPosition" value="Safety Supervisor"><label for="pos-ss">Safety Supervisor</label></div>
-                    <div><input type="radio" id="reg-pos-sem" name="observerPosition" value="Safety Manager"><label for="pos-sem">Safety Manager</label></div>
+                .switch-form a {
+                    color: #007bff;
+                    text-decoration: none;
+                    font-weight: 600;
+                }
+        
+                /* Modal Styles */
+                .modal-overlay {
+                    display: none;
+                    position: fixed;
+                    z-index: 1001;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0,0,0,0.6);
+                    justify-content: center;
+                    align-items: center;
+                }
+                .modal-content {
+                    background-color: #fefefe;
+                    padding: 30px;
+                    border-radius: 10px;
+                    text-align: center;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                    max-width: 400px;
+                    width: 90%;
+                }
+                .modal-content h3 {
+                    margin-top: 0;
+                    color: #333;
+                    font-size: 22px;
+                }
+                .modal-content p {
+                    margin-bottom: 25px;
+                    color: #555;
+                    font-size: 16px;
+                }
+                #emailConfirmationModal button {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background-color: #007bff;
+                    color: white;
+                    transition: background-color 0.3s ease;
+                }
+                #emailConfirmationModal button:hover {
+                    background-color: #0056b3;
+                }
+                        .modal-buttons {
+                            display: flex;
+                            justify-content: center;
+                            gap: 10px;
+                            margin-top: 20px;
+                        }                .modal-buttons button {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                    transition: background-color 0.3s ease;
+                }
+                .modal-buttons .cancel-btn {
+                    background-color: #6c757d;
+                    color: white;
+                }
+                .modal-buttons .cancel-btn:hover {
+                    background-color: #5a6268;
+                }
+                .modal-buttons #confirmRegisterBtn {
+                    background-color: #007bff;
+                    color: white;
+                }
+                .modal-buttons #confirmRegisterBtn:hover {
+                    background-color: #0056b3;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="language-buttons">
+                    <div class="language-button" id="lang-id" data-lang="id">
+                        <img src="img/ID.svg" alt="Bahasa Indonesia">
+                    </div>
+                    <div class="language-button active" id="lang-en" data-lang="en">
+                        <img src="img/EN.svg" alt="English">
+                    </div>
+                </div>
+                <form id="registerForm">
+                    <h1 data-key="registerTitle">Register</h1>
+                    <div id="message" class="message"></div>
+                    <div class="form-group">
+                        <label for="observerName" data-key="nameLabel">Observer Name</label>
+                        <input type="text" id="observerName" name="observerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="observerCompany" data-key="companyLabel">Company</label>
+                        <input type="text" id="observerCompany" name="observerCompany" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="observerPosition" data-key="positionLabel">Position</label>
+                        <div class="radio-group register-radio-group" id="observerPosition">
+                            <div><input type="radio" id="reg-pos-cm" name="observerPosition" value="Construction Manager" required><label for="reg-pos-cm" data-key="posCM">Construction Manager</label></div>
+                            <div><input type="radio" id="reg-pos-sm" name="observerPosition" value="Site Manager"><label for="reg-pos-sm" data-key="posSM">Site Manager</label></div>
+                            <div><input type="radio" id="reg-pos-cs" name="observerPosition" value="Construction Supervisor"><label for="reg-pos-cs" data-key="posCS">Construction Supervisor</label></div>
+                            <div><input type="radio" id="reg-pos-ss" name="observerPosition" value="Safety Supervisor"><label for="reg-pos-ss" data-key="posSS">Safety Supervisor</label></div>
+                            <div><input type="radio" id="reg-pos-sem" name="observerPosition" value="Safety Manager"><label for="reg-pos-sem" data-key="posSEM">Safety Manager</label></div>
+                            <div><input type="radio" id="reg-pos-w" name="observerPosition" value="Worker"><label for="reg-pos-w" data-key="posW">Worker</label></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-key="emailLabel">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" data-key="passwordLabel">Password</label>
+                        <input type="password" id="password" name="password" minlength="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword" data-key="confirmPasswordLabel">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn" data-key="registerButton">Register</button>
+                </form>
+                <div class="switch-form">
+                    <p><span data-key="haveAccount">Already have an account?</span> <a href="login.html" data-key="loginLink">Login here</a></p>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="email" data-key="emailLabel">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password" data-key="passwordLabel">Password</label>
-                <input type="password" id="password" name="password" minlength="6" required>
-            </div>
-            <div class="form-group">
-                <label for="confirmPassword" data-key="confirmPasswordLabel">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-            </div>
-            <button type="submit" class="submit-btn" data-key="registerButton">Register</button>
-        </form>
-        <div class="switch-form">
-            <p><span data-key="haveAccount">Already have an account?</span> <a href="login.html" data-key="loginLink">Login here</a></p>
-        </div>
-    </div>
-
-    <!-- Firebase Scripts -->
-    <!-- These scripts are now served by Firebase Hosting -->
-    <script src="/__/firebase/8.6.1/firebase-app.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
-    <script src="/__/firebase/init.js"></script>
-    <script src="js/firebase-init.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const translations = {
-                'id': {
-                    registerTitle: "Registrasi",
-                    nameLabel: "Nama Observer",
-                    companyLabel: "Perusahaan",
-                    positionLabel: "Jabatan",
-                    emailLabel: "Email",
-                    passwordLabel: "Kata Sandi",
-                    confirmPasswordLabel: "Konfirmasi Kata Sandi",
-                    registerButton: "Daftar",
-                    haveAccount: "Sudah punya akun?",
-                    loginLink: "Masuk di sini",
-                    passwordMismatch: "Password dan konfirmasi password tidak cocok.",
-                    successMessage: "Registrasi berhasil! Silakan periksa email Anda untuk verifikasi.",
-                    errorEmailInUse: "Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.",
-                    errorWeakPassword: "Password harus terdiri dari minimal 6 karakter.",
-                    errorGeneric: "Terjadi kesalahan saat registrasi. Silakan coba lagi.",
-                    errorFieldsRequired: "Semua kolom wajib diisi.",
-                    emailConfirmationTitle: "Verifikasi Email Anda",
-                    emailConfirmationMessage: "Registrasi berhasil! Silakan periksa kotak masuk email Anda (dan folder spam) untuk tautan verifikasi. Anda perlu memverifikasi email Anda sebelum admin dapat menyetujui akun Anda.",
-                    emailConfirmationButton: "Oke"
-                },
-                'en': {
-                    registerTitle: "Register",
-                    nameLabel: "Observer Name",
-                    emailLabel: "Email",
-                    passwordLabel: "Password",
-                    confirmPasswordLabel: "Confirm Password",
-                    registerButton: "Register",
-                    haveAccount: "Already have an account?",
-                    loginLink: "Login here",
-                    passwordMismatch: "Password and confirmation do not match.",
-                    successMessage: "Registration successful! Please check your email for verification.",
-                    errorEmailInUse: "This email is already in use.",
-                    errorWeakPassword: "Password should be at least 6 characters.",
-                    errorGeneric: "An error occurred during registration. Please try again.",
-                    errorFieldsRequired: "All fields are required.",
-                    emailConfirmationTitle: "Verify Your Email",
-                    emailConfirmationMessage: "Registration successful! Please check your email inbox (and spam folder) for a verification link. You need to verify your email before an admin can approve your account.",
-                    emailConfirmationButton: "Okay"
-                }
-            };
-
-            let currentLang = 'en';
-            const langButtons = document.querySelectorAll(".language-button");
-            const registerForm = document.getElementById('registerForm');
-            const messageDiv = document.getElementById('message'); // Still used for error messages
-
-            // Email Confirmation Modal Elements
-            const emailConfirmationModal = document.getElementById('emailConfirmationModal');
-            const emailConfirmationModalTitle = document.getElementById('emailConfirmationModalTitle');
-            const emailConfirmationModalMessage = document.getElementById('emailConfirmationModalMessage');
-            const emailConfirmationModalCloseBtn = document.getElementById('emailConfirmationModalCloseBtn');
-
-            function applyTranslation(lang) {
-                document.querySelectorAll('[data-key]').forEach(element => {
-                    const key = element.getAttribute('data-key');
-                    if (translations[lang][key]) {
-                        element.textContent = translations[lang][key];
-                    }
-                });
-                document.title = lang === 'id' ? 'Registrasi | Form Observasi Keselamatan' : 'Register | Safety Observation Form';
-                currentLang = lang;
-                langButtons.forEach(button => {
-                    button.classList.remove('active');
-                    if (button.dataset.lang === lang) {
-                        button.classList.add('active');
-                    }
-                });
-            }
-
-            langButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    applyTranslation(this.dataset.lang);
-                });
-            });
-
-            applyTranslation(currentLang);
-            messageDiv.style.display = 'none'; // Ensure message div is hidden on load
-
-            // Function to show email confirmation modal
-            function showEmailConfirmationModal() {
-                emailConfirmationModalTitle.textContent = translations[currentLang].emailConfirmationTitle;
-                emailConfirmationModalMessage.textContent = translations[currentLang].emailConfirmationMessage;
-                emailConfirmationModalCloseBtn.textContent = translations[currentLang].emailConfirmationButton;
-                emailConfirmationModal.style.display = 'flex';
-            }
-
-            // Event listener for closing email confirmation modal
-            emailConfirmationModalCloseBtn.addEventListener('click', () => {
-                emailConfirmationModal.style.display = 'none';
-                registerForm.reset(); // Reset form after successful registration
-            });
-
-            // Close modal if clicking outside
-            window.onclick = (event) => {
-                if (event.target == emailConfirmationModal) {
-                    emailConfirmationModal.style.display = 'none';
-                    registerForm.reset(); // Reset form after successful registration
-                }
-            }
-
-            registerForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                messageDiv.style.display = 'none';
-
-                const observerName = document.getElementById('observerName').value;
-                const observerCompany = document.getElementById('observerCompany').value;
-                const observerPosition = document.querySelector('input[name="observerPosition"]:checked');
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-
-                // Check if all fields are filled
-                if (!observerName || !observerCompany || !observerPosition || !email || !password || !confirmPassword) {
-                    messageDiv.textContent = translations[currentLang].errorFieldsRequired;
-                    messageDiv.className = 'message error';
-                    messageDiv.style.display = 'block';
-                    return;
-                }
-
-                const positionValue = observerPosition ? observerPosition.value : '';
-
-                if (password !== confirmPassword) {
-                    messageDiv.textContent = translations[currentLang].passwordMismatch;
-                    messageDiv.className = 'message error';
-                    messageDiv.style.display = 'block';
-                    return;
-                }
-
-                firebase.auth().createUserWithEmailAndPassword(email, password)
-                    .then(userCredential => {
-                        const user = userCredential.user;
-                        
-                        // Update profile and send verification email
-                        return user.updateProfile({
-                            displayName: observerName
-                        }).then(() => {
-                            return user.sendEmailVerification();
-                        }).then(() => {
-                            // Create a user document in Firestore
-                            return db.collection('users').doc(user.uid).set({
-                                displayName: observerName,
-                                email: user.email,
-                                company: observerCompany,
-                                position: positionValue,
-                                role: 'user',
-                                status: 'unverified', // 'unverified' -> 'pending' -> 'approved'
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                        });
-                    })
-                    .then(() => {
-                        showEmailConfirmationModal(); // Show the new modal
-                    })
-                    .catch(error => {
-                        let errorMessage;
-                        switch (error.code) {
-                            case 'auth/email-already-in-use':
-                                errorMessage = translations[currentLang].errorEmailInUse;
-                                break;
-                            case 'auth/weak-password':
-                                errorMessage = translations[currentLang].errorWeakPassword;
-                                break;
-                            default:
-                                errorMessage = translations[currentLang].errorGeneric;
-                                break;
+        
+            <!-- Firebase Scripts -->
+            <!-- These scripts are now served by Firebase Hosting -->
+            <script src="/__/firebase/8.6.1/firebase-app.js"></script>
+            <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+            <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+            <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+            <script src="/__/firebase/init.js"></script>
+            <script src="js/firebase-init.js"></script>
+        
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const translations = {
+                        'id': {
+                            registerTitle: "Registrasi",
+                            nameLabel: "Nama Observer",
+                            companyLabel: "Perusahaan",
+                            positionLabel: "Jabatan",
+                            posCM: "Manajer Konstruksi",
+                            posSM: "Manajer Lapangan",
+                            posCS: "Supervisor Konstruksi",
+                            posSS: "Supervisor Keselamatan",
+                            posSEM: "Manajer Keselamatan",
+                            posW: "Pekerja",
+                            emailLabel: "Email",
+                            passwordLabel: "Kata Sandi",
+                            confirmPasswordLabel: "Konfirmasi Kata Sandi",
+                            registerButton: "Daftar",
+                            haveAccount: "Sudah punya akun?",
+                            loginLink: "Masuk di sini",
+                            passwordMismatch: "Password dan konfirmasi password tidak cocok.",
+                            successMessage: "Registrasi berhasil! Silakan periksa email Anda untuk verifikasi.",
+                            errorEmailInUse: "Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.",
+                            errorWeakPassword: "Password harus terdiri dari minimal 6 karakter.",
+                            errorGeneric: "Terjadi kesalahan saat registrasi. Silakan coba lagi.",
+                            errorFieldsRequired: "Semua kolom wajib diisi.",
+                            emailConfirmationTitle: "Verifikasi Email Anda",
+                            emailConfirmationMessage: "Registrasi berhasil! Silakan periksa kotak masuk email Anda (dan folder spam) untuk tautan verifikasi. Anda perlu memverifikasi email Anda sebelum admin dapat menyetujui akun Anda.",
+                            emailConfirmationButton: "Oke",
+                            registrationConfirmTitle: "Konfirmasi Registrasi",
+                            registrationConfirmMessage: "Data yang sudah terdaftar tidak akan diubah kembali, siap registrasi?",
+                            confirmRegisterBtn: "Oke",
+                            cancelRegisterBtn: "Batal"
+                        },
+                        'en': {
+                            registerTitle: "Register",
+                            nameLabel: "Observer Name",
+                            companyLabel: "Company",
+                            positionLabel: "Position",
+                            posCM: "Construction Manager",
+                            posSM: "Site Manager",
+                            posCS: "Construction Supervisor",
+                            posSS: "Safety Supervisor",
+                            posSEM: "Safety Manager",
+                            posW: "Worker",
+                            emailLabel: "Email",
+                            passwordLabel: "Password",
+                            confirmPasswordLabel: "Confirm Password",
+                            registerButton: "Register",
+                            haveAccount: "Already have an account?",
+                            loginLink: "Login here",
+                            passwordMismatch: "Password and confirmation do not match.",
+                            successMessage: "Registration successful! Please check your email for verification.",
+                            errorEmailInUse: "This email is already in use.",
+                            errorWeakPassword: "Password should be at least 6 characters.",
+                            errorGeneric: "An error occurred during registration. Please try again.",
+                            errorFieldsRequired: "All fields are required.",
+                            emailConfirmationTitle: "Verify Your Email",
+                            emailConfirmationMessage: "Registration successful! Please check your email inbox (and spam folder) for a verification link. You need to verify your email before an admin can approve your account.",
+                            emailConfirmationButton: "Okay",
+                            registrationConfirmTitle: "Confirm Registration",
+                            registrationConfirmMessage: "Data that has been registered cannot be changed, are you ready to register?",
+                            confirmRegisterBtn: "OK",
+                            cancelRegisterBtn: "Cancel"
                         }
-                        messageDiv.textContent = errorMessage;
-                        messageDiv.className = 'message error';
-                        messageDiv.style.display = 'block';
+                    };
+        
+                    let currentLang = 'en';
+                    const langButtons = document.querySelectorAll(".language-button");
+                    const registerForm = document.getElementById('registerForm');
+                    const messageDiv = document.getElementById('message');
+        
+                    // Modals
+                    const emailConfirmationModal = document.getElementById('emailConfirmationModal');
+                    const registrationConfirmModal = document.getElementById('registrationConfirmModal');
+        
+                    function applyTranslation(lang) {
+                        document.querySelectorAll('[data-key]').forEach(element => {
+                            const key = element.getAttribute('data-key');
+                            if (translations[lang][key]) {
+                                element.textContent = translations[lang][key];
+                            }
+                        });
+                        document.title = lang === 'id' ? 'Registrasi | Form Observasi Keselamatan' : 'Register | Safety Observation Form';
+                        currentLang = lang;
+                        langButtons.forEach(button => {
+                            button.classList.remove('active');
+                            if (button.dataset.lang === lang) {
+                                button.classList.add('active');
+                            }
+                        });
+                    }
+        
+                    langButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            applyTranslation(this.dataset.lang);
+                        });
                     });
-            });
-        });
-    </script>
-    <!-- Email Confirmation Modal -->
-    <div id="emailConfirmationModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="emailConfirmationModalTitle"></h3>
-            <p id="emailConfirmationModalMessage"></p>
-            <button id="emailConfirmationModalCloseBtn" data-key="emailConfirmationButton"></button>
-        </div>
-    </div>
-</body>
-</html>
+        
+                    applyTranslation(currentLang);
+                    messageDiv.style.display = 'none';
+        
+                    function showModal(modal) {
+                        modal.style.display = 'flex';
+                    }
+        
+                    function hideModal(modal) {
+                        modal.style.display = 'none';
+                    }
+        
+                    document.getElementById('emailConfirmationModalCloseBtn').addEventListener('click', () => {
+                        hideModal(emailConfirmationModal);
+                        registerForm.reset();
+                    });
+        
+                    document.getElementById('cancelRegisterBtn').addEventListener('click', () => {
+                        hideModal(registrationConfirmModal);
+                    });
+        
+                    document.getElementById('confirmRegisterBtn').addEventListener('click', () => {
+                        hideModal(registrationConfirmModal);
+                        proceedWithRegistration();
+                    });
+        
+                    window.onclick = (event) => {
+                        if (event.target == emailConfirmationModal) {
+                            hideModal(emailConfirmationModal);
+                            registerForm.reset();
+                        }
+                        if (event.target == registrationConfirmModal) {
+                            hideModal(registrationConfirmModal);
+                        }
+                    }
+        
+                    registerForm.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        showModal(registrationConfirmModal);
+                        applyTranslation(currentLang); // Re-apply translation to modals
+                    });
+        
+                    function proceedWithRegistration() {
+                        messageDiv.style.display = 'none';
+        
+                        const observerName = document.getElementById('observerName').value;
+                        const observerCompany = document.getElementById('observerCompany').value;
+                        const observerPosition = document.querySelector('input[name="observerPosition"]:checked');
+                        const email = document.getElementById('email').value;
+                        const password = document.getElementById('password').value;
+                        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+                        if (!observerName || !observerCompany || !observerPosition || !email || !password || !confirmPassword) {
+                            messageDiv.textContent = translations[currentLang].errorFieldsRequired;
+                            messageDiv.className = 'message error';
+                            messageDiv.style.display = 'block';
+                            return;
+                        }
+        
+                        const positionValue = observerPosition ? observerPosition.value : '';
+        
+                        if (password !== confirmPassword) {
+                            messageDiv.textContent = translations[currentLang].passwordMismatch;
+                            messageDiv.className = 'message error';
+                            messageDiv.style.display = 'block';
+                            return;
+                        }
+        
+                        firebase.auth().createUserWithEmailAndPassword(email, password)
+                            .then(userCredential => {
+                                const user = userCredential.user;
+                                
+                                return user.updateProfile({
+                                    displayName: observerName
+                                }).then(() => {
+                                    return user.sendEmailVerification();
+                                }).then(() => {
+                                    return db.collection('users').doc(user.uid).set({
+                                        displayName: observerName,
+                                        email: user.email,
+                                        company: observerCompany,
+                                        position: positionValue,
+                                        role: 'user',
+                                        status: 'unverified',
+                                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                                });
+                            })
+                            .then(() => {
+                                showModal(emailConfirmationModal);
+                                applyTranslation(currentLang);
+                            })
+                            .catch(error => {
+                                let errorMessage;
+                                switch (error.code) {
+                                    case 'auth/email-already-in-use':
+                                        errorMessage = translations[currentLang].errorEmailInUse;
+                                        break;
+                                    case 'auth/weak-password':
+                                        errorMessage = translations[currentLang].errorWeakPassword;
+                                        break;
+                                    default:
+                                        errorMessage = translations[currentLang].errorGeneric;
+                                        break;
+                                }
+                                messageDiv.textContent = errorMessage;
+                                messageDiv.className = 'message error';
+                                messageDiv.style.display = 'block';
+                            });
+                    }
+                });
+            </script>
+                <!-- Modals -->
+                <div id="emailConfirmationModal" class="modal-overlay">
+                    <div class="modal-content">
+                        <h3 data-key="emailConfirmationTitle"></h3>
+                        <p data-key="emailConfirmationMessage"></p>
+                        <button id="emailConfirmationModalCloseBtn" data-key="emailConfirmationButton"></button>
+                    </div>
+                </div>            <div id="registrationConfirmModal" class="modal-overlay">
+                <div class="modal-content">
+                    <h3 data-key="registrationConfirmTitle"></h3>
+                    <p data-key="registrationConfirmMessage"></p>
+                    <div class="modal-buttons">
+                        <button id="cancelRegisterBtn" class="cancel-btn" data-key="cancelRegisterBtn"></button>
+                        <button id="confirmRegisterBtn" data-key="confirmRegisterBtn"></button>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
