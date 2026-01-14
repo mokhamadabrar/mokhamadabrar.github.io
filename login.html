@@ -165,8 +165,11 @@
         <div class="switch-form">
             <p><span data-key="loginAs">Login as</span> <a href="admin-login.html" data-key="adminLink">Admin</a></p>
             <p><span data-key="noAccount">Don't have an account?</span> <a href="register.html" data-key="registerLink">Register here</a></p>
+            <p><a href="#" id="forgot-password-link" data-key="forgotPassword">Forgot Password?</a></p>
         </div>
     </div>
+
+    <div id="modal-container"></div>
 
     <!-- Firebase Scripts -->
     <!-- These scripts are now served by Firebase Hosting -->
@@ -189,12 +192,19 @@
                     adminLink: "Admin",
                     noAccount: "Belum punya akun?",
                     registerLink: "Daftar di sini",
+                    forgotPassword: "Lupa Kata Sandi?",
+                    resetPasswordTitle: "Setel Ulang Kata Sandi",
+                    resetPasswordInstruction: "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk menyetel ulang kata sandi Anda.",
+                    cancelButton: "Batal",
+                    resetButton: "Setel Ulang Kata Sandi",
                     errorGeneric: "Terjadi kesalahan. Silakan coba lagi.",
                     loginError: "Email atau kata sandi tidak sesuai, atau akun Anda belum disetujui oleh admin.",
                     errorEmailNotVerified: "Email Anda belum diverifikasi. Silakan periksa kotak masuk Anda.",
                     errorPendingApproval: "Akun Anda menunggu persetujuan admin.",
                     errorInvalidRole: "Akun Anda memiliki peran yang tidak valid. Silakan hubungi dukungan.",
-                    errorNotRegistered: "Pengguna tidak ditemukan. Silakan daftar atau hubungi dukungan."
+                    errorNotRegistered: "Pengguna tidak ditemukan. Silakan daftar atau hubungi dukungan.",
+                    resetSuccess: "Tautan untuk menyetel ulang kata sandi telah dikirim ke email Anda. Periksa juga folder spam Anda.",
+                    resetError: "Gagal mengirim email pengaturan ulang kata sandi. Silakan periksa kembali email Anda."
                 },
                 'en': {
                     loginTitle: "Login",
@@ -205,12 +215,19 @@
                     adminLink: "Admin",
                     noAccount: "Don't have an account?",
                     registerLink: "Register here",
+                    forgotPassword: "Forgot Password?",
+                    resetPasswordTitle: "Reset Password",
+                    resetPasswordInstruction: "Enter your email address and we will send you a link to reset your password.",
+                    cancelButton: "Cancel",
+                    resetButton: "Reset Password",
                     errorGeneric: "An error occurred. Please try again.",
                     loginError: "Email or password is incorrect, or your account has not been approved by an admin.",
                     errorEmailNotVerified: "Your email address is not verified. Please check your inbox.",
                     errorPendingApproval: "Your account is pending admin approval.",
                     errorInvalidRole: "Your account has an invalid role. Please contact support.",
-                    errorNotRegistered: "User not found. Please register or contact support."
+                    errorNotRegistered: "User not found. Please register or contact support.",
+                    resetSuccess: "A password reset link has been sent to your email. Please also check your spam folder.",
+                    resetError: "Failed to send password reset email. Please check your email and try again."
                 }
             };
 
@@ -220,7 +237,7 @@
             function applyTranslation(lang) {
                 document.querySelectorAll('[data-key]').forEach(element => {
                     const key = element.getAttribute('data-key');
-                    if (translations[lang][key]) {
+                    if (translations[lang] && translations[lang][key]) {
                         element.textContent = translations[lang][key];
                     }
                 });
@@ -239,6 +256,56 @@
                     applyTranslation(this.dataset.lang);
                 });
             });
+
+            // Load modal
+            fetch('modal.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('modal-container').innerHTML = data;
+                    const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+                    const closeModal = document.querySelector('.close-button');
+                    const cancelReset = document.getElementById('cancelReset');
+                    const forgotPasswordLink = document.getElementById('forgot-password-link');
+
+                    forgotPasswordLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        forgotPasswordModal.style.display = 'flex';
+                    });
+
+                    closeModal.addEventListener('click', () => {
+                        forgotPasswordModal.style.display = 'none';
+                    });
+
+                    cancelReset.addEventListener('click', () => {
+                        forgotPasswordModal.style.display = 'none';
+                    });
+
+                    window.addEventListener('click', (e) => {
+                        if (e.target == forgotPasswordModal) {
+                            forgotPasswordModal.style.display = 'none';
+                        }
+                    });
+
+                    document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        const email = document.getElementById('resetEmail').value;
+                        const resetMessage = document.getElementById('resetMessage');
+
+                        firebase.auth().sendPasswordResetEmail(email)
+                            .then(() => {
+                                resetMessage.textContent = translations[currentLang].resetSuccess;
+                                resetMessage.className = 'message success';
+                                resetMessage.style.display = 'block';
+                            })
+                            .catch((error) => {
+                                resetMessage.textContent = translations[currentLang].resetError;
+                                resetMessage.className = 'message error';
+                                resetMessage.style.display = 'block';
+                            });
+                    });
+                    applyTranslation(currentLang);
+                });
+
 
             applyTranslation(currentLang); // Apply default language on load
 
