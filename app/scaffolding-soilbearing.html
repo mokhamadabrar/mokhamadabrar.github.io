@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scaffolding Soil Bearing Assessment (CBR Based)</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/img/virsim_red.webp">
+  
+  <!-- Meta tag viewport untuk responsivitas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+
+  <!-- SEO META TAGS -->
+  <meta name="description" content="Technical calculator for evaluating scaffolding load safety against soil bearing capacity based on CBR values." />
+  <meta name="keywords" content="scaffolding calculator, cbr soil, bearing capacity, safety scaffolding, civil engineering, soil bearing check, virsim calc" />
+  <meta name="author" content="Virsim Calc & Taufik Hidayat" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- OPEN GRAPH -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Scaffolding & CBR Analysis Calculator" />
+  <meta property="og:description" content="Evaluate scaffolding load safety against soil bearing capacity (CBR) accurately." />
+  <meta property="og:image" content="https://simcalc.github.io/img/scaffolding-baseplate.webp" />
+  <meta property="og:site_name" content="Virsim Calc" />
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      
+      /* PERBAIKAN KONTRAS: Warna teks digelapkan, background dicerahkan */
+      --danger: #b91c1c;       /* Merah lebih tua (High Contrast) */
+      --danger-soft: #fef2f2;  /* Merah sangat muda */
+      
+      --success: #15803d;      /* Hijau lebih tua (High Contrast) */
+      --success-soft: #f0fdf4; /* Hijau sangat muda */
+      
+      --text: #111827;
+      --muted: #4b5563;        /* Abu-abu lebih tua agar terbaca */
+      --border: #e5e7eb;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top left, #e0f2fe, #eef2ff);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wrapper {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px 32px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* Container Header + Logo + Lang Switch */
+    .header-container {
+      position: relative;
+      width: 100%;
+      margin-bottom: 24px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      background-color: #cbd5e1;
+    }
+
+    .header-banner {
+      display: block;
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .logo {
+      position: absolute;
+      bottom: 20px;
+      left: 24px;
+      height: 48px;
+      width: auto;
+      z-index: 10;
+      filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.9));
+    }
+
+    /* Language Toggle Buttons */
+    .lang-toggle {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      z-index: 20;
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 6px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .lang-btn {
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+      border-radius: 50%;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+
+    .lang-btn:hover {
+      transform: scale(1.1);
+      opacity: 0.9;
+    }
+
+    .lang-btn.active {
+      opacity: 1;
+      transform: scale(1.15);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      border: 2px solid #ffffff;
+    }
+
+    h1 {
+      font-size: 1.7rem;
+      margin-bottom: 4px;
+      color: #1e293b;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    /* Flyer / Sticky Right Column Styles */
+    .flyer-container {
+      position: sticky;
+      top: 24px; /* Jarak dari atas saat scroll */
+      height: fit-content;
+    }
+
+    .flyer-card {
+      border-top: 5px solid var(--accent); /* Aksen warna di atas seperti kop flyer */
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.01); /* Shadow lebih tebal */
+      background: linear-gradient(to bottom, #ffffff, #f8fafc);
+    }
+
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      .header-banner { height: 140px; }
+      /* Matikan efek sticky di mobile agar tidak mengganggu */
+      .flyer-container { position: static; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.4rem; }
+      .header-banner { height: 120px; }
+      .logo { height: 36px; bottom: 12px; left: 16px; }
+      .lang-toggle { top: 12px; right: 16px; padding: 4px 8px; }
+      .lang-btn { width: 24px; height: 24px; }
+      .wrapper { padding: 0 12px 24px; margin-top: 16px; }
+      .card { padding: 16px; }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      padding: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    
+    .card h3 {
+        font-size: 0.95rem;
+        margin: 16px 0 8px;
+        color: #334155;
+    }
+
+    .section-caption {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .field { margin-bottom: 0; }
+
+    input[type="number"], select {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      background: #f9fafb;
+      transition: all 0.2s;
+    }
+
+    input[type="number"]:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background: #ffffff;
+    }
+
+    .input-group-row { display: flex; gap: 8px; }
+    @media (max-width: 360px) { .input-group-row { flex-direction: column; } }
+
+    .unit {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .section-divider {
+      margin: 20px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .btn-row {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 8px;
+      border: none;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid transparent;
+    }
+
+    .btn-ghost:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .status-safe {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid rgba(22, 163, 74, 0.2);
+    }
+
+    .status-unsafe {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .result-box {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .result-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      word-break: break-word;
+    }
+
+    .result-subvalue {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .explanation {
+      font-size: 0.85rem;
+      color: #334155; /* Digelapkan sedikit agar lebih jelas */
+      margin-top: 16px;
+      line-height: 1.6;
+      background: #eff6ff;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .tagline {
+      font-size: 0.75rem;
+      color: #475569; /* Digelapkan dari #94a3b8 menjadi Slate-600 */
+      margin-top: 16px;
+      font-style: italic;
+    }
+
+    .ref-content {
+        font-size: 0.8rem;
+        color: #475569;
+        line-height: 1.6;
+    }
+    .ref-content ul {
+        padding-left: 20px;
+        margin: 8px 0;
+    }
+    .ref-content li {
+        margin-bottom: 6px;
+    }
+    .formula {
+        font-family: "Courier New", monospace;
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #0f172a;
+        display: inline-block;
+    }
+
+    footer {
+        margin-top: auto;
+        text-align: center;
+        padding: 20px 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+        border-top: 1px solid #e2e8f0;
+        background-color: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mengubah div wrapper menjadi main -->
+  <main class="wrapper">
+    <!-- HEADER CONTAINER -->
+    <div class="header-container">
+        <!-- LANGUAGE TOGGLE -->
+        <div class="lang-toggle">
+            <img src="https://simcalc.github.io/img/ID.svg" alt="Indonesian" class="lang-btn" onclick="setLanguage('id')" id="btn-id">
+            <img src="https://simcalc.github.io/img/EN.svg" alt="English" class="lang-btn active" onclick="setLanguage('en')" id="btn-en">
+        </div>
+
+        <!-- LOGO -->
+        <img 
+          src="https://simcalc.github.io/img/virsim_trans.webp" 
+          alt="Logo Virsim" 
+          class="logo"
+        />
+        <!-- HEADER IMAGE -->
+        <img 
+          src="https://simcalc.github.io/img/header-scaffold-soleplate.webp" 
+          alt="Scaffolding Sole Plate Illustration" 
+          class="header-banner"
+          onerror="this.style.display='none'"
+        />
+    </div>
+
+    <h1 data-i18n="title">Scaffolding &amp; CBR Assessment</h1>
+    <p class="subtitle" data-i18n="subtitle">
+      Technical calculator for evaluating scaffolding load safety against soil bearing capacity based on California Bearing Ratio (CBR).
+    </p>
+
+    <div class="layout">
+      <!-- LEFT COLUMN WRAPPER -->
+      <div>
+          <!-- INPUT CARD -->
+          <div class="card">
+            <h2 data-i18n="inputTitle">Input Parameters</h2>
+            <p class="section-caption" data-i18n="inputCaption">
+              Adjust the parameters below according to field conditions. Units: SI (kg, mm, %).
+            </p>
+
+            <!-- DATA SCAFFOLDING -->
+            <div class="section-divider" data-i18n="sectionA">A. Scaffolding Configuration</div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="scaffWeight" data-i18n="labelScaffWeight">Scaffolding Structure Weight</label>
+                <input type="number" id="scaffWeight" value="810" min="0" step="1" />
+                <div class="unit" data-i18n="unitScaffWeight">kg (total material mass)</div>
+              </div>
+              <div class="field">
+                <label for="numWorkers" data-i18n="labelWorkers">Number of Personnel</label>
+                <input type="number" id="numWorkers" value="3" min="0" step="1" />
+                <div class="unit" data-i18n="unitWorkers">persons</div>
+              </div>
+              <div class="field">
+                <label for="workerWeight" data-i18n="labelWorkerWeight">Weight per Person</label>
+                <input type="number" id="workerWeight" value="80" min="0" step="1" />
+                <div class="unit" data-i18n="unitWorkerWeight">kg/person</div>
+              </div>
+              <div class="field">
+                <label for="dynFactor" data-i18n="labelDynFactor">Dynamic Factor</label>
+                <input type="number" id="dynFactor" value="1.3" min="1.0" step="0.05" />
+                <div class="unit" data-i18n="unitDynFactor">Impact coefficient (1.2–1.4)</div>
+              </div>
+              <div class="field">
+                <label for="numBases" data-i18n="labelNumBases">Number of Base Plates</label>
+                <input type="number" id="numBases" value="4" min="1" step="1" />
+                <div class="unit" data-i18n="unitNumBases">Support points</div>
+              </div>
+              <div class="field">
+                <label for="baseLength" data-i18n="labelBaseDim">Base Plate Dimensions (L x W)</label>
+                <div class="input-group-row">
+                    <input type="number" id="baseLength" value="150" min="1" step="1" placeholder="P" />
+                    <input type="number" id="baseWidth" value="150" min="1" step="1" placeholder="L" />
+                </div>
+                <div class="unit" data-i18n="unitBaseDim">millimeter (mm)</div>
+              </div>
+            </div>
+
+            <div class="section-divider" data-i18n="sectionB">B. Soil Parameters (CBR)</div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="soilType" data-i18n="labelSoilType">Soil Category / CBR</label>
+                <select id="soilType">
+                  <option value="1.5" data-i18n="optVeryPoor">Very poor (CBR ≈ 1.5%)</option>
+                  <option value="5" data-i18n="optPoor">Poor–medium (CBR ≈ 5%)</option>
+                  <option value="13.5" selected data-i18n="optMedium">Medium (CBR ≈ 13.5%)</option>
+                  <option value="35" data-i18n="optGood">Good (CBR ≈ 35%)</option>
+                  <option value="70" data-i18n="optVeryGood">Very good (CBR ≈ 70%)</option>
+                  <option value="manual" data-i18n="optManual">Manual Input...</option>
+                </select>
+                <div class="unit" data-i18n="unitSoilType">Select preset or manual input</div>
+              </div>
+              <div class="field">
+                <label for="cbrValue" data-i18n="labelCBR">CBR Value</label>
+                <input type="number" id="cbrValue" value="13.5" min="0.1" step="0.1" />
+                <div class="unit" data-i18n="unitCBR">Percentage (%)</div>
+              </div>
+              <div class="field">
+                <label for="fsTanah" data-i18n="labelFS">Safety Factor (SF)</label>
+                <input type="number" id="fsTanah" value="3.0" min="1.1" step="0.1" />
+                <div class="unit" data-i18n="unitFS">Typically 2.0–3.0</div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn-primary" id="btnHitung">
+                <span>🔍</span> <span data-i18n="btnCalc">Safety Analysis</span>
+              </button>
+              <button class="btn-ghost" type="button" id="btnReset" data-i18n="btnReset">
+                Reset to Defaults
+              </button>
+            </div>
+          </div>
+
+          <!-- RESULTS CARD -->
+          <div class="card" id="resultsCard">
+            <div class="results-header">
+              <div>
+                <h2 data-i18n="resTitle">Analysis Results</h2>
+                <p class="section-caption" id="soilSummary" style="margin-bottom: 0;">
+                  Awaiting calculation...
+                </p>
+              </div>
+              <div id="statusBadge" class="status-badge status-unsafe" style="visibility:hidden;">
+                <span class="status-dot"></span>
+                <span id="statusText">STATUS</span>
+              </div>
+            </div>
+    
+            <div class="result-grid">
+              <div class="result-box">
+                <div class="result-label" data-i18n="resContactPressure">Contact Pressure (Scaffolding)</div>
+                <div class="result-value" id="qScaffKPa">-</div>
+                <div class="result-subvalue" id="qScaffOther">Actual Load</div>
+              </div>
+              
+              <div class="result-box">
+                <div class="result-label" data-i18n="resAllowCap">Allowable Soil Capacity (Q_allow)</div>
+                <div class="result-value" id="qAllowKPa">-</div>
+                <div class="result-subvalue" id="qAllowOther">Safe Limit</div>
+              </div>
+              
+              <div class="result-box" style="flex-direction: row; justify-content: space-between; align-items: center;">
+                <div>
+                    <div class="result-label" data-i18n="resMargin">Safety Margin</div>
+                    <div class="result-value" id="margin">-</div>
+                </div>
+                <div id="marginIcon" style="font-size: 1.5rem;">⚖️</div>
+              </div>
+    
+              <div class="result-box">
+                 <div class="result-label" data-i18n="resLoadDetail">Load Details</div>
+                 <div style="font-size: 0.9rem; color: #334155; margin-top: 4px;" id="weights">-</div>
+              </div>
+            </div>
+    
+            <div class="explanation" id="explanation" style="display: none;">
+              &nbsp;
+            </div>
+            
+            <p class="tagline" data-i18n="disclaimer">
+              Disclaimer: This calculator is a preliminary estimation tool. Professional geotechnical analysis and field testing (e.g., Plate Load Test) are recommended for critical decisions.
+            </p>
+          </div>
+      </div>
+
+      <!-- RIGHT COLUMN (Literature / Flyer) -->
+      <div class="flyer-container">
+          <div class="card flyer-card">
+            <h2 data-i18n="litTitle">Theoretical Basis & References</h2>
+            <div class="ref-content" id="litContent">
+                <!-- Content injected by JS based on language -->
+            </div>
+          </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+      Created design calculation @ 2025<br>
+      by Virsim Calc - Taufik Hidayat & Mupit Irvan
+  </footer>
+
+  <script>
+    // --- Translations Database ---
+    const translations = {
+      id: {
+        title: "Scaffolding & CBR Check",
+        subtitle: "Kalkulator teknis untuk mengevaluasi keamanan beban scaffolding terhadap daya dukung tanah berdasarkan nilai California Bearing Ratio (CBR).",
+        inputTitle: "Input Data",
+        inputCaption: "Sesuaikan parameter di bawah sesuai kondisi lapangan. Satuan: SI (kg, mm, %).",
+        sectionA: "A. Konfigurasi Scaffolding",
+        labelScaffWeight: "Berat Struktur Scaffolding",
+        unitScaffWeight: "kg (total material)",
+        labelWorkers: "Jumlah Pekerja",
+        unitWorkers: "orang",
+        labelWorkerWeight: "Berat per Pekerja",
+        unitWorkerWeight: "kg/orang",
+        labelDynFactor: "Faktor Dinamis",
+        unitDynFactor: "Koefisien kejut (1.2–1.4)",
+        labelNumBases: "Jumlah Base Plate",
+        unitNumBases: "Titik tumpuan",
+        labelBaseDim: "Dimensi Base Plate (P x L)",
+        unitBaseDim: "milimeter (mm)",
+        sectionB: "B. Parameter Tanah (CBR)",
+        labelSoilType: "Kategori Tanah / CBR",
+        optVeryPoor: "Sangat buruk (CBR ≈ 1,5%)",
+        optPoor: "Buruk–sedang (CBR ≈ 5%)",
+        optMedium: "Sedang (CBR ≈ 13,5%)",
+        optGood: "Baik (CBR ≈ 35%)",
+        optVeryGood: "Sangat baik (CBR ≈ 70%)",
+        optManual: "Input Manual...",
+        unitSoilType: "Pilih preset atau manual",
+        labelCBR: "Nilai CBR",
+        unitCBR: "Persentase (%)",
+        labelFS: "Safety Factor (FS)",
+        unitFS: "Umumnya 2.0–3.0",
+        btnCalc: "Analisis Keamanan",
+        btnReset: "Reset Default",
+        resTitle: "Hasil Analisis",
+        resContactPressure: "Tekanan Kontak (Scaffolding)",
+        resAllowCap: "Kapasitas Ijin Tanah (Q_allow)",
+        resMargin: "Margin Keamanan",
+        resLoadDetail: "Detail Beban",
+        disclaimer: "Disclaimer: Kalkulator ini adalah alat bantu estimasi awal. Analisis geoteknik profesional dan pengujian lapangan (seperti Plate Load Test) tetap direkomendasikan untuk keputusan kritikal.",
+        // Dynamic JS Strings
+        soilSummaryPre: "Menunggu perhitungan...",
+        soilSummaryPrefix: "Tanah:",
+        svcLoad: "Beban Aktual",
+        safeLimit: "Batas Aman",
+        totalLoad: "Total Beban:",
+        loadPerLeg: "Beban per Kaki:",
+        safeStatus: "AMAN",
+        unsafeStatus: "TIDAK AMAN",
+        safeDesc: "<strong>Kesimpulan:</strong> Konfigurasi scaffolding <strong>AMAN</strong>.<br>Tekanan kontak lebih kecil dari kapasitas ijin tanah. Pastikan pemadatan tanah di lapangan sesuai dengan nilai CBR yang diasumsikan.",
+        unsafeDesc: "<strong>Kesimpulan:</strong> Konfigurasi scaffolding <strong>BERISIKO</strong>.<br>Tekanan kontak melebihi kapasitas ijin tanah. <br><strong>Saran:</strong> Perbesar ukuran base plate (gunakan sole board / papan alas), kurangi jarak antar tiang, atau lakukan perbaikan tanah.",
+        // Literature
+        litTitle: "Landasan Teori & Referensi", // Tambahkan translation key ini
+        litContent: `
+            <p>Perhitungan dalam kalkulator ini didasarkan pada prinsip-prinsip berikut:</p>
+            <h3>1. Estimasi Berat Struktur (Dead Load)</h3>
+            <p>Berat struktur scaffolding adalah total beban mati dari seluruh komponen yang membebani tanah. Untuk perhitungan akurat, berat komponen dijumlahkan:</p>
+            <ul>
+                <li><strong>Pipa (Tube):</strong> Pipa galvanis standar (OD 48.3mm, tebal 3.2-4.0mm) memiliki berat linear rata-rata <span class="formula">≈ 4.37 kg/m</span> (referensi BS 1139 / EN 39).</li>
+                <li><strong>Fittings (Klem):</strong> Fixed atau Swivel coupler memiliki berat rata-rata <span class="formula">1.0 - 1.3 kg/pc</span>.</li>
+                <li><strong>Platform (Lantai Kerja):</strong> Metal plank (catwalk) standar 1.8m rata-rata <span class="formula">12 - 16 kg/unit</span>. Papan kayu tebal 38mm sekitar <span class="formula">15 - 20 kg/m</span>.</li>
+            </ul>
+            <h3>2. Beban & Tekanan Kontak (Contact Pressure)</h3>
+            <p>Menggunakan prinsip mekanika teknik dasar dimana tekanan adalah gaya vertikal dibagi luas penampang kontak:</p>
+            <ul>
+                <li><strong>Rumus:</strong> <span class="formula">q = P_total / A_base</span></li>
+                <li><strong>Beban Total (P):</strong> Penjumlahan Berat Mati (scaffold) + Berat Hidup (pekerja & material).</li>
+                <li><strong>Faktor Dinamis:</strong> Ditambahkan khusus pada beban hidup untuk mengakomodasi efek kejut gerakan pekerja (biasanya faktor 1.2 - 1.4).</li>
+            </ul>
+            <h3>3. Korelasi CBR ke Daya Dukung</h3>
+            <p>Karena data geoteknik seringkali terbatas pada nilai CBR (California Bearing Ratio), digunakan korelasi empiris untuk mengestimasi daya dukung batas (Ultimate Bearing Capacity, qu):</p>
+            <ul>
+                <li><strong>Model Empiris:</strong> <span class="formula">qu (kPa) ≈ 26.22 × CBR^0.664</span></li>
+                <li><strong>Penjelasan:</strong> Pendekatan konservatif ini mengkonversi nilai kekuatan subgrade (CBR) menjadi kapasitas dukung ultimit (referensi TRL).</li>
+            </ul>
+            <h3>4. Faktor Keamanan (Safety Factor)</h3>
+            <p>Daya dukung ijin (Allowable Bearing Capacity) dihitung dengan membagi daya dukung ultimit dengan faktor keamanan:</p>
+            <ul>
+                <li><strong>Rumus:</strong> <span class="formula">Q_allow = qu / FS</span></li>
+                <li><strong>Referensi:</strong> Prinsip Geoteknik Terzaghi menyarankan FS antara 2.0 hingga 3.0 untuk fondasi dangkal permanen dan struktur sementara.</li>
+            </ul>
+        `
+      },
+      en: {
+        title: "Scaffolding & CBR Assessment",
+        subtitle: "Technical calculator for evaluating scaffolding load safety against soil bearing capacity based on California Bearing Ratio (CBR).",
+        inputTitle: "Input Parameters",
+        inputCaption: "Adjust the parameters below according to field conditions. Units: SI (kg, mm, %).",
+        sectionA: "A. Scaffolding Configuration",
+        labelScaffWeight: "Scaffolding Structure Weight",
+        unitScaffWeight: "kg (total material mass)",
+        labelWorkers: "Number of Personnel",
+        unitWorkers: "persons",
+        labelWorkerWeight: "Weight per Person",
+        unitWorkerWeight: "kg/person",
+        labelDynFactor: "Dynamic Factor",
+        unitDynFactor: "Impact coefficient (1.2–1.4)",
+        labelNumBases: "Number of Base Plates",
+        unitNumBases: "Support points",
+        labelBaseDim: "Base Plate Dimensions (L x W)",
+        unitBaseDim: "millimeter (mm)",
+        sectionB: "B. Soil Parameters (CBR)",
+        labelSoilType: "Soil Category / CBR",
+        optVeryPoor: "Very poor (CBR ≈ 1.5%)",
+        optPoor: "Poor–medium (CBR ≈ 5%)",
+        optMedium: "Medium (CBR ≈ 13.5%)",
+        optGood: "Good (CBR ≈ 35%)",
+        optVeryGood: "Very good (CBR ≈ 70%)",
+        optManual: "Manual Input...",
+        unitSoilType: "Select preset or manual input",
+        labelCBR: "CBR Value",
+        unitCBR: "Percentage (%)",
+        labelFS: "Safety Factor (SF)",
+        unitFS: "Typically 2.0–3.0",
+        btnCalc: "Safety Analysis",
+        btnReset: "Reset to Defaults",
+        resTitle: "Analysis Results",
+        resContactPressure: "Contact Pressure (Scaffolding)",
+        resAllowCap: "Allowable Soil Capacity (Q_allow)",
+        resMargin: "Safety Margin",
+        resLoadDetail: "Load Details",
+        disclaimer: "Disclaimer: This calculator is a preliminary estimation tool. Professional geotechnical analysis and field testing (e.g., Plate Load Test) are recommended for critical decisions.",
+        // Dynamic JS Strings
+        soilSummaryPre: "Awaiting calculation...",
+        soilSummaryPrefix: "Soil:",
+        svcLoad: "Actual Load",
+        safeLimit: "Safe Limit",
+        totalLoad: "Total Load:",
+        loadPerLeg: "Load per Leg:",
+        safeStatus: "SAFE",
+        unsafeStatus: "UNSAFE",
+        safeDesc: "<strong>Conclusion:</strong> Scaffolding configuration is <strong>SAFE</strong>.<br>Contact pressure is less than allowable soil capacity. Ensure field soil compaction meets the assumed CBR value.",
+        unsafeDesc: "<strong>Conclusion:</strong> Scaffolding configuration is <strong>AT RISK</strong>.<br>Contact pressure exceeds allowable soil capacity. <br><strong>Recommendation:</strong> Increase base plate size (use sole boards), reduce span between standards, or perform soil improvement.",
+        // Literature
+        litTitle: "Theoretical Basis & References", // Tambahkan translation key ini
+        litContent: `
+            <p>Calculations in this tool are based on the following principles:</p>
+            <h3>1. Structural Weight Estimation (Dead Load)</h3>
+            <p>The scaffolding structural weight represents the total dead load of all components bearing on the soil. For accurate calculation, component weights are summed:</p>
+            <ul>
+                <li><strong>Tubes:</strong> Standard galvanized pipes (OD 48.3mm, thickness 3.2-4.0mm) have an average linear weight of <span class="formula">≈ 4.37 kg/m</span> (Ref: BS 1139 / EN 39).</li>
+                <li><strong>Fittings (Couplers):</strong> Fixed or Swivel couplers average <span class="formula">1.0 - 1.3 kg/pc</span>.</li>
+                <li><strong>Platforms (Working Decks):</strong> Standard 1.8m metal planks average <span class="formula">12 - 16 kg/unit</span>. Timber boards (38mm thick) average <span class="formula">15 - 20 kg/m</span>.</li>
+            </ul>
+            <h3>2. Load & Contact Pressure</h3>
+            <p>Utilizes fundamental engineering mechanics principles where pressure is defined as force divided by the contact area:</p>
+            <ul>
+                <li><strong>Formula:</strong> <span class="formula">q = P_total / A_base</span></li>
+                <li><strong>Total Load (P):</strong> Summation of Dead Load (scaffold) + Live Load (personnel & materials).</li>
+                <li><strong>Dynamic Factor:</strong> Applied specifically to live loads to accommodate impact effects from personnel movement (typically 1.2 - 1.4).</li>
+            </ul>
+            <h3>3. CBR to Bearing Capacity Correlation</h3>
+            <p>Since geotechnical data is often limited to field CBR (California Bearing Ratio) values, empirical correlations are employed to estimate Ultimate Bearing Capacity (qu):</p>
+            <ul>
+                <li><strong>Empirical Model:</strong> <span class="formula">qu (kPa) ≈ 26.22 × CBR^0.664</span></li>
+                <li><strong>Explanation:</strong> This is a conservative approach utilized in civil engineering to convert subgrade strength (CBR) into ultimate bearing capacity (Ref: TRL).</li>
+            </ul>
+            <h3>4. Safety Factor (SF)</h3>
+            <p>Allowable Bearing Capacity is calculated by dividing Ultimate Bearing Capacity by the Safety Factor:</p>
+            <ul>
+                <li><strong>Formula:</strong> <span class="formula">Q_allow = qu / SF</span></li>
+                <li><strong>Reference:</strong> Terzaghi's Principles suggest an SF between 2.0 and 3.0 for permanent shallow foundations. For temporary structures, a minimum SF of 2.0 - 3.0 is recommended.</li>
+            </ul>
+        `
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+
+      // Update Buttons state
+      document.getElementById('btn-id').classList.toggle('active', lang === 'id');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+      // Update Static Text
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.innerText = t[key];
+      });
+
+      // Update HTML Content (Literature)
+      document.getElementById('litContent').innerHTML = t.litContent;
+
+      // Recalculate to update dynamic result text
+      hitung();
+    }
+
+    // --- Calculation Logic ---
+    function quFromCBR(cbr) {
+      return 26.22 * Math.pow(cbr, 0.664);
+    }
+
+    function qAllowFromCBR(cbr, fs) {
+      return quFromCBR(cbr) / fs;
+    }
+
+    function format(num, digits = 2) {
+      if (!isFinite(num)) return "-";
+      // Use 'en-US' for dot decimal if English, 'id-ID' for comma if Indo
+      const locale = currentLang === 'en' ? 'en-US' : 'id-ID';
+      return num.toLocaleString(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+    }
+
+    function hitung() {
+      const t = translations[currentLang];
+      
+      const scaffWeight = parseFloat(document.getElementById("scaffWeight").value) || 0;
+      const numWorkers = parseFloat(document.getElementById("numWorkers").value) || 0;
+      const workerWeight = parseFloat(document.getElementById("workerWeight").value) || 0;
+      const dynFactor = parseFloat(document.getElementById("dynFactor").value) || 1;
+      const numBases = parseFloat(document.getElementById("numBases").value) || 1;
+      const baseLength = parseFloat(document.getElementById("baseLength").value) || 1;
+      const baseWidth = parseFloat(document.getElementById("baseWidth").value) || 1;
+
+      const soilTypeSel = document.getElementById("soilType").value;
+      let cbr = parseFloat(document.getElementById("cbrValue").value) || 0.1;
+      const fsTanah = parseFloat(document.getElementById("fsTanah").value) || 1.5;
+
+      if (soilTypeSel !== "manual") {
+        cbr = parseFloat(soilTypeSel);
+        document.getElementById("cbrValue").value = cbr;
+      }
+
+      // Calcs
+      const workersStatic = numWorkers * workerWeight;
+      const workersDynamic = workersStatic * dynFactor;
+      const totalWeight = scaffWeight + workersDynamic;
+
+      const baseAreaEach = (baseLength / 1000) * (baseWidth / 1000);
+      const totalBaseArea = baseAreaEach * numBases;
+
+      const g = 9.81;
+      const qScaffKPa = (totalWeight * g) / totalBaseArea / 1000;
+      const qScaffTonPerM2 = (totalWeight / 1000) / totalBaseArea; 
+
+      const qu = quFromCBR(cbr);
+      const qAllow = qAllowFromCBR(cbr, fsTanah);
+      
+      const safe = qAllow >= qScaffKPa;
+      const margin = qAllow - qScaffKPa;
+      
+      // Update UI
+      document.getElementById("qScaffKPa").textContent = `${format(qScaffKPa)} kPa`;
+      document.getElementById("qScaffOther").textContent = `${format(qScaffTonPerM2)} t/m² (${t.svcLoad})`;
+
+      document.getElementById("qAllowKPa").textContent = `${format(qAllow)} kPa`;
+      document.getElementById("qAllowOther").textContent = `qu = ${format(qu)} kPa (SF=${fsTanah})`;
+
+      const weightsText = 
+        `${t.totalLoad} ${format(totalWeight, 0)} kg\n` +
+        `${t.loadPerLeg} ${format((totalWeight / numBases) || 0, 1)} kg`;
+      document.getElementById("weights").innerText = weightsText;
+
+      const marginText = `${margin >= 0 ? "+" : ""}${format(margin)} kPa`;
+      const marginEl = document.getElementById("margin");
+      marginEl.textContent = marginText;
+      marginEl.style.color = safe ? "var(--success)" : "var(--danger)";
+      document.getElementById("marginIcon").textContent = safe ? "✅" : "⚠️";
+
+      const badge = document.getElementById("statusBadge");
+      const statusText = document.getElementById("statusText");
+      badge.style.visibility = "visible";
+      
+      if (safe) {
+        badge.className = "status-badge status-safe";
+        statusText.textContent = t.safeStatus;
+      } else {
+        badge.className = "status-badge status-unsafe";
+        statusText.textContent = t.unsafeStatus;
+      }
+
+      // Soil summary
+      const summary = document.getElementById("soilSummary");
+      // Only update text, not remove content
+      summary.textContent = `${t.soilSummaryPrefix} CBR ${format(cbr, 1)}%`;
+
+      // Explanation
+      const exp = document.getElementById("explanation");
+      exp.style.display = "block";
+      if (safe) {
+        exp.style.borderLeftColor = "var(--success)";
+        exp.style.background = "var(--success-soft)";
+        exp.innerHTML = t.safeDesc;
+      } else {
+        exp.style.borderLeftColor = "var(--danger)";
+        exp.style.background = "var(--danger-soft)";
+        exp.innerHTML = t.unsafeDesc;
+      }
+    }
+
+    function resetToExample() {
+      document.getElementById("scaffWeight").value = 810;
+      document.getElementById("numWorkers").value = 3;
+      document.getElementById("workerWeight").value = 80;
+      document.getElementById("dynFactor").value = 1.3;
+      document.getElementById("numBases").value = 4;
+      document.getElementById("baseLength").value = 150;
+      document.getElementById("baseWidth").value = 150;
+      document.getElementById("soilType").value = "13.5";
+      document.getElementById("cbrValue").value = 13.5;
+      document.getElementById("fsTanah").value = 3.0;
+      
+      setTimeout(hitung, 50);
+    }
+
+    // Listeners
+    document.getElementById("btnHitung").addEventListener("click", function (e) {
+      e.preventDefault();
+      hitung();
+    });
+
+    document.getElementById("btnReset").addEventListener("click", function (e) {
+      e.preventDefault();
+      resetToExample();
+    });
+
+    document.getElementById("soilType").addEventListener("change", function () {
+      const value = this.value;
+      if (value !== "manual") {
+        document.getElementById("cbrValue").value = parseFloat(value);
+      }
+    });
+
+    // Init
+    window.addEventListener("DOMContentLoaded", () => {
+        setLanguage('en'); // Initialize with EN text
+        resetToExample();
+    });
+  </script>
+</body>
+</html>

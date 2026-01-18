@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  
+  <!-- SEO & Technical Safety Metadata -->
+  <title>LTM 1500-8.1 – Crane Pad & Outrigger Simulator</title>
+  <meta name="description" content="Technical safety simulator for Liebherr LTM 1500-8.1. Calculate outrigger reactions, ground bearing pressure, and verify lifting capacities against rated load charts for safe lifting operations." />
+  <meta name="keywords" content="crane simulator, LTM 1500-8.1, outrigger pressure, ground bearing capacity, crane safety, lifting plan, heavy lift safety, engineering" />
+  <meta name="author" content="Concept Simulator" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Open Graph / WhatsApp Preview -->
+  <meta property="og:title" content="LTM 1500-8.1 – Crane Pad & Outrigger Simulator" />
+  <meta property="og:description" content="Technical safety tool to calculate outrigger loads and check ground bearing pressures for safe crane setup." />
+  <meta property="og:image" content="https://mokhamadabrar.github.io/img/LIEBHERR-LTM-1500-8.1.webp" />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/webp" href="https://mokhamadabrar.github.io/img/LIEBHERR-LTM-1500-8.1.webp" />
+
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #020617;
+      --accent: #eab308;
+      --accent-soft: rgba(234, 179, 8, 0.15);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f97316;
+      --safe: #22c55e;
+      --border: #1f2937;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 55%);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+    }
+
+    .app {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .left-panel,
+    .right-panel {
+      padding: 14px;
+      overflow: auto;
+    }
+
+    .left-panel {
+      flex: 0 0 360px;
+      max-width: 420px;
+      background: linear-gradient(180deg, #020617, #020617 40%, #030712);
+      border-right: 1px solid var(--border);
+    }
+
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 span.badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .section {
+      margin-bottom: 12px;
+      padding: 10px 11px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(55, 65, 81, 0.7);
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 10px;
+    }
+
+    label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    label span.value-display {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="number"],
+    input[type="range"],
+    input[type="checkbox"] {
+      width: 100%;
+    }
+
+    input[type="number"] {
+      background: #020617;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      padding: 4px 8px;
+      color: var(--text);
+      font-size: 0.8rem;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.3);
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent);
+      height: 24px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .checkbox-row input {
+      width: auto;
+    }
+
+    .note {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      margin-top: 4px;
+      white-space: normal;
+    }
+
+    .status-pill svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
+    .status-pill.safe {
+      border-color: rgba(34, 197, 94, 0.7);
+      color: var(--safe);
+    }
+
+    .status-pill.warn {
+      border-color: rgba(249, 115, 22, 0.7);
+      color: var(--danger);
+    }
+
+    .canvas-card,
+    .table-card {
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at top, #020617 0, #020617 50%, #030712);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .canvas-header,
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .canvas-header h2,
+    .table-header h2 {
+      font-size: 0.9rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .canvas-header h2 span,
+    .table-header h2 span {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.15);
+      color: #5eead4;
+      border: 1px solid rgba(45, 212, 191, 0.5);
+      white-space: nowrap;
+    }
+
+    #vizContainer {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      min-height: 260px;
+      max-height: 420px;
+      border-radius: 14px;
+      background: radial-gradient(circle at center, #020617 0, #020617 40%, #020617 60%, #030712 100%);
+      border: 1px solid #111827;
+      position: relative;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid rgba(31, 41, 55, 0.8);
+      padding: 4px 6px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .chip {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(55, 65, 81, 0.8);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 960px) {
+      .app {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .left-panel {
+        flex: none;
+        max-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 12px;
+      }
+
+      .right-panel {
+        flex: none;
+        width: 100%;
+        padding: 10px 12px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="left-panel">
+    <h1>LTM 1500-8.1 <span class="badge">Concept Simulator</span></h1>
+    <div class="subtitle">
+      Simulasi statika sederhana.
+      <strong>Data Load Chart</strong> diambil dari PDF LTM 1500-8.1 (165t CW, 360°).
+    </div>
+
+    <!-- Crane + Load -->
+    <div class="section">
+      <div class="section-title">Crane & Load</div>
+      <div class="grid-2">
+        <div>
+          <label>Crane + CW mass (t)
+            <span class="value-display" id="massCraneLabel"></span>
+          </label>
+          <input type="number" id="massCrane" value="261" min="50" max="500" step="1">
+        </div>
+        <div>
+          <label>Load mass (t)
+            <span class="value-display" id="massLoadLabel"></span>
+          </label>
+          <input type="number" id="massLoad" value="58" min="0" max="500" step="1">
+        </div>
+        <div>
+          <label>Rated capacity at R (t)
+            <span class="value-display" id="ratedCapLabel"></span>
+          </label>
+          <input type="number" id="ratedCapacity" value="80" min="0" max="600" step="0.1" readonly style="background: #111827; color: #9ca3af; border-color: #374151;">
+        </div>
+        <div>
+          <label>Safe utilisation limit
+            <span class="value-display" id="utilLimitLabel"></span>
+          </label>
+          <input type="range" id="utilLimit" min="0.5" max="1" step="0.05" value="0.75">
+        </div>
+      </div>
+      
+      <div class="checkbox-row" style="margin-bottom:8px;">
+        <input type="checkbox" id="autoLoadChart" checked>
+        <label for="autoLoadChart" style="margin:0; gap:4px;">
+          Auto-fill <strong>Rated Capacity</strong> dari Load Chart (PDF) sesuai Radius & Boom.
+        </label>
+      </div>
+
+      <div id="loadStatus" class="status-pill safe"></div>
+    </div>
+
+    <!-- Geometry -->
+    <div class="section">
+      <div class="section-title">Geometry & Slewing</div>
+      <div class="grid-2">
+        <div>
+          <label>Radius R to load (m)
+            <span class="value-display" id="radiusLabel"></span>
+          </label>
+          <input type="range" id="radius" min="3" max="50" step="0.5" value="18">
+        </div>
+        <div>
+          <label>Boom length L (m)
+            <span class="value-display" id="boomLabel"></span>
+          </label>
+          <!-- Using standard lengths from PDF: 16.1, 21.3, 26.5, 31.7, 36.9, 42.1, 47.3, 50 -->
+          <input type="range" id="boom" min="16.1" max="50" step="0.1" value="31.7">
+        </div>
+        <div>
+          <label>Slewing angle φ (deg)
+            <span class="value-display" id="angleLabel"></span>
+          </label>
+          <input type="range" id="slewAngle" min="0" max="359" step="1" value="45">
+        </div>
+        <div>
+          <label>Outrigger half-width a (m)
+            <span class="value-display" id="halfWidthLabel"></span>
+          </label>
+          <input type="number" id="halfWidth" value="5" min="2" max="7" step="0.1">
+        </div>
+        <div>
+          <label>Outrigger half-length b (m)
+            <span class="value-display" id="halfLengthLabel"></span>
+          </label>
+          <input type="number" id="halfLength" value="5" min="2" max="8" step="0.1">
+        </div>
+        <div>
+          <label>Crane CG offset y (m)
+            <span class="value-display" id="cgYLabel"></span>
+          </label>
+          <input type="number" id="cgYOffset" value="-0.5" min="-3" max="3" step="0.1">
+        </div>
+      </div>
+      <div class="note">
+        Radius R diukur horizontal. Boom L disesuaikan dengan chart PDF (16.1m - 50m).
+      </div>
+    </div>
+
+    <!-- Ground / pad -->
+    <div class="section">
+      <div class="section-title">Ground & Pad</div>
+      <div class="grid-2">
+        <div>
+          <label>CBR (%)
+            <span class="value-display" id="cbrLabel"></span>
+          </label>
+          <input type="number" id="cbr" value="50" min="1" max="100" step="1">
+        </div>
+        <div>
+          <label>FS bearing capacity
+            <span class="value-display" id="fsLabel"></span>
+          </label>
+          <input type="number" id="fs" value="3" min="1.5" max="5" step="0.5">
+        </div>
+        <div>
+          <label>Pad P (m)</label>
+          <input type="number" id="padP" value="3.5" min="0.5" max="10" step="0.1">
+        </div>
+        <div>
+          <label>Pad L (m)</label>
+          <input type="number" id="padL" value="2.2" min="0.5" max="10" step="0.1">
+        </div>
+      </div>
+
+      <div class="checkbox-row">
+        <!-- Disabled because user didn't provide OUTRIGGER PRESSURE table, only load chart -->
+        <input type="checkbox" id="useCraneTable" disabled>
+        <label for="useCraneTable" style="margin:0; gap:4px; opacity:0.7;">
+          (Data Outrigger Pressure Table tidak tersedia di PDF, menggunakan model konservatif).
+        </label>
+      </div>
+
+      <div id="bearingStatus" class="status-pill safe"></div>
+
+      <div class="note">
+        q<sub>ult</sub> ≈ 68.9 × CBR (kPa). Batas crane (leg force) dihitung konservatif karena PDF hanya berisi kapasitas angkat.
+      </div>
+    </div>
+  </div>
+
+  <!-- Right panel -->
+  <div class="right-panel">
+    <div class="canvas-card">
+      <div class="canvas-header">
+        <h2>Crane Visualization
+          <span>Top View &amp; Side Elevation</span>
+        </h2>
+        <span class="tag">Conceptual · Not for real-world lifting approval</span>
+      </div>
+      <div id="vizContainer">
+        <svg id="vizSvg" viewBox="0 0 600 600"></svg>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h2>Numerical Output <span>Reactions · Pressures · Stability</span></h2>
+        <span class="chip" id="stabilityChip"></span>
+      </div>
+      <table>
+        <thead>
+        <tr>
+          <th>Item</th>
+          <th>Value</th>
+          <th>Unit</th>
+        </tr>
+        </thead>
+        <tbody id="outputTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const g = 9.81; // m/s²
+
+  // DATA extracted from "500 ton - LIEBHERR LTM 1500-8.1 lifting capacities.pdf"
+  // 165t Counterweight, 360 degrees.
+  // Format: Boom Length -> { Radius: Capacity_Tonnes }
+  const loadChartData = {
+    16.1: { 3: 500, 3.5: 400, 4: 325, 4.5: 274, 5: 268, 6: 238, 7: 213, 8: 193, 9: 176, 10: 161, 12: 133, 14: 113 },
+    21.3: { 3: 500, 3.5: 400, 4: 325, 4.5: 274, 5: 262, 6: 233, 7: 209, 8: 189, 9: 168, 10: 150, 12: 124, 14: 105 },
+    26.5: { 3: 500, 3.5: 400, 4: 325, 4.5: 269, 5: 252, 6: 223, 7: 199, 8: 179, 9: 162, 10: 147, 12: 123, 14: 105, 16: 92, 18: 80, 20: 66 },
+    31.7: { 3.5: 272, 4: 267, 4.5: 263, 5: 251, 6: 221, 7: 199, 8: 179, 9: 162, 10: 147, 12: 124, 14: 106, 16: 90, 18: 79, 20: 71, 22: 63, 24: 57 },
+    36.9: { 4: 247, 4.5: 238, 5: 231, 6: 212, 7: 195, 8: 178, 9: 161, 10: 146, 12: 122, 14: 104, 16: 89, 18: 79, 20: 70, 22: 62, 24: 56, 26: 50, 28: 46, 30: 42 },
+    42.1: { 5: 187, 6: 171, 7: 158, 8: 147, 9: 138, 10: 130, 12: 111, 14: 99, 16: 78, 18: 71, 20: 63, 22: 59, 24: 55, 26: 50, 28: 46, 30: 42, 32: 38.5, 34: 35.5 },
+    47.3: { 6: 150, 7: 139, 8: 129, 9: 120, 10: 112, 12: 98, 14: 87, 16: 71, 18: 63, 20: 57, 22: 53, 24: 49.5, 26: 46, 28: 43, 30: 40.5, 32: 37, 34: 34.5, 36: 32.5, 38: 30.5, 40: 28.6, 42: 24.9, 44: 23.5 },
+    50:   { 7: 121, 8: 113, 9: 106, 10: 98, 12: 87, 14: 78, 16: 71, 18: 63, 20: 57, 22: 53, 24: 49.5, 26: 46, 28: 43, 30: 40.5, 32: 37, 34: 34.5, 36: 32.5, 38: 30.5, 40: 28.6, 42: 24.9, 44: 19.4, 46: 18.2, 48: 17 }
+  };
+
+  const els = {
+    massCrane: document.getElementById("massCrane"),
+    massLoad: document.getElementById("massLoad"),
+    ratedCapacity: document.getElementById("ratedCapacity"),
+    utilLimit: document.getElementById("utilLimit"),
+    radius: document.getElementById("radius"),
+    boom: document.getElementById("boom"),
+    slewAngle: document.getElementById("slewAngle"),
+    halfWidth: document.getElementById("halfWidth"),
+    halfLength: document.getElementById("halfLength"),
+    cgYOffset: document.getElementById("cgYOffset"),
+    cbr: document.getElementById("cbr"),
+    fs: document.getElementById("fs"),
+    padP: document.getElementById("padP"),
+    padL: document.getElementById("padL"),
+    useCraneTable: document.getElementById("useCraneTable"),
+    autoLoadChart: document.getElementById("autoLoadChart"),
+
+    massCraneLabel: document.getElementById("massCraneLabel"),
+    massLoadLabel: document.getElementById("massLoadLabel"),
+    ratedCapLabel: document.getElementById("ratedCapLabel"),
+    utilLimitLabel: document.getElementById("utilLimitLabel"),
+    radiusLabel: document.getElementById("radiusLabel"),
+    boomLabel: document.getElementById("boomLabel"),
+    angleLabel: document.getElementById("angleLabel"),
+    halfWidthLabel: document.getElementById("halfWidthLabel"),
+    halfLengthLabel: document.getElementById("halfLengthLabel"),
+    cgYLabel: document.getElementById("cgYLabel"),
+    cbrLabel: document.getElementById("cbrLabel"),
+    fsLabel: document.getElementById("fsLabel"),
+
+    vizSvg: document.getElementById("vizSvg"),
+    outputTableBody: document.getElementById("outputTableBody"),
+    stabilityChip: document.getElementById("stabilityChip"),
+    loadStatus: document.getElementById("loadStatus"),
+    bearingStatus: document.getElementById("bearingStatus")
+  };
+
+  function fmt(x, d = 1) {
+    return Number(x).toFixed(d);
+  }
+
+  function getInterpolatedCapacity(radius, boom) {
+    // 1. Find closest boom keys
+    const booms = Object.keys(loadChartData).map(Number).sort((a,b) => a-b);
+    let bLower = booms[0];
+    let bUpper = booms[booms.length - 1];
+
+    // Find bounding booms
+    for (let i = 0; i < booms.length - 1; i++) {
+        if (boom >= booms[i] && boom <= booms[i+1]) {
+            bLower = booms[i];
+            bUpper = booms[i+1];
+            break;
+        }
+    }
+    // Simple clamp if out of range
+    if (boom < booms[0]) bUpper = bLower; 
+    if (boom > booms[booms.length - 1]) bLower = bUpper;
+
+    // Helper to get capacity for a specific boom at given radius
+    const getCapAtBoom = (b, r) => {
+        const data = loadChartData[b];
+        if (!data) return 0;
+        const radii = Object.keys(data).map(Number).sort((a,b) => a-b);
+        
+        // Exact match
+        if (data[r]) return data[r];
+        
+        // Range check
+        if (r < radii[0] || r > radii[radii.length - 1]) return 0;
+
+        // Interpolate radius
+        for (let i = 0; i < radii.length - 1; i++) {
+            if (r >= radii[i] && r <= radii[i+1]) {
+                const r1 = radii[i];
+                const r2 = radii[i+1];
+                const c1 = data[r1];
+                const c2 = data[r2];
+                // Linear interp
+                return c1 + (c2 - c1) * (r - r1) / (r2 - r1);
+            }
+        }
+        return 0;
+    };
+
+    const capLower = getCapAtBoom(bLower, radius);
+    const capUpper = getCapAtBoom(bUpper, radius);
+
+    if (bLower === bUpper) return capLower;
+    if (capLower === 0 || capUpper === 0) return 0; // Safety if off-chart on one side
+
+    // Interpolate boom
+    return capLower + (capUpper - capLower) * (boom - bLower) / (bUpper - bLower);
+  }
+
+  function updateLabels() {
+    els.massCraneLabel.textContent = els.massCrane.value + " t";
+    els.massLoadLabel.textContent = els.massLoad.value + " t";
+    els.ratedCapLabel.textContent = fmt(els.ratedCapacity.value, 1) + " t";
+    els.utilLimitLabel.textContent = fmt(parseFloat(els.utilLimit.value) * 100, 0) + " %";
+    els.radiusLabel.textContent = els.radius.value + " m";
+    els.boomLabel.textContent = els.boom.value + " m";
+    els.angleLabel.textContent = els.slewAngle.value + "°";
+    els.halfWidthLabel.textContent = els.halfWidth.value + " m";
+    els.halfLengthLabel.textContent = els.halfLength.value + " m";
+    els.cgYLabel.textContent = els.cgYOffset.value + " m";
+    els.cbrLabel.textContent = els.cbr.value + " %";
+    els.fsLabel.textContent = "FS = " + els.fs.value;
+  }
+
+  function compute() {
+    const R = parseFloat(els.radius.value);
+    const L = parseFloat(els.boom.value);
+
+    // AUTO UPDATE RATED CAPACITY
+    if (els.autoLoadChart.checked) {
+        const chartCap = getInterpolatedCapacity(R, L);
+        els.ratedCapacity.value = chartCap.toFixed(1);
+    }
+    
+    // Check READONLY status
+    if (els.autoLoadChart.checked) {
+        els.ratedCapacity.setAttribute("readonly", true);
+        els.ratedCapacity.style.background = "#111827";
+        els.ratedCapacity.style.color = "#9ca3af";
+    } else {
+        els.ratedCapacity.removeAttribute("readonly");
+        els.ratedCapacity.style.background = "#020617";
+        els.ratedCapacity.style.color = "#e5e7eb";
+    }
+
+    updateLabels();
+
+    const mCrane = parseFloat(els.massCrane.value);
+    const mLoad = parseFloat(els.massLoad.value);
+    const ratedCap = parseFloat(els.ratedCapacity.value);
+    const utilLimit = parseFloat(els.utilLimit.value);
+    const phiDeg = parseFloat(els.slewAngle.value);
+    const a = parseFloat(els.halfWidth.value);
+    const b = parseFloat(els.halfLength.value);
+    const cgYOffset = parseFloat(els.cgYOffset.value);
+    const cbr = parseFloat(els.cbr.value);
+    const fs = parseFloat(els.fs.value);
+    const padP = parseFloat(els.padP.value);
+    const padL = parseFloat(els.padL.value);
+
+    const padArea = padP * padL;
+
+    const Wc = mCrane * g;
+    const Wl = mLoad * g;
+    const W = Wc + Wl;
+
+    // Basic triangle check for boom angle
+    let boomAngleRad = 0;
+    if (R <= L) {
+       boomAngleRad = Math.acos(R / L);
+    } else {
+       boomAngleRad = 0; 
+    }
+    const boomAngleDeg = boomAngleRad * 180 / Math.PI;
+
+    const phiRad = phiDeg * Math.PI / 180;
+
+    const xCrane = 0;
+    const yCrane = cgYOffset;
+
+    const xLoad = R * Math.cos(phiRad);
+    const yLoad = R * Math.sin(phiRad);
+
+    const xCG = (Wc * xCrane + Wl * xLoad) / W;
+    const yCG = (Wc * yCrane + Wl * yLoad) / W;
+
+    // line reactions
+    const R_right = W * (xCG + a) / (2 * a);
+    const R_left = W - R_right;
+
+    const R_front = W * (yCG + b) / (2 * b);
+    const R_rear = W - R_front;
+
+    // corner reactions (kN)
+    const Q_NW = R_left * R_front / W;
+    const Q_NE = R_right * R_front / W;
+    const Q_SW = R_left * R_rear / W;
+    const Q_SE = R_right * R_rear / W;
+
+    const reactions = { Q_NW, Q_NE, Q_SW, Q_SE };
+
+    // CBR → q_allow ground (kPa)
+    const q_ult = 68.9 * cbr;
+    const q_allow_ground = q_ult / fs;
+
+    const factor_kPa = 1 / padArea;
+    const q_NW = Q_NW * factor_kPa;
+    const q_NE = Q_NE * factor_kPa;
+    const q_SW = Q_SW * factor_kPa;
+    const q_SE = Q_SE * factor_kPa;
+
+    const qGroundMax = Math.max(q_NW, q_NE, q_SW, q_SE);
+
+    // Crane Outrigger Limits
+    // Since we don't have the table, use conservative
+    const gammaDyn = 1.3;
+    const QpairCons = gammaDyn * W;
+    const QperCons = QpairCons / 2;
+    const qAllowCrane = QperCons / padArea;
+    const craneModeLabel = "Mode: Conservative (No leg pressure data in PDF)";
+
+    const qLimitFinal = Math.min(q_allow_ground, qAllowCrane);
+    const safetyRatio = qLimitFinal > 0 ? qGroundMax / qLimitFinal : Infinity;
+
+    // Utilisation vs Rated capacity
+    // If ratedCap is 0 (off chart), util is infinite/unsafe
+    let utilisationVsLimit = 0;
+    let safeCap = 0;
+    
+    if (ratedCap > 0) {
+        safeCap = utilLimit * ratedCap;
+        utilisationVsLimit = safeCap > 0 ? (mLoad / safeCap) : 0;
+    } else {
+        utilisationVsLimit = 999; // Force Unsafe
+    }
+
+    // UPDATE load status pill
+    els.loadStatus.innerHTML = "";
+    
+    let isLoadSafe = utilisationVsLimit <= 1 && ratedCap > 0;
+    
+    els.loadStatus.classList.toggle("safe", isLoadSafe);
+    els.loadStatus.classList.toggle("warn", !isLoadSafe);
+    
+    const svgIcon1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgIcon1.setAttribute("viewBox", "0 0 20 20");
+    svgIcon1.innerHTML =
+      '<circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.4"/>' +
+      (isLoadSafe
+        ? '<path d="M6 10.5 8.5 13 14 7.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+        : '<path d="M7 7l6 6m0-6-6 6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>');
+    
+    const text1 = document.createElement("span");
+    if (ratedCap > 0) {
+         text1.textContent =
+      `Load = ${fmt(mLoad,1)} t · Rated = ${fmt(ratedCap,1)} t · ${fmt(utilLimit*100,0)}% = ${fmt(safeCap,1)} t ` +
+      (isLoadSafe ? "→ OK" : "→ EXCEEDS limit!");
+    } else {
+        text1.textContent = "OUT OF CHART / INVALID RADIUS";
+    }
+   
+    els.loadStatus.appendChild(svgIcon1);
+    els.loadStatus.appendChild(text1);
+
+    // UPDATE bearing status pill (ground + crane)
+    els.bearingStatus.innerHTML = "";
+    const bearingIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    bearingIcon.setAttribute("viewBox", "0 0 20 20");
+    bearingIcon.innerHTML =
+      '<circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.4"/>' +
+      (safetyRatio <= 1
+        ? '<path d="M6 10.5 8.5 13 14 7.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+        : '<path d="M7 7l6 6m0-6-6 6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>');
+
+    els.bearingStatus.classList.toggle("safe", safetyRatio <= 1);
+    els.bearingStatus.classList.toggle("warn", safetyRatio > 1);
+
+    const bearingText = document.createElement("span");
+    bearingText.textContent =
+      `q_max = ${fmt(qGroundMax,0)} kPa · q_allow_ground = ${fmt(q_allow_ground,0)} kPa · ` +
+      `q_allow_crane ≈ ${fmt(qAllowCrane,0)} kPa → ` +
+      (safetyRatio <= 1 ? "SAFE" : "OVER LIMIT") +
+      ` · ${craneModeLabel}`;
+
+    els.bearingStatus.appendChild(bearingIcon);
+    els.bearingStatus.appendChild(bearingText);
+
+    // UPDATE stability chip
+    const marginX = (a - Math.abs(xCG)) / a;
+    const marginY = (b - Math.abs(yCG)) / b;
+    const stabilityMargin = Math.min(marginX, marginY);
+    const marginPercent = Math.max(0, stabilityMargin) * 100;
+    els.stabilityChip.textContent =
+      `CG margin to tipping edge ≈ ${fmt(marginPercent,1)} % of half-span`;
+
+    // Table rows
+    const rows = [
+      ["Boom angle (approx.)", fmt(boomAngleDeg, 1), "deg"],
+      ["Radius R", fmt(R, 2), "m"],
+      ["Boom length L", fmt(L, 2), "m"],
+      ["Slewing angle φ", fmt(phiDeg, 1), "deg"],
+      ["Crane + CW weight", fmt(Wc, 0), "kN"],
+      ["Load weight", fmt(Wl, 0), "kN"],
+      ["Total weight", fmt(W, 0), "kN"],
+      ["CG x", fmt(xCG, 2), "m"],
+      ["CG y", fmt(yCG, 2), "m"],
+      ["Line reaction LEFT", fmt(R_left, 0), "kN"],
+      ["Line reaction RIGHT", fmt(R_right, 0), "kN"],
+      ["Line reaction FRONT", fmt(R_front, 0), "kN"],
+      ["Line reaction REAR", fmt(R_rear, 0), "kN"],
+      ["Q Front-Left (NW)", fmt(Q_NW, 0), "kN"],
+      ["Q Front-Right (NE)", fmt(Q_NE, 0), "kN"],
+      ["Q Rear-Left (SW)", fmt(Q_SW, 0), "kN"],
+      ["Q Rear-Right (SE)", fmt(Q_SE, 0), "kN"],
+      ["Pad area per outrigger", fmt(padArea, 2), "m²"],
+      ["q_allow_ground (CBR)", fmt(q_allow_ground, 0), "kPa"],
+      ["q_allow_crane (mode)", fmt(qAllowCrane,0), "kPa"],
+      ["q_max on pad", fmt(qGroundMax, 0), "kPa"],
+      ["q_NW", fmt(q_NW, 0), "kPa"],
+      ["q_NE", fmt(q_NE, 0), "kPa"],
+      ["q_SW", fmt(q_SW, 0), "kPa"],
+      ["q_SE", fmt(q_SE, 0), "kPa"]
+    ];
+
+    els.outputTableBody.innerHTML = rows
+      .map(([name, value, unit]) =>
+        `<tr><td>${name}</td><td>${value}</td><td>${unit}</td></tr>`
+      )
+      .join("");
+
+    drawSvg({ a, b, xCG, yCG, R, phiRad, reactions, L });
+  }
+
+  function drawSvg({ a, b, xCG, yCG, R, phiRad, reactions, L }) {
+    const svg = els.vizSvg;
+    const w = 600;
+    const h = 600;
+    svg.innerHTML = "";
+
+    // -------------------------
+    // TOP VIEW (Upper 2/3)
+    // -------------------------
+    const cx = w / 2;
+    const cy = 220; // Move top view up
+    const scale = 6; // 1 m ≈ 6 px
+
+    function worldToScreen(x, y) {
+      return {
+        x: cx + x * scale,
+        y: cy - y * scale
+      };
+    }
+
+    // Grid
+    const grid = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    for (let i = -30; i <= 30; i += 5) {
+      const p1 = worldToScreen(i, -30);
+      const p2 = worldToScreen(i, 30);
+      const h1 = worldToScreen(-30, i);
+      const h2 = worldToScreen(30, i);
+
+      const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      vLine.setAttribute("x1", p1.x);
+      vLine.setAttribute("y1", p1.y);
+      vLine.setAttribute("x2", p2.x);
+      vLine.setAttribute("y2", p2.y);
+      vLine.setAttribute("stroke", "#1f2937");
+      vLine.setAttribute("stroke-width", "1");
+      grid.appendChild(vLine);
+
+      const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      hLine.setAttribute("x1", h1.x);
+      hLine.setAttribute("y1", h1.y);
+      hLine.setAttribute("x2", h2.x);
+      hLine.setAttribute("y2", h2.y);
+      hLine.setAttribute("stroke", "#1f2937");
+      hLine.setAttribute("stroke-width", "1");
+      grid.appendChild(hLine);
+    }
+    svg.appendChild(grid);
+
+    // Label: TOP VIEW
+    const topLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    topLabel.setAttribute("x", 10);
+    topLabel.setAttribute("y", 20);
+    topLabel.setAttribute("fill", "#64748b");
+    topLabel.setAttribute("font-size", "10");
+    topLabel.setAttribute("font-weight", "bold");
+    topLabel.textContent = "TOP VIEW";
+    svg.appendChild(topLabel);
+
+    // support polygon area
+    const corners = [
+      { name: "NW", x: -a, y: b, reaction: reactions.Q_NW },
+      { name: "NE", x: a, y: b, reaction: reactions.Q_NE },
+      { name: "SE", x: a, y: -b, reaction: reactions.Q_SE },
+      { name: "SW", x: -a, y: -b, reaction: reactions.Q_SW }
+    ];
+
+    const polyPoints = corners
+      .map(c => {
+        const p = worldToScreen(c.x, c.y);
+        return `${p.x},${p.y}`;
+      })
+      .join(" ");
+
+    // Dashed support lines
+    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    poly.setAttribute("points", polyPoints);
+    poly.setAttribute("fill", "rgba(15,23,42,0.9)");
+    poly.setAttribute("stroke", "#4b5563");
+    poly.setAttribute("stroke-width", "2");
+    poly.setAttribute("stroke-dasharray", "5,5");
+    svg.appendChild(poly);
+
+    // outriggers
+    const maxR = Math.max(reactions.Q_NW, reactions.Q_NE, reactions.Q_SW, reactions.Q_SE);
+
+    corners.forEach(c => {
+      const p = worldToScreen(c.x, c.y);
+      const rel = maxR > 0 ? c.reaction / maxR : 0;
+      const color =
+        rel < 0.4 ? "#22c55e" :
+        rel < 0.7 ? "#eab308" :
+        "#f97316";
+
+      const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circ.setAttribute("cx", p.x);
+      circ.setAttribute("cy", p.y);
+      circ.setAttribute("r", 10);
+      circ.setAttribute("fill", color);
+      circ.setAttribute("stroke", "#111827");
+      circ.setAttribute("stroke-width", "1.5");
+      svg.appendChild(circ);
+
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", p.x);
+      label.setAttribute("y", p.y - 14);
+      label.setAttribute("fill", "#9ca3af");
+      label.setAttribute("font-size", "10");
+      label.setAttribute("text-anchor", "middle");
+      label.textContent = c.name;
+      svg.appendChild(label);
+    });
+
+    // crane centre
+    const center = worldToScreen(0, 0);
+    const centerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    centerCircle.setAttribute("cx", center.x);
+    centerCircle.setAttribute("cy", center.y);
+    centerCircle.setAttribute("r", 6);
+    centerCircle.setAttribute("fill", "#eab308");
+    svg.appendChild(centerCircle);
+
+    // CG
+    const cg = worldToScreen(xCG, yCG);
+    const cgCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    cgCircle.setAttribute("cx", cg.x);
+    cgCircle.setAttribute("cy", cg.y);
+    cgCircle.setAttribute("r", 6);
+    cgCircle.setAttribute("fill", "#38bdf8");
+    cgCircle.setAttribute("stroke", "#0ea5e9");
+    cgCircle.setAttribute("stroke-width", "1.5");
+    svg.appendChild(cgCircle);
+
+    const cgLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    cgLabel.setAttribute("x", cg.x + 8);
+    cgLabel.setAttribute("y", cg.y - 4);
+    cgLabel.setAttribute("fill", "#93c5fd");
+    cgLabel.setAttribute("font-size", "11");
+    cgLabel.textContent = "CG";
+    svg.appendChild(cgLabel);
+
+    // boom & load (Top View)
+    const tip = worldToScreen(R * Math.cos(phiRad), R * Math.sin(phiRad));
+    const boomLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    boomLine.setAttribute("x1", center.x);
+    boomLine.setAttribute("y1", center.y);
+    boomLine.setAttribute("x2", tip.x);
+    boomLine.setAttribute("y2", tip.y);
+    boomLine.setAttribute("stroke", "#fbbf24");
+    boomLine.setAttribute("stroke-width", "3");
+    boomLine.setAttribute("stroke-linecap", "round");
+    svg.appendChild(boomLine);
+
+    const loadCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    loadCircle.setAttribute("cx", tip.x);
+    loadCircle.setAttribute("cy", tip.y);
+    loadCircle.setAttribute("r", 6);
+    loadCircle.setAttribute("fill", "#f97316");
+    svg.appendChild(loadCircle);
+
+
+    // -------------------------
+    // SIDE VIEW (Bottom 1/3)
+    // -------------------------
+    // Separator line
+    const sep = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    sep.setAttribute("x1", 0);
+    sep.setAttribute("y1", 420);
+    sep.setAttribute("x2", 600);
+    sep.setAttribute("y2", 420);
+    sep.setAttribute("stroke", "#1f2937");
+    sep.setAttribute("stroke-dasharray", "4");
+    svg.appendChild(sep);
+
+    const sideLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    sideLabel.setAttribute("x", 10);
+    sideLabel.setAttribute("y", 440);
+    sideLabel.setAttribute("fill", "#64748b");
+    sideLabel.setAttribute("font-size", "10");
+    sideLabel.setAttribute("font-weight", "bold");
+    sideLabel.textContent = "SIDE VIEW (Elevation)";
+    svg.appendChild(sideLabel);
+
+    // Config for side view
+    const groundY = 570;
+    const originX = 100;
+    const sideScale = scale; // Keep consistent scale
+
+    // Ground line
+    const groundLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    groundLine.setAttribute("x1", 20);
+    groundLine.setAttribute("y1", groundY);
+    groundLine.setAttribute("x2", 580);
+    groundLine.setAttribute("y2", groundY);
+    groundLine.setAttribute("stroke", "#4b5563");
+    groundLine.setAttribute("stroke-width", "2");
+    svg.appendChild(groundLine);
+
+    // Crane Body (Side)
+    const craneBody = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    craneBody.setAttribute("x", originX - 15);
+    craneBody.setAttribute("y", groundY - 20);
+    craneBody.setAttribute("width", 30);
+    craneBody.setAttribute("height", 20);
+    craneBody.setAttribute("fill", "#0f172a");
+    craneBody.setAttribute("stroke", "#eab308");
+    svg.appendChild(craneBody);
+
+    // Boom pivot
+    const pivotX = originX;
+    const pivotY = groundY - 20;
+
+    // Boom Tip Calculation
+    // Triangle: base = R, hypotenuse = L
+    // If L < R (invalid), clamp height to 0
+    let hBoom = 0;
+    if (L > R) {
+        hBoom = Math.sqrt(L*L - R*R);
+    }
+    
+    // Scale for side view
+    const tipX_side = originX + R * sideScale;
+    const tipY_side = pivotY - hBoom * sideScale;
+
+    // Boom Line
+    const sideBoom = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    sideBoom.setAttribute("x1", pivotX);
+    sideBoom.setAttribute("y1", pivotY);
+    sideBoom.setAttribute("x2", tipX_side);
+    sideBoom.setAttribute("y2", tipY_side);
+    sideBoom.setAttribute("stroke", "#fbbf24");
+    sideBoom.setAttribute("stroke-width", "4");
+    sideBoom.setAttribute("stroke-linecap", "round");
+    svg.appendChild(sideBoom);
+
+    // Load Line (Cable)
+    const cable = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    cable.setAttribute("x1", tipX_side);
+    cable.setAttribute("y1", tipY_side);
+    cable.setAttribute("x2", tipX_side);
+    cable.setAttribute("y2", groundY - 10); // hang above ground
+    cable.setAttribute("stroke", "#9ca3af");
+    cable.setAttribute("stroke-width", "1");
+    cable.setAttribute("stroke-dasharray", "2");
+    svg.appendChild(cable);
+
+    // Load Block
+    const sideLoad = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    sideLoad.setAttribute("x", tipX_side - 6);
+    sideLoad.setAttribute("y", groundY - 25);
+    sideLoad.setAttribute("width", 12);
+    sideLoad.setAttribute("height", 15);
+    sideLoad.setAttribute("fill", "#f97316");
+    svg.appendChild(sideLoad);
+
+    // Dimension lines
+    // R (Radius)
+    const dimLineR = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    dimLineR.setAttribute("x1", originX);
+    dimLineR.setAttribute("y1", groundY + 15);
+    dimLineR.setAttribute("x2", tipX_side);
+    dimLineR.setAttribute("y2", groundY + 15);
+    dimLineR.setAttribute("stroke", "#64748b");
+    dimLineR.setAttribute("stroke-width", "1");
+    svg.appendChild(dimLineR);
+    
+    const dimTextR = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    dimTextR.setAttribute("x", (originX + tipX_side)/2);
+    dimTextR.setAttribute("y", groundY + 25);
+    dimTextR.setAttribute("fill", "#64748b");
+    dimTextR.setAttribute("font-size", "9");
+    dimTextR.setAttribute("text-anchor", "middle");
+    dimTextR.textContent = `R = ${fmt(R,1)}m`;
+    svg.appendChild(dimTextR);
+
+    // L (Boom Length) label near mid-boom
+    const midX = (pivotX + tipX_side) / 2;
+    const midY = (pivotY + tipY_side) / 2;
+    const dimTextL = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    dimTextL.setAttribute("x", midX - 10);
+    dimTextL.setAttribute("y", midY - 10);
+    dimTextL.setAttribute("fill", "#eab308");
+    dimTextL.setAttribute("font-size", "9");
+    dimTextL.textContent = `L = ${fmt(L,1)}m`;
+    svg.appendChild(dimTextL);
+  }
+
+  // listeners
+  Object.values(els)
+    .filter(el => el instanceof HTMLElement && el.tagName === "INPUT")
+    .forEach(input => {
+      input.addEventListener("input", compute);
+      input.addEventListener("change", compute);
+    });
+
+  // mencegah scroll aneh saat geser slider di mobile
+  document.addEventListener("touchmove", function (e) {
+    if (e.target.tagName === "INPUT" && e.target.type === "range") {
+      e.stopPropagation();
+    }
+  }, { passive: false });
+
+  compute();
+</script>
+</body>
+</html>
