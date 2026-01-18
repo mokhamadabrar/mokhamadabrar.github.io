@@ -20,15 +20,23 @@
 			}
 			.header {
 				display: flex;
-				justify-content: space-between;
+				/* justify-content: space-between; */
 				align-items: center;
 				margin-bottom: 20px;
 				position: relative;
+				gap: 20px; /* Add gap between logo and title */
+			}
+			.header-logo {
+				height: 50px; /* Adjust as needed */
+				width: auto;
+				max-width: 100px; /* Ensure it doesn't get too big */
+				object-fit: contain;
 			}
 			.header-controls {
 				display: flex;
 				align-items: center;
 				gap: 20px;
+				margin-left: auto; /* Push controls to the right */
 			}
 			.language-buttons {
 				display: flex;
@@ -231,13 +239,47 @@
 				font-weight: bold;
 				cursor: pointer;
 			}
+			.modal-photo-container {
+				width: 200px;
+				height: 250px; /* Fixed height */
+				border-radius: 8px;
+				overflow: hidden; /* This is important for cropping */
+				margin-top: 10px;
+				border: 1px solid #e0e0e0;
+			}
+			.modal-photo {
+				width: 100%;
+				height: 100%;
+				object-fit: cover; /* This crops the image to fit */
+			}
 		</style>
 	</head>
 	<body>
 		<div class="header">
+			<img
+				src="https://res.cloudinary.com/dnk3hccmm/image/upload/v1763541373/lgo1_aipv7n.png"
+				alt="Company Logo"
+				class="header-logo"
+			/>
 			<h1 data-key="dashboardTitle">Admin Dashboard</h1>
 			<div class="header-controls">
-				<button id="observation-form-btn" style="background-color: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: background-color 0.3s ease;" data-key="observationFormButton">Go to Observation Form</button>
+				<button
+					id="observation-form-btn"
+					style="
+						background-color: #3498db;
+						color: white;
+						border: none;
+						padding: 10px 15px;
+						border-radius: 6px;
+						cursor: pointer;
+						font-size: 14px;
+						font-weight: bold;
+						transition: background-color 0.3s ease;
+					"
+					data-key="observationFormButton"
+				>
+					Go to Observation Form
+				</button>
 				<div class="language-buttons">
 					<div class="language-button" id="lang-id" data-lang="id">
 						<img src="img/ID.svg" alt="Bahasa Indonesia" />
@@ -267,18 +309,19 @@
 			<div class="dashboard-controls">
 				<div class="filter-container">
 					<div class="filter-group">
-						<label for="filterCheckbox"
-							><input type="checkbox" id="filterCheckbox" />
-							<span data-key="filterByDate">Filter by date</span></label
-						>
+						<label for="startDate" data-key="startDateLabel">Start Date:</label>
+						<input type="date" id="startDate" />
 					</div>
-					<div
-						class="filter-group"
-						id="dateFilterContainer"
-						style="display: none"
-					>
-						<input type="date" id="dateFilter" />
+					<div class="filter-group">
+						<label for="endDate" data-key="endDateLabel">End Date:</label>
+						<input type="date" id="endDate" />
 					</div>
+					<button id="applyDateFilter" data-key="applyFilterButton">
+						Apply Filter
+					</button>
+					<button id="resetDateFilter" data-key="resetFilterButton">
+						Reset
+					</button>
 				</div>
 				<div class="charts-container">
 					<div class="chart-box"><canvas id="positionChart"></canvas></div>
@@ -349,7 +392,10 @@
 					id: {
 						dashboardTitle: "Dasbor Admin",
 						logoutButton: "Keluar",
-						filterByDate: "Filter berdasarkan tanggal",
+						startDateLabel: "Tanggal Mulai:",
+						endDateLabel: "Tanggal Akhir:",
+						applyFilterButton: "Terapkan Filter",
+						resetFilterButton: "Atur Ulang",
 						loading: "Memuat data...",
 						colDate: "Tanggal",
 						colObserver: "Observer",
@@ -357,7 +403,7 @@
 						colCategory: "Kategori",
 						colActions: "Aksi",
 						detailsButton: "Detail",
-						noReports: "Tidak ada laporan.",
+						noReports: "Tidak ada laporan ditemukan.",
 						chartTitlePosition: "Observasi berdasarkan Jabatan",
 						chartTitleCategory: "Observasi berdasarkan Kategori",
 						chartTitleType: "Observasi berdasarkan Jenis",
@@ -394,13 +440,16 @@
 						actionError: "Terjadi kesalahan.",
 						observationFormButton: "Kembali ke Form Observasi",
 						modalPhotoLink: "Lihat Foto",
-						modalNoPhotoPlaceholder: "Tidak ada foto dokumentasi."
+						modalNoPhotoPlaceholder: "Tidak ada foto dokumentasi.",
 					},
 					en: {
 						dashboardTitle: "Admin Dashboard",
 						logoutButton: "Logout",
-						filterByDate: "Filter by date",
-						loading: "Memuat data...",
+						startDateLabel: "Start Date:",
+						endDateLabel: "End Date:",
+						applyFilterButton: "Apply Filter",
+						resetFilterButton: "Reset",
+						loading: "Loading data...",
 						colDate: "Date",
 						colObserver: "Observer",
 						colLocation: "Location",
@@ -442,34 +491,42 @@
 						actionError: "An error occurred.",
 						observationFormButton: "Go to Observation Form",
 						modalPhotoLink: "View Photo",
-						modalNoPhotoPlaceholder: "No documentation photo provided."
+						modalNoPhotoPlaceholder: "No documentation photo provided.",
 					},
 				};
 				let currentLang = "en";
 
-				                // --- DOM ELEMENTS ---
-								const langButtons = document.querySelectorAll(".language-button");
-								const tabButtons = document.querySelectorAll(".tab-button");
-								const tabContents = document.querySelectorAll(".tab-content");
-								const contentDiv = document.getElementById("dashboard-content");
-								const loadingDiv = document.getElementById("loading");
-								const modal = document.getElementById("detailsModal");
-								const modalBody = document.getElementById("modal-body-content");
-								const closeModalBtn = document.querySelector(".modal-close");
-								const dateFilterInput = document.getElementById("dateFilter");
-								const filterCheckbox = document.getElementById("filterCheckbox");
-								const dateFilterContainer = document.getElementById(
-									"dateFilterContainer"
-								);
-								const usersTableBody = document.getElementById("users-table-content");
-								const loadingUsersDiv = document.getElementById("loading-users");
-								const observationFormBtn = document.getElementById('observation-form-btn');
+				// --- DOM ELEMENTS ---
+				const langButtons = document.querySelectorAll(".language-button");
+				const tabButtons = document.querySelectorAll(".tab-button");
+				const tabContents = document.querySelectorAll(".tab-content");
+				const contentDiv = document.getElementById("dashboard-content");
+				const loadingDiv = document.getElementById("loading");
+				const modal = document.getElementById("detailsModal");
+				const modalBody = document.getElementById("modal-body-content");
+				const closeModalBtn = document.querySelector(".modal-close");
+				const startDateInput = document.getElementById("startDate");
+				const endDateInput = document.getElementById("endDate");
+				const applyDateFilterBtn = document.getElementById("applyDateFilter");
+				const resetDateFilterBtn = document.getElementById("resetDateFilter");
+				const usersTableBody = document.getElementById("users-table-content");
+				const loadingUsersDiv = document.getElementById("loading-users");
+				const observationFormBtn = document.getElementById(
+					"observation-form-btn"
+				);
+
 				// --- GLOBAL STATE ---
 				let allReports = [];
 				let allUsers = [];
 				let positionChart, categoryChart, typeChart;
 				let currentView = "observations";
-				let currentConfirmCallback = null; // Callback for confirmation modal
+
+				// --- INITIAL SETUP ---
+				function setDateFiltersMaxDate() {
+					const today = new Date().toISOString().split("T")[0];
+					startDateInput.max = today;
+					endDateInput.max = today;
+				}
 
 				// --- TRANSLATION LOGIC ---
 				function applyTranslation(lang) {
@@ -487,7 +544,6 @@
 							btn.classList.add("active");
 						}
 					});
-					// Re-render dynamic content with new language
 					if (currentView === "observations") updateObservationsDashboard();
 					else renderUsersTable();
 				}
@@ -501,12 +557,8 @@
 					document
 						.querySelector(`.tab-button[data-tab="${view}"]`)
 						.classList.add("active");
-
-					if (view === "observations") {
-						updateObservationsDashboard();
-					} else if (view === "users") {
-						renderUsersTable();
-					}
+					if (view === "observations") updateObservationsDashboard();
+					else if (view === "users") renderUsersTable();
 				}
 
 				// --- USER MANAGEMENT ---
@@ -526,10 +578,6 @@
 						const statusText =
 							translations[currentLang][statusKey] || user.status;
 						const statusClass = `status-${user.status}`;
-
-						// Don't allow deleting the currently logged-in admin
-						const canDelete = user.uid !== adminUser.uid;
-
 						html += `
                         <tr>
                             <td>${user.displayName || "N/A"}</td>
@@ -543,25 +591,21 @@
 																		: ""
 																}
                             </td>
-                        </tr>
-                    `;
+                        </tr>`;
 					});
 					usersTableBody.innerHTML = html;
 				}
 
 				// --- OBSERVATIONS DASHBOARD ---
 				function updateObservationsDashboard() {
-					const useDateFilter = filterCheckbox.checked;
-					const selectedDate = dateFilterInput.value;
+					const startDate = startDateInput.value;
+					const endDate = endDateInput.value;
 					let filteredReports = allReports;
 
-					if (useDateFilter && selectedDate) {
+					if (startDate && endDate) {
 						filteredReports = allReports.filter((report) => {
-							if (!report.submittedAt) return false;
-							return (
-								report.submittedAt.toDate().toISOString().split("T")[0] ===
-								selectedDate
-							);
+							if (!report.obsDate) return false;
+							return report.obsDate >= startDate && report.obsDate <= endDate;
 						});
 					}
 					renderObservationsTable(filteredReports);
@@ -591,86 +635,163 @@
 					);
 				}
 
-				function renderObservationsTable(reports) {
-					if (reports.length === 0) {
-						contentDiv.innerHTML = `<tr><td colspan="5" style="text-align: center;">${translations[currentLang].noReports}</td></tr>`;
-						return;
-					}
-					let html = "";
-					reports.forEach((report) => {
-						const date = report.submittedAt
-							? report.submittedAt.toDate().toLocaleDateString()
-							: "N/A";
-						html += `
-                        <tr>
-                            <td>${date}</td><td>${
-							report.observerName || "N/A"
-						}</td>
-                            <td>${report.obsLocation || "N/A"}</td><td>${
-							report.category || "N/A"
-						}</td>
-                            <td><button class="details-btn" data-id="${
-															report.id
-														}">${
-							translations[currentLang].detailsButton
-						}</button></td>
-                        </tr>
-                    `;
-					});
-					contentDiv.innerHTML = html;
-				}
+								function renderObservationsTable(reports) {
 
-				function updatePieChart(
-					reports,
-					field,
-					canvasId,
-					title,
-					chartInstance,
-					setChartInstance
-				) {
-					const counts = reports.reduce((acc, report) => {
-						const key = report[field] || "Unknown";
-						acc[key] = (acc[key] || 0) + 1;
-						return acc;
-					}, {});
-					if (chartInstance) {
-						chartInstance.destroy();
-					}
-					const newChart = new Chart(document.getElementById(canvasId), {
-						type: "pie",
-						data: {
-							labels: Object.keys(counts),
-							datasets: [
-								{
-									data: Object.values(counts),
-									backgroundColor: [
-										"#3498db",
-										"#e74c3c",
-										"#9b59b6",
-										"#f1c40f",
-										"#2ecc71",
-										"#1abc9c",
-										"#34495e",
-										"#e67e22",
-										"#7f8c8d",
-									],
-								},
-							],
-						},
-						options: {
-							responsive: true,
-							plugins: {
-								legend: { display: true, position: "top" },
-								title: { display: true, text: title },
-							},
-						},
-					});
-					setChartInstance(newChart);
-				}
+									if (reports.length === 0) {
 
-				// --- DATA FETCHING ---
+										contentDiv.innerHTML = `<tr><td colspan="5" style="text-align: center;">${translations[currentLang].noReports}</td></tr>`;
+
+										return;
+
+									}
+
+									let html = "";
+
+									reports.forEach((report) => {
+
+										const date = report.obsDate || (report.submittedAt ? report.submittedAt.toDate().toLocaleDateString() : "N/A");
+
+										html += `
+
+				                        <tr>
+
+				                            <td>${date}</td>
+
+											<td>${report.observerName || "N/A"}</td>
+
+				                            <td>${report.obsLocation || "N/A"}</td>
+
+											<td>${report.category || "N/A"}</td>
+
+				                            <td><button class="details-btn" data-id="${report.id}">${translations[currentLang].detailsButton}</button></td>
+
+				                        </tr>`;
+
+									});
+
+									contentDiv.innerHTML = html;
+
+								}
+
+				
+
+								function generateColors(numColors) {
+
+									const colors = [];
+
+									const hueStep = 360 / numColors;
+
+									for (let i = 0; i < numColors; i++) {
+
+										const hue = i * hueStep;
+
+										colors.push(`hsl(${hue}, 70%, 60%)`);
+
+									}
+
+									return colors;
+
+								}
+
+				
+
+								                                function updatePieChart(reports, field, canvasId, title, chartInstance, setChartInstance) {
+								                					const totalObservations = reports.length;
+								                					const counts = reports.reduce((acc, report) => {
+								                						const key = report[field] || "Unknown";
+								                						acc[key] = (acc[key] || 0) + 1;
+								                						return acc;
+								                					}, {});
+								                
+								                					if (chartInstance) {
+								                						chartInstance.destroy();
+								                					}
+								                
+								                					const centerTextPlugin = {
+								                						id: 'centerText',
+								                						beforeDraw: function(chart) {
+								                							if (chart.config.options.plugins.centerText.display) {
+								                								const ctx = chart.ctx;
+								                								const centerConfig = chart.config.options.plugins.centerText;
+								                								const fontWeight = centerConfig.fontWeight || 'normal';
+								                								const fontStyle = centerConfig.fontStyle || 'Arial';
+								                								const txt = centerConfig.text;
+								                								const color = centerConfig.color || '#000';
+								                								const maxFontSize = centerConfig.maxFontSize || 75;
+								                								const minFontSize = centerConfig.minFontSize || 20;
+								                
+								                								ctx.save();
+								                								let fontSize = (chart.innerRadius / 1.2); // Aggressive font sizing
+								                								if (fontSize > maxFontSize) fontSize = maxFontSize;
+								                								if (fontSize < minFontSize) fontSize = minFontSize;
+								                								
+								                								ctx.font = `${fontWeight} ${fontSize}px ${fontStyle}`;
+								                								ctx.textBaseline = 'middle';
+								                								ctx.textAlign = 'center';
+								                
+								                								const textX = Math.round((chart.chartArea.left + chart.chartArea.right) / 2);
+								                								const textY = Math.round((chart.chartArea.top + chart.chartArea.bottom) / 2);
+								                								
+								                								ctx.fillStyle = color;
+								                								ctx.fillText(txt, textX, textY);
+								                								ctx.restore();
+								                							}
+								                						}
+								                					};
+								                
+								                					const newChart = new Chart(document.getElementById(canvasId), {
+								                						type: "doughnut",
+								                						data: {
+								                							labels: Object.keys(counts),
+								                							datasets: [{
+								                								data: Object.values(counts),
+								                								backgroundColor: generateColors(Object.keys(counts).length),
+								                							}],
+								                						},
+								                						plugins: [centerTextPlugin],
+								                						options: {
+								                							responsive: true,
+								                							plugins: {
+								                								legend: {
+								                									position: 'top',
+								                									labels: {
+								                										generateLabels: function(chart) {
+								                											const data = chart.data;
+								                											if (data.labels.length && data.datasets.length) {
+								                																								return data.labels.map((label, i) => {
+								                																									const meta = chart.getDatasetMeta(0);
+								                																									const ds = data.datasets[0];
+								                																									const value = ds.data[i];
+								                																									// Attempt to translate the label
+								                																									const translatedLabel = translations[currentLang][`cat${label.replace(/\s/g, '')}`] || translations[currentLang][label.replace(/\s/g, '')] || label;
+								                																									return {
+								                																										text: `${translatedLabel}: ${value}`,
+								                																										fillStyle: ds.backgroundColor[i],
+								                																										hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+								                																										index: i
+								                																									};
+								                																								});								                											}
+								                											return [];
+								                										}
+								                									}
+								                								},
+								                								title: { display: true, text: title },
+								                								centerText: {
+								                									display: true,
+								                									text: totalObservations,
+								                									color: '#2c3e50',
+								                									fontWeight: 'bold', // Corrected property
+								                									fontStyle: 'Arial',
+								                									maxFontSize: 70,
+								                									minFontSize: 30 
+								                								}
+								                							}
+								                						},
+								                					});
+								                					setChartInstance(newChart);
+								                				}				// --- DATA FETCHING ---
 				db.collection("observations")
-					.orderBy("submittedAt", "desc")
+					.orderBy("obsDate", "desc")
 					.onSnapshot(
 						(snapshot) => {
 							loadingDiv.style.display = "none";
@@ -687,7 +808,7 @@
 					);
 
 				db.collection("users")
-					.where("status", "in", ["approved", "pending", "unverified"]) // Filter users by status
+					.where("status", "in", ["approved", "pending", "unverified"])
 					.orderBy("createdAt", "desc")
 					.onSnapshot(
 						(snapshot) => {
@@ -719,48 +840,41 @@
 					sessionStorage.removeItem("adminUser");
 					window.location.href = "admin-login.html";
 				});
-				filterCheckbox.addEventListener("change", () => {
-					dateFilterContainer.style.display = filterCheckbox.checked
-						? "block"
-						: "none";
-					if (!filterCheckbox.checked) {
-						dateFilterInput.value = "";
-					}
+				applyDateFilterBtn.addEventListener(
+					"click",
+					updateObservationsDashboard
+				);
+				resetDateFilterBtn.addEventListener("click", () => {
+					startDateInput.value = "";
+					endDateInput.value = "";
 					updateObservationsDashboard();
 				});
-				dateFilterInput.addEventListener("change", updateObservationsDashboard);
+
 				usersTableBody.addEventListener("click", async (e) => {
 					if (e.target && e.target.classList.contains("approve-btn")) {
 						const button = e.target;
 						const uid = button.dataset.uid;
-						button.disabled = true; // Disable button to prevent multiple clicks
-						button.textContent = translations[currentLang].disapproving; // Use disapproving as a temporary text
-
+						button.disabled = true;
 						try {
 							await db
 								.collection("users")
 								.doc(uid)
 								.update({ status: "approved" });
-							console.log(`User ${uid} approved successfully.`);
 						} catch (error) {
 							console.error("Error approving user: ", error);
-							button.disabled = false; // Re-enable button on error
-							button.textContent = translations[currentLang].approveButton; // Restore button text
+							button.disabled = false;
 							alert(
 								`${translations[currentLang].actionError}: ${error.message}`
-							); // Simple error feedback
+							);
 						}
 					}
 				});
 
-				// Event delegation for Details buttons
-				contentDiv.addEventListener('click', (e) => {
-					if (e.target && e.target.classList.contains('details-btn')) {
+				contentDiv.addEventListener("click", (e) => {
+					if (e.target && e.target.classList.contains("details-btn")) {
 						const reportId = e.target.dataset.id;
-						const report = allReports.find(r => r.id === reportId);
-						if (report) {
-							showDetailsModal(report);
-						}
+						const report = allReports.find((r) => r.id === reportId);
+						if (report) showDetailsModal(report);
 					}
 				});
 
@@ -769,48 +883,62 @@
 					if (event.target == modal) modal.style.display = "none";
 				};
 
-				// Helper function to show details modal
 				function showDetailsModal(report) {
-					const date = report.submittedAt
-						? report.submittedAt.toDate().toLocaleDateString()
-						: "N/A";
-					
-					let photoContent;
+					const date =
+						report.obsDate ||
+						(report.submittedAt
+							? report.submittedAt.toDate().toLocaleDateString()
+							: "N/A");
+					let photoContent = `<p><strong data-key="modalPhoto">Photo:</strong> ${translations[currentLang].modalNoPhoto}</p>`;
 					if (report.photoURL) {
-						photoContent = `<p><strong data-key="modalPhoto">Photo:</strong></p><img src="${report.photoURL}" alt="${translations[currentLang].modalPhoto}" style="max-width: 100%; height: auto; display: block; margin-top: 10px; border-radius: 8px;">`;
-					} else {
-						// Placeholder SVG as data URL
-						const placeholderSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Crect width='150' height='100' fill='%23e0e0e0'/%3E%3Ctext x='75' y='55' font-family='Arial' font-size='12' fill='%23757575' text-anchor='middle'%3E${encodeURIComponent(translations[currentLang].modalNoPhotoPlaceholder)}%3C/text%3E%3C/svg%3E`;
-						photoContent = `<p><strong data-key="modalPhoto">Photo:</strong></p><img src="${placeholderSvg}" alt="${translations[currentLang].modalNoPhotoPlaceholder}" style="max-width: 100%; height: auto; display: block; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc;">`;
+						photoContent = `
+							<p><strong data-key="modalPhoto">Photo:</strong></p>
+							<div class="modal-photo-container">
+								<img src="${report.photoURL}" alt="Observation Photo" class="modal-photo">
+							</div>
+						`;
 					}
-
 					modalBody.innerHTML = `
 						<h2>${translations[currentLang].modalTitle}</h2>
-						<p><strong data-key="modalDate">Date:</strong> ${date}</p>
-						<p><strong data-key="modalObserver">Observer:</strong> ${report.observerName || 'N/A'}</p>
-						<p><strong data-key="modalCompany">Company:</strong> ${report.observerCompany || 'N/A'}</p>
-						<p><strong data-key="modalPosition">Position:</strong> ${report.observerPosition || 'N/A'}</p>
-						<p><strong data-key="modalLocation">Location:</strong> ${report.obsLocation || 'N/A'}</p>
-						
+						<p><strong>${translations[currentLang].modalDate}:</strong> ${date}</p>
+						<p><strong>${translations[currentLang].modalObserver}:</strong> ${
+						report.observerName || "N/A"
+					}</p>
+						<p><strong>${translations[currentLang].modalCompany}:</strong> ${
+						report.observerCompany || "N/A"
+					}</p>
+						<p><strong>${translations[currentLang].modalPosition}:</strong> ${
+						report.observerPosition || "N/A"
+					}</p>
+						<p><strong>${translations[currentLang].modalLocation}:</strong> ${
+						report.obsLocation || "N/A"
+					}</p>
 						<h3>${translations[currentLang].modalHeaderObservation}</h3>
-						<p><strong data-key="modalCategory">Category:</strong> ${report.category || 'N/A'}</p>
-						<p><strong data-key="modalType">Type:</strong> ${report.obsType || 'N/A'}</p>
-						<p><strong data-key="modalDescription">Description:</strong> ${report.description || 'N/A'}</p>
-						
+						<p><strong>${translations[currentLang].modalCategory}:</strong> ${
+						report.category || "N/A"
+					}</p>
+						<p><strong>${translations[currentLang].modalType}:</strong> ${
+						report.obsType || "N/A"
+					}</p>
+						<p><strong>${translations[currentLang].modalDescription}:</strong> ${
+						report.description || "N/A"
+					}</p>
 						<h3>${translations[currentLang].modalHeaderFollowUp}</h3>
-						<p><strong data-key="modalImmediateAction">Immediate Action:</strong> ${report.immediateAction || 'N/A'}</p>
-						<p><strong data-key="modalRecommendation">Recommendation:</strong> ${report.recommendation || 'N/A'}</p>
-						${photoContent}
-					`;
+						<p><strong>${translations[currentLang].modalImmediateAction}:</strong> ${
+						report.immediateAction || "N/A"
+					}</p>
+						<p><strong>${translations[currentLang].modalRecommendation}:</strong> ${
+						report.recommendation || "N/A"
+					}</p>
+						${photoContent}`;
 					modal.style.display = "flex";
 				}
 
-				// Initial Load
+				// --- INITIAL LOAD ---
+				setDateFiltersMaxDate();
 				applyTranslation(currentLang);
-
-				// Add event listener for the new observation form button AFTER initial load
-				observationFormBtn.addEventListener('click', () => {
-					window.location.href = 'index.html';
+				observationFormBtn.addEventListener("click", () => {
+					window.location.href = "index.html";
 				});
 			});
 		</script>
