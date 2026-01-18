@@ -1,916 +1,1605 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- === SEO dan Media Sosial === -->
-    <title>Form Observasi Keselamatan (K3) | Safety Observation Form</title>
-    <meta name="description" content="Laporkan temuan keselamatan (K3), baik perilaku aman/tidak aman maupun kondisi aman/tidak aman, melalui formulir observasi digital ini.">
-    <meta name="keywords" content="K3, HSE, Form Keselamatan, Safety Observation, Lapor K3, Form Observasi K3">
-    
-    <!-- Open Graph (untuk Facebook, LinkedIn, dll.) -->
-    <meta property="og:title" content="Form Observasi Keselamatan (K3)">
-    <meta property="og:description" content="Laporkan temuan K3 dengan mudah menggunakan formulir observasi online ini.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mokhamadabrar.github.io/img/observation20.webp">
-    <meta property="og:url" content="https://mokhamadabrar.github.io/"> <!-- Ganti dengan URL Anda nanti -->
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Form Observasi Keselamatan (K3)">
-    <meta name="twitter:description" content="Laporkan temuan K3 dengan mudah menggunakan formulir observasi online ini.">
-    <meta name="twitter:image" content="https://mokhamadabrar.github.io/img/observation20.webp">
-    <!-- === AKHIR SEO === -->
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-    <style>
-        body {
-            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
-            background-image: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            min-height: 100vh;
-        }
-
-        #logout-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: rgba(244, 67, 54, 0.8);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            backdrop-filter: blur(3px);
-            transition: background-color 0.3s ease;
-        }
-
-        #logout-btn:hover {
-            background-color: #d32f2f;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-        }
-
-        .header-banner {
-            height: 180px;
-            background-image: url('https://mokhamadabrar.github.io/img/construction.webp');
-            background-size: cover;
-            background-position: center center;
-            position: relative;
-        }
-
-        .header-logo {
-            position: absolute;
-            bottom: 10px;
-            left: 15px;
-            height: 50px;
-            width: auto;
-            max-width: 100px;
-            object-fit: contain;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 5px;
-            border-radius: 8px;
-            backdrop-filter: blur(3px);
-        }
-
-        .language-buttons {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            display: flex;
-            gap: 10px;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 5px 10px;
-            border-radius: 8px;
-            backdrop-filter: blur(3px);
-        }
-
-        .language-button {
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 2px solid transparent;
-        }
-
-        .language-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .language-button.active {
-            border: 2px solid #007bff;
-        }
-
-        .language-button img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        fieldset {
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        legend {
-            font-weight: 600;
-            color: #007bff;
-            padding: 0 10px;
-            font-size: 18px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin-left: -10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        textarea,
-        input[type="file"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dfe6e9;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 15px;
-            background-color: #fdfdfd;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        textarea:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
-            outline: none;
-        }
-
-        input[type="file"] {
-            padding: 5px;
-            background-color: #f4f7f6;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .radio-group div {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-        }
-
-        .radio-group label {
-            font-weight: normal;
-            margin-bottom: 0;
-            margin-left: 8px;
-            font-size: 15px;
-        }
-
-        input[type="radio"] {
-            transform: scale(1.1);
-            margin-right: 5px;
-        }
-
-        .radio-group-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            background-color: #FFFFFF;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #dfe6e9;
-        }
-
-        .radio-group-grid div {
-            display: flex;
-            align-items: center;
-        }
-
-        .radio-group-grid label {
-            font-weight: normal;
-            margin-bottom: 0;
-            margin-left: 8px;
-            font-size: 14px;
-        }
-
-        .category-subtitle {
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            color: #34495e;
-            font-size: 13px;
-        }
-
-        @media (max-width: 600px) {
-            .radio-group-grid {
-                grid-template-columns: 1fr;
-            }
-            body { padding: 10px; }
-        }
-
-        .submit-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 15px;
-            background-image: linear-gradient(to right, #007bff, #0056b3);
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
-        }
-
-        .submit-btn:hover {
-            background-image: linear-gradient(to right, #0056b3, #007bff);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
-        }
-        
-        .whatsapp-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 12px 15px;
-            margin-top: 15px;
-            background-image: linear-gradient(to right, #25D366, #128C7E);
-            background-color: #25D366;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-        }
-
-        .whatsapp-btn:hover {
-            background-image: linear-gradient(to right, #128C7E, #25D366);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(37, 211, 102, 0.4);
-        }
-        
-        .whatsapp-btn .fa {
-            font-size: 20px;
-        }
-
-        #formMessage {
-            text-align: center;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: none; 
-        }
-
-        #formMessage.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-
-        #formMessage.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-
-        .form-card {
-            background-color: #ffffff;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        .card-title {
-            font-weight: 600;
-            color: #007bff;
-            font-size: 18px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin-bottom: 20px;
-            margin-top: 0;
-        }
-    </style>
-</head>
-<body>
-    <script>
-        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
-        if (!loggedInUser) {
-            window.location.href = 'login.html';
-        }
-    </script>
-
-    <div class="container">
-        <form id="safetyForm">
-            <div class="form-card">
-                <div class="header-banner" style="margin: -25px -25px 25px -25px; border-radius: 12px 12px 0 0;">
-                    <img src="https://res.cloudinary.com/dnk3hccmm/image/upload/v1763541373/lgo1_aipv7n.png" alt="Company Logo" class="header-logo">
-                    <button id="logout-btn">Logout</button>
-                    <button id="admin-dashboard-btn" style="display: none; position: absolute; top: 15px; right: 100px; background-color: rgba(52, 152, 219, 0.8); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; backdrop-filter: blur(3px); transition: background-color 0.3s ease;">Go to Admin Dashboard</button>
-                    <div class="language-buttons">
-                        <div class="language-button" id="lang-id" data-lang="id">
-                            <img src="https://mokhamadabrar.github.io/img/ID.svg" alt="Bahasa Indonesia">
-                        </div>
-                        <div class="language-button active" id="lang-en" data-lang="en">
-                            <img src="https://mokhamadabrar.github.io/img/EN.svg" alt="English">
-                        </div>
-                    </div>
-                </div>
-                <h1 data-key="formTitle">Form Observasi Keselamatan (K3)</h1>
-                <div id="formMessage"></div>
-                <h2 class="card-title" data-key="reporterInfo">Informasi Pelapor</h2>
-                <div class="form-group">
-                    <p style="margin: 0;"><strong><span data-key="observerNameLabel">Nama Observer:</span></strong> <span id="observerNameText">N/A</span></p>
-                </div>
-                    <div class="form-group">
-                        <p style="margin: 0;"><strong><span data-key="observerCompanyLabel">Perusahaan:</span></strong> <span id="observerCompanyText">N/A</span></p>
-                    </div>
-                    <div class="form-group">
-                        <p style="margin: 0;"><strong><span data-key="observerPositionLabel">Jabatan:</span></strong> <span id="observerPositionText">N/A</span></p>
-                    </div>
-                    <p style="margin-top: 10px;"><small data-key="contactAdmin">Hubungi admin untuk melakukan perubahan.</small></p>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="obsDate" data-key="obsDateLabel">Tanggal Observasi:</label>
-                        <input type="date" id="obsDate" name="obsDate" required>
-                    </div>
-                </div>
-
-            <div class="form-card">
-                <h2 class="card-title" data-key="observationDetails">Observation Details</h2>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label for="obsLocation" data-key="obsLocationLabel">Lokasi Observasi:</label>
-                    <input type="text" id="obsLocation" name="obsLocation" data-placeholder-key="obsLocationPlaceholder" placeholder="Contoh: Area Workshop, Gudang B" required>
-                </div>
-            </div>
-
-            <div class="form-card">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label data-key="categoriesLabel">Kategori Observasi:</label>
-                    <div class="category-subtitle" data-key="hraTitle">HRA</div>
-                    <div class="radio-group-grid">
-                        <div><input type="radio" id="cat-heights" name="category" value="Working from Heights" required><label for="cat-heights" data-key="catHeights">Working from Heights</label></div>
-                        <div><input type="radio" id="cat-lifting" name="category" value="Lifting Operations"><label for="cat-lifting" data-key="catLifting">Lifting Operations</label></div>
-                        <div><input type="radio" id="cat-mobile" name="category" value="Mobile Equipment"><label for="cat-mobile" data-key="catMobile">Mobile Equipment</label></div>
-                        <div><input type="radio" id="cat-ground" name="category" value="Ground Disturbance"><label for="cat-ground" data-key="catGround">Ground Disturbance</label></div>
-                        <div><input type="radio" id="cat-driving" name="category" value="Driving & Off-Road Vehicles"><label for="cat-driving" data-key="catDriving">Driving & Off-Road Vehicles</label></div>
-                        <div><input type="radio" id="cat-material" name="category" value="Material Handling"><label for="cat-material" data-key="catMaterial">Material Handling</label></div>
-                        <div><input type="radio" id="cat-energy" name="category" value="Energy Isolation"><label for="cat-energy" data-key="catEnergy">Energy Isolation</label></div>
-                        <div><input type="radio" id="cat-confined" name="category" value="Confined Spaces"><label for="cat-confined" data-key="catConfined">Confined Spaces</label></div>
-                        <div><input type="radio" id="cat-electrical" name="category" value="Electrical"><label for="cat-electrical" data-key="catElectrical">Electrical</label></div>
-                        <div><input type="radio" id="cat-noise" name="category" value="Noise"><label for="cat-noise" data-key="catNoise">Noise</label></div>
-                        <div><input type="radio" id="cat-thermal" name="category" value="Thermal Stress"><label for="cat-thermal" data-key="catThermal">Thermal Stress</label></div>
-                        <div><input type="radio" id="cat-hazardous" name="category" value="Hazardous Materials"><label for="cat-hazardous" data-key="catHazardous">Hazardous Materials</label></div>
-                    </div>
-                    <div class="category-subtitle" data-key="nonHraTitle">Non HRA/Other</div>
-                    <div class="radio-group-grid">
-                        <div><input type="radio" id="cat-animals" name="category" value="Animals and Insects"><label for="cat-animals" data-key="catAnimals">Animals and Insects</label></div>
-                        <div><input type="radio" id="cat-barricades" name="category" value="Barricades"><label for="cat-barricades" data-key="catBarricades">Barricades</label></div>
-                        <div><input type="radio" id="cat-biological" name="category" value="Biological"><label for="cat-biological" data-key="catBiological">Biological</label></div>
-                        <div><input type="radio" id="cat-documentation" name="category" value="Documentation"><label for="cat-documentation" data-key="catDocumentation">Documentation</label></div>
-                        <div><input type="radio" id="cat-emergency" name="category" value="Emergency Preparedness"><label for="cat-emergency" data-key="catEmergency">Emergency Preparedness</label></div>
-                        <div><input type="radio" id="cat-environmental" name="category" value="Environmental"><label for="cat-environmental" data-key="catEnvironmental">Environmental</label></div>
-                        <div><input type="radio" id="cat-ergonomic" name="category" value="Ergonomic"><label for="cat-ergonomic" data-key="catErgonomic">Ergonomic</label></div>
-                        <div><input type="radio" id="cat-fatigue" name="category" value="Fatigue"><label for="cat-fatigue" data-key="catFatigue">Fatigue</label></div>
-                        <div><input type="radio" id="cat-fire" name="category" value="Fire Protection"><label for="cat-fire" data-key="catFire">Fire Protection</label></div>
-                        <div><input type="radio" id="cat-tools" name="category" value="Hand or Power Tools"><label for="cat-tools" data-key="catTools">Hand or Power Tools</label></div>
-                        <div><input type="radio" id="cat-housekeeping" name="category" value="Housekeeping"><label for="cat-housekeeping" data-key="catHousekeeping">Housekeeping</label></div>
-                        <div><input type="radio" id="cat-lasers" name="category" value="Lasers"><label for="cat-lasers" data-key="catLasers">Lasers</label></div>
-                        <div><input type="radio" id="cat-lighting" name="category" value="Lighting"><label for="cat-lighting" data-key="catLighting">Lighting</label></div>
-                        <div><input type="radio" id="cat-lof" name="category" value="Line of Fire"><label for="cat-lof" data-key="catLof">Line of Fire</label></div>
-                        <div><input type="radio" id="cat-logistics" name="category" value="Logistics"><label for="cat-logistics" data-key="catLogistics">Logistics</label></div>
-                        <div><input type="radio" id="cat-lifting-manual" name="category" value="Manual Lifting"><label for="cat-lifting-manual" data-key="catManualLifting">Manual Lifting</label></div>
-                        <div><input type="radio" id="cat-office" name="category" value="Office Tools and Equipment"><label for="cat-office" data-key="catOffice">Office Tools and Equipment</label></div>
-                        <div><input type="radio" id="cat-other-new" name="category" value="Other"><label for="cat-other-new" data-key="catOtherNew">Other</label></div>
-                        <div><input type="radio" id="cat-ppe" name="category" value="Personal Protective Equipment"><label for="cat-ppe" data-key="catPpe">Personal Protective Equipment</label></div>
-                        <div><input type="radio" id="cat-culture" name="category" value="Safety Culture"><label for="cat-culture" data-key="catCulture">Safety Culture</label></div>
-                        <div><input type="radio" id="cat-sanitation" name="category" value="Sanitation"><label for="cat-sanitation" data-key="catSanitation">Sanitation</label></div>
-                        <div><input type="radio" id="cat-access" name="category" value="Site Access and Control"><label for="cat-access" data-key="catAccess">Site Access and Control</label></div>
-                        <div><input type="radio" id="cat-training" name="category" value="Training"><label for="cat-training" data-key="catTraining">Training</label></div>
-                        <div><input type="radio" id="cat-ventilation" name="category" value="Ventilation"><label for="cat-ventilation" data-key="catVentilation">Ventilation</label></div>
-                        <div><input type="radio" id="cat-surfaces" name="category" value="Walking, Working Surfaces"><label for="cat-surfaces" data-key="catSurfaces">Walking, Working Surfaces</label></div>
-                        <div><input type="radio" id="cat-welding" name="category" value="Welding, Cutting and Grinding"><label for="cat-welding" data-key="catWelding">Welding, Cutting and Grinding</label></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-card">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label data-key="obsTypeLabel">Jenis Observasi:</label>
-                    <div class="radio-group">
-                        <div>
-                            <input type="radio" id="safeActAndCondition" name="obsType" value="Safe Act and Condition" required>
-                            <label for="safeActAndCondition" data-key="safeActAndCondition">Safe Act and Condition</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="unsafeActAndCondition" name="obsType" value="Unsafe Act and Condition">
-                            <label for="unsafeActAndCondition" data-key="unsafeActAndCondition">Unsafe Act and Condition</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-card">
-                <div class="form-group">
-                    <label for="description" data-key="descriptionLabel">Deskripsi Observasi:</label>
-                    <textarea id="description" name="description" rows="5" data-placeholder-key="descriptionPlaceholder" placeholder="Jelaskan apa yang Anda lihat..." required></textarea>
-                </div>
-                <div class="form-group" id="immediateActionGroup" style="display: none; margin-bottom: 0;">
-                    <label for="immediateAction" data-key="immediateActionAndRecommendationLabel">Immediate Action taken and Recommendations/ Improvement Suggestions:</label>
-                    <textarea id="immediateAction" name="immediateAction" rows="3" data-placeholder-key="immediateActionPlaceholder" placeholder="Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan..."></textarea>
-                </div>
-            </div>
-
-            <div class="form-card">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label for="uploadPhoto" data-key="uploadPhotoLabel">Unggah Foto (Opsional):</label>
-                    <input type="file" id="uploadPhoto" name="uploadPhoto" accept="image/*">
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn" data-key="submitButton" name="submitAction" value="submit">Kirim Laporan</button>
-            
-            <button type="submit" id="whatsapp-share-btn" class="whatsapp-btn" name="submitAction" value="whatsapp">
-                <i class="fa fa-whatsapp" style="color:white;"></i>
-                <span data-key="shareButton">Bagikan ke WhatsApp</span>
-            </button>
-        </form>
-    </div>
-
-    <!-- Firebase Scripts -->
-    <!-- These scripts are now served by Firebase Hosting -->
-    <script src="/__/firebase/8.6.1/firebase-app.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
-    <script src="/__/firebase/init.js"></script>
-
-    <!-- Other scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-    <script src="js/firebase-init.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // --- AUTO-FILL & USER SESSION ---
-            const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
-            if (!loggedInUser) {
-                window.location.href = 'login.html';
-            }
-            
-            document.getElementById('logout-btn').addEventListener('click', function() {
-                sessionStorage.removeItem('loggedInUser');
-                sessionStorage.removeItem('adminUser'); // Clear admin session as well
-                window.location.href = 'login.html';
-            });
-
-            // Admin Dashboard Button Logic
-            const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
-            const adminUser = JSON.parse(sessionStorage.getItem('adminUser'));
-            if (adminUser) {
-                adminDashboardBtn.style.display = 'block'; // Show the button
-                adminDashboardBtn.addEventListener('click', function() {
-                    window.location.href = 'dashboard.html';
-                });
-            }
-
-            async function loadReporterInfo() {
-                const nameSpan = document.getElementById('observerNameText');
-                const companySpan = document.getElementById('observerCompanyText');
-                const positionSpan = document.getElementById('observerPositionText');
-                const locationInput = document.getElementById('obsLocation');
-
-                let name = "N/A";
-                let company = "N/A";
-                let position = "N/A";
-
-                // Try to get data from Firestore first
-                try {
-                    const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        name = userData.displayName || loggedInUser.displayName || "N/A";
-                        company = userData.company || "N/A";
-                        position = userData.position || "N/A";
-                    } else {
-                         name = loggedInUser.displayName || "N/A";
-                    }
-                } catch (error) {
-                    console.error("Error fetching user data from Firestore:", error);
-                    name = loggedInUser.displayName || "N/A";
-                }
-                
-                // Load location from localStorage
-                const location = localStorage.getItem(`${loggedInUser.uid}_reporterLocation`);
-
-                nameSpan.textContent = name;
-                companySpan.textContent = company;
-                positionSpan.textContent = position;
-                if (location) locationInput.value = location;
-
-                // Set today's date
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-                const dd = String(today.getDate()).padStart(2, '0');
-                const todayFormatted = `${yyyy}-${mm}-${dd}`;
-                document.getElementById('obsDate').value = todayFormatted;
-                document.getElementById('obsDate').setAttribute('max', todayFormatted);
-            }
-
-            function saveReporterInfo() {
-                localStorage.setItem(`${loggedInUser.uid}_reporterLocation`, document.getElementById('obsLocation').value);
-            }
-
-            loadReporterInfo();
-
-            // --- FORM & TRANSLATION SETUP ---
-            const safetyForm = document.getElementById("safetyForm");
-            const messageDiv = document.getElementById("formMessage");
-            const langButtons = document.querySelectorAll(".language-button");
-            
-            const translations = {
-                'id': {
-                    formTitle: "Form Observasi Keselamatan (K3)",
-                    reporterInfo: "Informasi Pelapor",
-                    observerNameLabel: "Nama Observer:",
-                    observerCompanyLabel: "Perusahaan:",
-                    observerPositionLabel: "Jabatan:",
-                    contactAdmin: "Hubungi admin untuk melakukan perubahan.",
-                    obsLocationLabel: "Lokasi Observasi:",
-                    obsLocationPlaceholder: "Contoh: Area Workshop, Gudang B",
-                    observationDetails: "Detail Observasi",
-                    obsDateLabel: "Tanggal Observasi:",
-                    categoriesLabel: "Kategori Observasi:",
-                    hraTitle: "HRA (High-Risk Activity)",
-                    nonHraTitle: "Non HRA/Lainnya",
-                    catHeights: "Bekerja di Ketinggian",
-                    catLifting: "Operasi Pengangkatan",
-                    catMobile: "Peralatan Bergerak",
-                    catGround: "Gangguan Tanah",
-                    catDriving: "Mengemudi & Kendaraan Off-Road",
-                    catMaterial: "Penanganan Material",
-                    catEnergy: "Isolasi Energi",
-                    catConfined: "Ruang Terbatas",
-                    catElectrical: "Listrik",
-                    catNoise: "Kebisingan",
-                    catThermal: "Stres Termal",
-                    catHazardous: "Bahan Berbahaya",
-                    catAnimals: "Hewan dan Serangga",
-                    catBarricades: "Barikade",
-                    catBiological: "Biologis",
-                    catDocumentation: "Dokumentasi",
-                    catEmergency: "Kesiapan Darurat",
-                    catEnvironmental: "Lingkungan",
-                    catErgonomic: "Ergonomis",
-                    catFatigue: "Kelelahan",
-                    catFire: "Proteksi Kebakaran",
-                    catTools: "Peralatan Tangan atau Listrik",
-                    catHousekeeping: "Tata Graha",
-                    catLasers: "Laser",
-                    catLighting: "Pencahayaan",
-                    catLof: "Line of Fire",
-                    catLogistics: "Logistik",
-                    catManualLifting: "Pengangkatan Manual",
-                    catOffice: "Peralatan Kantor",
-                    catOtherNew: "Lainnya",
-                    catPpe: "Alat Pelindung Diri (APD)",
-                    catCulture: "Budaya Keselamatan",
-                    catSanitation: "Sanitasi",
-                    catAccess: "Akses dan Kontrol Situs",
-                    catTraining: "Pelatihan",
-                    catVentilation: "Ventilasi",
-                    catSurfaces: "Permukaan Jalan/Kerja",
-                    catWelding: "Pengelasan, Pemotongan, dan Gerinda",
-                    obsTypeLabel: "Jenis Observasi:",
-                    safeActAndCondition: "Tindakan dan Kondisi Aman",
-                    unsafeActAndCondition: "Tindakan dan Kondisi Tidak Aman",
-                    descriptionLabel: "Deskripsi Observasi:",
-                    descriptionPlaceholder: "Jelaskan apa yang Anda lihat...",
-                    immediateActionAndRecommendationLabel: "Tindakan Segera yang Diambil dan Rekomendasi/Saran Perbaikan:",
-                    immediateActionPlaceholder: "Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan...",
-                    uploadPhotoLabel: "Unggah Foto (Opsional):",
-                    submitButton: "Kirim Laporan",
-                    submittingButton: "Mengirim...",
-                    successMessage: "<strong>Laporan berhasil dikirim!</strong> Terima kasih atas observasi Anda.",
-                    errorMessage: "<strong>Terjadi kesalahan saat mengirim laporan.</strong> Mohon coba lagi.",
-                    errorFutureDate: "Tanggal observasi tidak boleh di masa depan.",
-                    shareButton: "Bagikan ke WhatsApp",
-                    shareText: "Ayo laporkan temuan K3 di sini:"
-                },
-                'en': {
-                    formTitle: "Safety Observation Form (HSE)",
-                    reporterInfo: "Reporter Information",
-                    observerNameLabel: "Observer Name:",
-                    observerCompanyLabel: "Company:",
-                    observerPositionLabel: "Position:",
-                    contactAdmin: "Contact admin to make changes.",
-                    obsLocationLabel: "Observation Location:",
-                    obsLocationPlaceholder: "Example: Workshop Area, Warehouse B",
-                    observationDetails: "Observation Details",
-                    obsDateLabel: "Observation Date:",
-                    categoriesLabel: "Observation Categories:",
-                    hraTitle: "HRA (High-Risk Activity)",
-                    nonHraTitle: "Non HRA/Other",
-                    catHeights: "Working from Heights",
-                    catLifting: "Lifting Operations",
-                    catMobile: "Mobile Equipment",
-                    catGround: "Ground Disturbance",
-                    catDriving: "Driving & Off-Road Vehicles",
-                    catMaterial: "Material Handling",
-                    catEnergy: "Energy Isolation",
-                    catConfined: "Confined Spaces",
-                    catElectrical: "Electrical",
-                    catNoise: "Noise",
-                    catThermal: "Thermal Stress",
-                    catHazardous: "Hazardous Materials",
-                    catAnimals: "Animals and Insects",
-                    catBarricades: "Barricades",
-                    catBiological: "Biological",
-                    catDocumentation: "Documentation",
-                    catEmergency: "Emergency Preparedness",
-                    catEnvironmental: "Environmental",
-                    catErgonomic: "Ergonomic",
-                    catFatigue: "Fatigue",
-                    catFire: "Fire Protection",
-                    catTools: "Hand or Power Tools",
-                    catHousekeeping: "Housekeeping",
-                    catLasers: "Lasers",
-                    catLighting: "Lighting",
-                    catLof: "Line of Fire",
-                    catLogistics: "Logistics",
-                    catManualLifting: "Manual Lifting",
-                    catOffice: "Office Tools and Equipment",
-                    catOtherNew: "Other",
-                    catPpe: "Personal Protective Equipment",
-                    catCulture: "Safety Culture",
-                    catSanitation: "Sanitation",
-                    catAccess: "Site Access and Control",
-                    catTraining: "Training",
-                    catVentilation: "Ventilation",
-                    catSurfaces: "Walking, Working Surfaces",
-                    catWelding: "Welding, Cutting and Grinding",
-                    obsTypeLabel: "Observation Type:",
-                    safeActAndCondition: "Safe Act and Condition",
-                    unsafeActAndCondition: "Unsafe Act and Condition",
-                    descriptionLabel: "Observation Description:",
-                    descriptionPlaceholder: "Describe what you observed...",
-                    immediateActionAndRecommendationLabel: "Immediate Action taken and Recommendations/ Improvement Suggestions:",
-                    immediateActionPlaceholder: "Example: Reprimanding workers, stopping work, cleaning spills...",
-                    uploadPhotoLabel: "Upload Photo (Optional):",
-                    submitButton: "Submit Report",
-                    submittingButton: "Submitting...",
-                    successMessage: "<strong>Report successfully submitted!</strong> Thank you for your observation.",
-                    errorMessage: "<strong>An error occurred while submitting the report.</strong> Please try again.",
-                    errorFutureDate: "Observation date cannot be in the future.",
-                    shareButton: "Share to WhatsApp",
-                    shareText: "Let's report HSE findings here:"
-                }
-            };
-
-            let currentLang = 'en'; 
-
-            function applyTranslation(lang) {
-                document.querySelectorAll('[data-key]').forEach(element => {
-                    const key = element.getAttribute('data-key');
-                    if (translations[lang][key]) {
-                        element.textContent = translations[lang][key];
-                    }
-                });
-                document.querySelectorAll('[data-placeholder-key]').forEach(element => {
-                    const key = element.getAttribute('data-placeholder-key');
-                    if (translations[lang][key]) {
-                        element.placeholder = translations[lang][key];
-                    }
-                });
-                langButtons.forEach(button => {
-                    button.classList.remove('active');
-                    if (button.dataset.lang === lang) {
-                        button.classList.add('active');
-                    }
-                });
-                currentLang = lang;
-            }
-
-            langButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const lang = this.dataset.lang;
-                    applyTranslation(lang);
-                });
-            });
-
-            applyTranslation(currentLang);
-
-            // --- DYNAMIC FORM LOGIC ---
-            const immediateActionGroup = document.getElementById('immediateActionGroup');
-            const obsTypeRadios = document.querySelectorAll('input[name="obsType"]');
-
-            obsTypeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'Unsafe Act and Condition') {
-                        immediateActionGroup.style.display = 'block';
-                    } else {
-                        immediateActionGroup.style.display = 'none';
-                    }
-                });
-            });
-
-
-            function shareViaWhatsApp(data, photoURL) {
-                const phoneNumber = "6281285989142";
-                let message = `*Laporan Observasi Keselamatan Baru*\n\n`;
-                message += `*Nama Observer:* ${data.observerName || 'N/A'}\n`;
-                message += `*Perusahaan:* ${data.observerCompany || 'N/A'}\n`;
-                message += `*Jabatan:* ${data.observerPosition || 'N/A'}\n`;
-                message += `*Lokasi:* ${data.obsLocation || 'N/A'}\n`;
-                message += `*Tanggal:* ${data.obsDate || 'N/A'}\n\n`;
-                message += `*--- Detail Observasi ---*\n`;
-                message += `*Kategori:* ${data.category || 'N/A'}\n`;
-                message += `*Jenis:* ${data.obsType || 'N/A'}\n`;
-                message += `*Deskripsi:*\n${data.description || 'N/A'}\n\n`;
-                message += `*Tindakan & Rekomendasi:*\n${data.immediateAction || 'N/A'}\n\n`;
-
-                if (photoURL) {
-                    message += `*Link Foto:* ${photoURL}\n`;
-                } else {
-                    message += `*Foto:* Tidak ada foto yang dilampirkan.\n`;
-                }
-
-                const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-                window.open(whatsappUrl, '_blank');
-            }
-
-            safetyForm.addEventListener("submit", async function(event) {
-                event.preventDefault();
-                const submitAction = event.submitter ? event.submitter.value : 'submit';
-
-                const obsDateInput = document.getElementById('obsDate');
-                const dateValue = obsDateInput.value;
-                const dateParts = dateValue.split('-'); // YYYY-MM-DD
-                // Create date in local timezone at midnight to avoid timezone issues
-                const selectedDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); 
-                
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (selectedDate > today) {
-                    messageDiv.innerHTML = translations[currentLang].errorFutureDate;
-                    messageDiv.className = "form-message error";
-                    messageDiv.style.display = 'block';
-                    setTimeout(() => {
-                        messageDiv.style.display = 'none';
-                    }, 6000);
-                    return; // Prevent form submission
-                }
-
-                const submitButtons = safetyForm.querySelectorAll('button[type="submit"]');
-                submitButtons.forEach(btn => btn.disabled = true);
-                
-                const originalButton = event.submitter || document.querySelector('.submit-btn');
-                const originalButtonText = originalButton.textContent;
-                originalButton.textContent = translations[currentLang].submittingButton;
-                
-                messageDiv.style.display = 'none';
-
-                try {
-                    // 1. Save reporter info for next time
-                    saveReporterInfo();
-
-                    // 2. Handle File Upload to Cloudinary
-                    const fileInput = document.getElementById('uploadPhoto');
-                    let file = fileInput.files[0];
-                    let photoURL = '';
-
-                    if (file) {
-                        console.log(`Original file size: ${file.size / 1024 / 1024} MB`);
-                        const options = {
-                            maxSizeMB: 0.05,
-                            maxWidthOrHeight: 1920,
-                            useWebWorker: true
-                        }
-                        const compressedFile = await imageCompression(file, options);
-                        console.log(`Compressed file size: ${compressedFile.size / 1024 / 1024} MB`);
-                        file = compressedFile; // Use the compressed file for upload
-
-                        const cloudName = 'dnk3hccmm';
-                        const uploadPreset = 'unsigned_reports';
-                        const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-                        
-                        const formData = new FormData();
-                        formData.append('file', file);
-                        formData.append('upload_preset', uploadPreset);
-                        formData.append('folder', 'observationform');
-
-                        const response = await fetch(cloudinaryUrl, {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        if (!response.ok) {
-                            throw new Error('Cloudinary upload failed');
-                        }
-
-                        const cloudinaryData = await response.json();
-                        photoURL = cloudinaryData.secure_url;
-                    }
-
-                    // 3. Prepare data for Firestore
-                    const formElementData = new FormData(safetyForm);
-                    const dataToSave = {};
-                    formElementData.forEach((value, key) => {
-                        if (key !== 'uploadPhoto' && key !== 'submitAction') {
-                            dataToSave[key] = value;
-                        }
-                    });
-                    
-                    // Add the static reporter info to the data to be saved
-                    dataToSave.observerName = document.getElementById('observerNameText').textContent;
-                    dataToSave.observerCompany = document.getElementById('observerCompanyText').textContent;
-                    dataToSave.observerPosition = document.getElementById('observerPositionText').textContent;
-
-                    dataToSave.photoURL = photoURL;
-                    dataToSave.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
-                    dataToSave.submittedBy = loggedInUser.email;
-
-                    // 4. Save to Firestore
-                    await db.collection("observations").add(dataToSave);
-
-                    // 5. Handle WhatsApp sharing if needed
-                    if (submitAction === 'whatsapp') {
-                        shareViaWhatsApp(dataToSave, photoURL);
-                    }
-
-                    // 6. Success Feedback
-                    messageDiv.innerHTML = translations[currentLang].successMessage;
-                    messageDiv.className = "form-message success";
-                    safetyForm.reset();
-                    loadReporterInfo(); 
-                    window.scrollTo(0, 0);
-
-                } catch (error) {
-                    // 7. Error Feedback
-                    console.error("Error submitting report: ", error);
-                    messageDiv.innerHTML = translations[currentLang].errorMessage;
-                    messageDiv.className = "form-message error";
-                } finally {
-                    // 8. Reset button state
-                    submitButtons.forEach(btn => btn.disabled = false);
-                    originalButton.textContent = originalButtonText;
-                    setTimeout(() => {
-                        messageDiv.style.display = 'none';
-                    }, 6000);
-                }
-            });
-            
-
-        });
-    </script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<!-- === SEO dan Media Sosial === -->
+		<title>Form Observasi Keselamatan (K3) | Safety Observation Form</title>
+		<meta
+			name="description"
+			content="Laporkan temuan keselamatan (K3), baik perilaku aman/tidak aman maupun kondisi aman/tidak aman, melalui formulir observasi digital ini."
+		/>
+		<meta
+			name="keywords"
+			content="K3, HSE, Form Keselamatan, Safety Observation, Lapor K3, Form Observasi K3"
+		/>
+
+		<!-- Open Graph (untuk Facebook, LinkedIn, dll.) -->
+		<meta property="og:title" content="Form Observasi Keselamatan (K3)" />
+		<meta
+			property="og:description"
+			content="Laporkan temuan K3 dengan mudah menggunakan formulir observasi online ini."
+		/>
+		<meta property="og:type" content="website" />
+		<meta
+			property="og:image"
+			content="https://mokhamadabrar.github.io/img/observation20.webp"
+		/>
+		<meta property="og:url" content="https://mokhamadabrar.github.io/" />
+		<!-- Ganti dengan URL Anda nanti -->
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Form Observasi Keselamatan (K3)" />
+		<meta
+			name="twitter:description"
+			content="Laporkan temuan K3 dengan mudah menggunakan formulir observasi online ini."
+		/>
+		<meta
+			name="twitter:image"
+			content="https://mokhamadabrar.github.io/img/observation20.webp"
+		/>
+		<!-- === AKHIR SEO === -->
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+		/>
+
+		<!-- EmailJS SDK -->
+		<script
+			type="text/javascript"
+			src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"
+		></script>
+		<script type="text/javascript">
+			(function () {
+				emailjs.init("pOS8CxS4h5ruwVoYh"); // Ganti dengan Public Key EmailJS Anda
+			})();
+		</script>
+
+		<style>
+			body {
+				font-family:
+					"Inter",
+					-apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					Roboto,
+					Helvetica,
+					Arial,
+					sans-serif;
+				background-color: #f4f7f6;
+				background-image: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+				margin: 0;
+				padding: 20px;
+				color: #333;
+				min-height: 100vh;
+			}
+
+			#logout-btn {
+				position: absolute;
+				top: 15px;
+				right: 15px;
+				background-color: rgba(244, 67, 54, 0.8);
+				color: white;
+				border: none;
+				padding: 8px 12px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: bold;
+				backdrop-filter: blur(3px);
+				transition: background-color 0.3s ease;
+			}
+
+			#logout-btn:hover {
+				background-color: #d32f2f;
+			}
+
+			.container {
+				max-width: 800px;
+				margin: 20px auto;
+			}
+
+			.header-banner {
+				height: 180px;
+				background-image: url("https://mokhamadabrar.github.io/img/construction.webp");
+				background-size: cover;
+				background-position: center center;
+				position: relative;
+			}
+
+			.header-logo {
+				position: absolute;
+				bottom: 10px;
+				left: 15px;
+				height: 50px;
+				width: auto;
+				max-width: 100px;
+				object-fit: contain;
+				background-color: rgba(255, 255, 255, 0.7);
+				padding: 5px;
+				border-radius: 8px;
+				backdrop-filter: blur(3px);
+			}
+
+			.language-buttons {
+				position: absolute;
+				bottom: 15px;
+				right: 15px;
+				display: flex;
+				gap: 10px;
+				background-color: rgba(255, 255, 255, 0.7);
+				padding: 5px 10px;
+				border-radius: 8px;
+				backdrop-filter: blur(3px);
+			}
+
+			.language-button {
+				cursor: pointer;
+				width: 30px;
+				height: 30px;
+				border-radius: 50%;
+				overflow: hidden;
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+				transition:
+					transform 0.2s ease,
+					box-shadow 0.2s ease;
+				border: 2px solid transparent;
+			}
+
+			.language-button:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+			}
+
+			.language-button.active {
+				border: 2px solid #007bff;
+			}
+
+			.language-button img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+
+			h1 {
+				text-align: center;
+				color: #2c3e50;
+				margin-bottom: 25px;
+				font-size: 24px;
+				font-weight: 700;
+			}
+
+			fieldset {
+				border: none;
+				padding: 0;
+				margin: 0;
+			}
+
+			legend {
+				font-weight: 600;
+				color: #007bff;
+				padding: 0 10px;
+				font-size: 18px;
+				border-bottom: 2px solid #007bff;
+				padding-bottom: 5px;
+				margin-left: -10px;
+			}
+
+			.form-group {
+				margin-bottom: 15px;
+			}
+
+			label {
+				display: block;
+				font-weight: 600;
+				margin-bottom: 6px;
+				font-size: 14px;
+			}
+
+			input[type="text"],
+			input[type="date"],
+			textarea,
+			input[type="file"],
+			input[type="email"] {
+				width: 100%;
+				padding: 10px 12px;
+				border: 1px solid #dfe6e9;
+				border-radius: 6px;
+				box-sizing: border-box;
+				font-size: 15px;
+				background-color: #fdfdfd;
+				transition:
+					border-color 0.3s ease,
+					box-shadow 0.3s ease;
+			}
+
+			input[type="text"]:focus,
+			input[type="date"]:focus,
+			textarea:focus,
+			input[type="email"]:focus {
+				border-color: #007bff;
+				box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+				outline: none;
+			}
+
+			input[type="file"] {
+				padding: 5px;
+				background-color: #f4f7f6;
+			}
+
+			textarea {
+				resize: vertical;
+				min-height: 80px;
+			}
+
+			.radio-group div {
+				margin-bottom: 8px;
+				display: flex;
+				align-items: center;
+			}
+
+			.radio-group label {
+				font-weight: normal;
+				margin-bottom: 0;
+				margin-left: 8px;
+				font-size: 15px;
+			}
+
+			input[type="radio"] {
+				transform: scale(1.1);
+				margin-right: 5px;
+			}
+
+			.radio-group-grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 8px;
+				background-color: #ffffff;
+				padding: 15px;
+				border-radius: 6px;
+				border: 1px solid #dfe6e9;
+			}
+
+			.radio-group-grid div {
+				display: flex;
+				align-items: center;
+			}
+
+			.radio-group-grid label {
+				font-weight: normal;
+				margin-bottom: 0;
+				margin-left: 8px;
+				font-size: 14px;
+			}
+
+			.category-subtitle {
+				font-weight: bold;
+				margin-top: 15px;
+				margin-bottom: 10px;
+				color: #34495e;
+				font-size: 13px;
+			}
+
+			@media (max-width: 600px) {
+				.radio-group-grid {
+					grid-template-columns: 1fr;
+				}
+				body {
+					padding: 10px;
+				}
+			}
+
+			.submit-btn {
+				display: block;
+				width: 100%;
+				padding: 12px 15px;
+				background-image: linear-gradient(to right, #007bff, #0056b3);
+				background-color: #007bff;
+				color: white;
+				border: none;
+				border-radius: 6px;
+				font-size: 16px;
+				font-weight: bold;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+			}
+
+			.submit-btn:hover {
+				background-image: linear-gradient(to right, #0056b3, #007bff);
+				transform: translateY(-2px);
+				box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+			}
+
+			.whatsapp-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				width: 100%;
+				padding: 12px 15px;
+				margin-top: 15px;
+				background-image: linear-gradient(to right, #25d366, #128c7e);
+				background-color: #25d366;
+				color: white;
+				border: none;
+				border-radius: 6px;
+				font-size: 16px;
+				font-weight: bold;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+			}
+
+			.whatsapp-btn:hover {
+				background-image: linear-gradient(to right, #128c7e, #25d366);
+				transform: translateY(-2px);
+				box-shadow: 0 6px 12px rgba(37, 211, 102, 0.4);
+			}
+
+			.whatsapp-btn .fa {
+				font-size: 20px;
+			}
+
+			#formMessage {
+				text-align: center;
+				font-weight: bold;
+				padding: 10px;
+				border-radius: 5px;
+				margin-bottom: 15px;
+				display: none;
+			}
+
+			#formMessage.success {
+				background-color: #d4edda;
+				color: #155724;
+				border: 1px solid #c3e6cb;
+				display: block;
+			}
+
+			#formMessage.error {
+				background-color: #f8d7da;
+				color: #721c24;
+				border: 1px solid #f5c6cb;
+				display: block;
+			}
+
+			.form-card {
+				background-color: #ffffff;
+				border-radius: 12px;
+				padding: 25px;
+				margin-bottom: 15px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+			}
+
+			.card-title {
+				font-weight: 600;
+				color: #007bff;
+				font-size: 18px;
+				border-bottom: 2px solid #007bff;
+				padding-bottom: 5px;
+				margin-bottom: 20px;
+				margin-top: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			const loggedInUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+			if (!loggedInUser) {
+				window.location.href = "login.html";
+			}
+		</script>
+
+		<div class="container">
+			<form id="safetyForm">
+				<div class="form-card">
+					<div
+						class="header-banner"
+						style="margin: -25px -25px 25px -25px; border-radius: 12px 12px 0 0"
+					>
+						<img
+							src="https://res.cloudinary.com/dnk3hccmm/image/upload/v1763541373/lgo1_aipv7n.png"
+							alt="Company Logo"
+							class="header-logo"
+						/>
+						<button id="logout-btn">Logout</button>
+						<button
+							id="admin-dashboard-btn"
+							style="
+								display: none;
+								position: absolute;
+								top: 15px;
+								right: 100px;
+								background-color: rgba(52, 152, 219, 0.8);
+								color: white;
+								border: none;
+								padding: 8px 12px;
+								border-radius: 6px;
+								cursor: pointer;
+								font-size: 14px;
+								font-weight: bold;
+								backdrop-filter: blur(3px);
+								transition: background-color 0.3s ease;
+							"
+						>
+							Go to Admin Dashboard
+						</button>
+						<div class="language-buttons">
+							<div class="language-button" id="lang-id" data-lang="id">
+								<img
+									src="https://mokhamadabrar.github.io/img/ID.svg"
+									alt="Bahasa Indonesia"
+								/>
+							</div>
+							<div class="language-button active" id="lang-en" data-lang="en">
+								<img
+									src="https://mokhamadabrar.github.io/img/EN.svg"
+									alt="English"
+								/>
+							</div>
+						</div>
+					</div>
+					<h1 data-key="formTitle">Form Observasi Keselamatan (K3)</h1>
+					<div id="formMessage"></div>
+					<h2 class="card-title" data-key="reporterInfo">Informasi Pelapor</h2>
+					<div class="form-group">
+						<p style="margin: 0">
+							<strong
+								><span data-key="observerNameLabel"
+									>Nama Observer:</span
+								></strong
+							>
+							<span id="observerNameText">N/A</span>
+						</p>
+					</div>
+					<div class="form-group">
+						<p style="margin: 0">
+							<strong
+								><span data-key="observerCompanyLabel"
+									>Perusahaan:</span
+								></strong
+							>
+							<span id="observerCompanyText">N/A</span>
+						</p>
+					</div>
+					<div class="form-group">
+						<p style="margin: 0">
+							<strong
+								><span data-key="observerPositionLabel">Jabatan:</span></strong
+							>
+							<span id="observerPositionText">N/A</span>
+						</p>
+					</div>
+					<p style="margin-top: 10px">
+						<small data-key="contactAdmin"
+							>Hubungi admin untuk melakukan perubahan.</small
+						>
+					</p>
+					<div class="form-group" style="margin-bottom: 0">
+						<label for="obsDate" data-key="obsDateLabel"
+							>Tanggal Observasi:</label
+						>
+						<input type="date" id="obsDate" name="obsDate" required />
+					</div>
+				</div>
+
+				<div class="form-card">
+					<h2 class="card-title" data-key="observationDetails">
+						Observation Details
+					</h2>
+					<div class="form-group" style="margin-bottom: 0">
+						<label for="obsLocation" data-key="obsLocationLabel"
+							>Lokasi Observasi:</label
+						>
+						<input
+							type="text"
+							id="obsLocation"
+							name="obsLocation"
+							data-placeholder-key="obsLocationPlaceholder"
+							placeholder="Contoh: Area Workshop, Gudang B"
+							required
+						/>
+					</div>
+				</div>
+
+				<div class="form-card">
+					<div class="form-group" style="margin-bottom: 0">
+						<label data-key="categoriesLabel">Kategori Observasi:</label>
+						<div class="category-subtitle" data-key="hraTitle">HRA</div>
+						<div class="radio-group-grid">
+							<div>
+								<input
+									type="radio"
+									id="cat-heights"
+									name="category"
+									value="Working from Heights"
+									required
+								/><label for="cat-heights" data-key="catHeights"
+									>Working from Heights</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-lifting"
+									name="category"
+									value="Lifting Operations"
+								/><label for="cat-lifting" data-key="catLifting"
+									>Lifting Operations</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-mobile"
+									name="category"
+									value="Mobile Equipment"
+								/><label for="cat-mobile" data-key="catMobile"
+									>Mobile Equipment</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-ground"
+									name="category"
+									value="Ground Disturbance"
+								/><label for="cat-ground" data-key="catGround"
+									>Ground Disturbance</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-driving"
+									name="category"
+									value="Driving & Off-Road Vehicles"
+								/><label for="cat-driving" data-key="catDriving"
+									>Driving & Off-Road Vehicles</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-material"
+									name="category"
+									value="Material Handling"
+								/><label for="cat-material" data-key="catMaterial"
+									>Material Handling</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-energy"
+									name="category"
+									value="Energy Isolation"
+								/><label for="cat-energy" data-key="catEnergy"
+									>Energy Isolation</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-confined"
+									name="category"
+									value="Confined Spaces"
+								/><label for="cat-confined" data-key="catConfined"
+									>Confined Spaces</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-electrical"
+									name="category"
+									value="Electrical"
+								/><label for="cat-electrical" data-key="catElectrical"
+									>Electrical</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-noise"
+									name="category"
+									value="Noise"
+								/><label for="cat-noise" data-key="catNoise">Noise</label>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-thermal"
+									name="category"
+									value="Thermal Stress"
+								/><label for="cat-thermal" data-key="catThermal"
+									>Thermal Stress</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-hazardous"
+									name="category"
+									value="Hazardous Materials"
+								/><label for="cat-hazardous" data-key="catHazardous"
+									>Hazardous Materials</label
+								>
+							</div>
+						</div>
+						<div class="category-subtitle" data-key="nonHraTitle">
+							Non HRA/Other
+						</div>
+						<div class="radio-group-grid">
+							<div>
+								<input
+									type="radio"
+									id="cat-animals"
+									name="category"
+									value="Animals and Insects"
+								/><label for="cat-animals" data-key="catAnimals"
+									>Animals and Insects</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-barricades"
+									name="category"
+									value="Barricades"
+								/><label for="cat-barricades" data-key="catBarricades"
+									>Barricades</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-biological"
+									name="category"
+									value="Biological"
+								/><label for="cat-biological" data-key="catBiological"
+									>Biological</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-documentation"
+									name="category"
+									value="Documentation"
+								/><label for="cat-documentation" data-key="catDocumentation"
+									>Documentation</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-emergency"
+									name="category"
+									value="Emergency Preparedness"
+								/><label for="cat-emergency" data-key="catEmergency"
+									>Emergency Preparedness</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-environmental"
+									name="category"
+									value="Environmental"
+								/><label for="cat-environmental" data-key="catEnvironmental"
+									>Environmental</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-ergonomic"
+									name="category"
+									value="Ergonomic"
+								/><label for="cat-ergonomic" data-key="catErgonomic"
+									>Ergonomic</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-fatigue"
+									name="category"
+									value="Fatigue"
+								/><label for="cat-fatigue" data-key="catFatigue">Fatigue</label>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-fire"
+									name="category"
+									value="Fire Protection"
+								/><label for="cat-fire" data-key="catFire"
+									>Fire Protection</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-tools"
+									name="category"
+									value="Hand or Power Tools"
+								/><label for="cat-tools" data-key="catTools"
+									>Hand or Power Tools</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-housekeeping"
+									name="category"
+									value="Housekeeping"
+								/><label for="cat-housekeeping" data-key="catHousekeeping"
+									>Housekeeping</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-lasers"
+									name="category"
+									value="Lasers"
+								/><label for="cat-lasers" data-key="catLasers">Lasers</label>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-lighting"
+									name="category"
+									value="Lighting"
+								/><label for="cat-lighting" data-key="catLighting"
+									>Lighting</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-lof"
+									name="category"
+									value="Line of Fire"
+								/><label for="cat-lof" data-key="catLof">Line of Fire</label>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-logistics"
+									name="category"
+									value="Logistics"
+								/><label for="cat-logistics" data-key="catLogistics"
+									>Logistics</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-lifting-manual"
+									name="category"
+									value="Manual Lifting"
+								/><label for="cat-lifting-manual" data-key="catManualLifting"
+									>Manual Lifting</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-office"
+									name="category"
+									value="Office Tools and Equipment"
+								/><label for="cat-office" data-key="catOffice"
+									>Office Tools and Equipment</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-other-new"
+									name="category"
+									value="Other"
+								/><label for="cat-other-new" data-key="catOtherNew"
+									>Other</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-ppe"
+									name="category"
+									value="Personal Protective Equipment"
+								/><label for="cat-ppe" data-key="catPpe"
+									>Personal Protective Equipment</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-culture"
+									name="category"
+									value="Safety Culture"
+								/><label for="cat-culture" data-key="catCulture"
+									>Safety Culture</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-sanitation"
+									name="category"
+									value="Sanitation"
+								/><label for="cat-sanitation" data-key="catSanitation"
+									>Sanitation</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-access"
+									name="category"
+									value="Site Access and Control"
+								/><label for="cat-access" data-key="catAccess"
+									>Site Access and Control</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-training"
+									name="category"
+									value="Training"
+								/><label for="cat-training" data-key="catTraining"
+									>Training</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-ventilation"
+									name="category"
+									value="Ventilation"
+								/><label for="cat-ventilation" data-key="catVentilation"
+									>Ventilation</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-surfaces"
+									name="category"
+									value="Walking, Working Surfaces"
+								/><label for="cat-surfaces" data-key="catSurfaces"
+									>Walking, Working Surfaces</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="cat-welding"
+									name="category"
+									value="Welding, Cutting and Grinding"
+								/><label for="cat-welding" data-key="catWelding"
+									>Welding, Cutting and Grinding</label
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-card">
+					<div class="form-group" style="margin-bottom: 0">
+						<label data-key="obsTypeLabel">Jenis Observasi:</label>
+						<div class="radio-group">
+							<div>
+								<input
+									type="radio"
+									id="safeActAndCondition"
+									name="obsType"
+									value="Safe Act and Condition"
+									required
+								/>
+								<label for="safeActAndCondition" data-key="safeActAndCondition"
+									>Safe Act and Condition</label
+								>
+							</div>
+							<div>
+								<input
+									type="radio"
+									id="unsafeActAndCondition"
+									name="obsType"
+									value="Unsafe Act and Condition"
+								/>
+								<label
+									for="unsafeActAndCondition"
+									data-key="unsafeActAndCondition"
+									>Unsafe Act and Condition</label
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				                <div class="form-card">
+				                    <div class="form-group" style="position: relative;">
+				                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+				                            <label for="description" data-key="descriptionLabel" style="margin-bottom: 0;">Deskripsi Observasi:</label>
+				                            <button type="button" class="translate-btn" data-target="description" style="background: none; border: none; color: #007bff; cursor: pointer; font-size: 12px; font-weight: bold;">
+				                                <i class="fa fa-language"></i> Translate to English
+				                            </button>
+				                        </div>
+				                        <textarea
+				                            id="description"
+				                            name="description"
+				                            rows="5"
+				                            data-placeholder-key="descriptionPlaceholder"
+				                            placeholder="Jelaskan apa yang Anda lihat..."
+				                            required
+				                        ></textarea>
+				                    </div>
+				                    <div id="immediateActionGroup" style="display: none">
+				                        <div class="form-group" style="position: relative;">
+				                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+				                                <label for="immediateAction" data-key="immediateActionAndRecommendationLabel" style="margin-bottom: 0;">Immediate Action taken and Recommendations/ Improvement Suggestions:</label>
+				                                <button type="button" class="translate-btn" data-target="immediateAction" style="background: none; border: none; color: #007bff; cursor: pointer; font-size: 12px; font-weight: bold;">
+				                                    <i class="fa fa-language"></i> Translate to English
+				                                </button>
+				                            </div>
+				                            <textarea
+				                                id="immediateAction"
+				                                name="immediateAction"
+				                                rows="3"
+				                                data-placeholder-key="immediateActionPlaceholder"
+				                                placeholder="Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan..."
+				                            ></textarea>
+				                        </div>						<div class="form-group" style="margin-bottom: 0">
+							<label for="unsafeEmail" data-key="unsafeEmailLabel"
+								>Email Address:</label
+							>
+							<input
+								type="email"
+								id="unsafeEmail"
+								name="unsafeEmail"
+								data-placeholder-key="unsafeEmailPlaceholder"
+								placeholder="Enter email address..."
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-card">
+					<div class="form-group" style="margin-bottom: 0">
+						<label for="uploadPhoto" data-key="uploadPhotoLabel"
+							>Unggah Foto (Opsional):</label
+						>
+						<input
+							type="file"
+							id="uploadPhoto"
+							name="uploadPhoto"
+							accept="image/*"
+						/>
+					</div>
+				</div>
+
+				<button
+					type="submit"
+					class="submit-btn"
+					data-key="submitButton"
+					name="submitAction"
+					value="submit"
+				>
+					Kirim Laporan
+				</button>
+
+				<button
+					type="submit"
+					id="whatsapp-share-btn"
+					class="whatsapp-btn"
+					name="submitAction"
+					value="whatsapp"
+				>
+					<i class="fa fa-whatsapp" style="color: white"></i>
+					<span data-key="shareButton">Bagikan ke WhatsApp</span>
+				</button>
+			</form>
+		</div>
+
+		<!-- Firebase Scripts -->
+		<!-- These scripts are now served by Firebase Hosting -->
+		<script src="/__/firebase/8.6.1/firebase-app.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+		<script src="/__/firebase/init.js"></script>
+
+		<!-- Other scripts -->
+		<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+		<script src="js/firebase-init.js"></script>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				// --- AUTO-FILL & USER SESSION ---
+				const loggedInUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+				if (!loggedInUser) {
+					window.location.href = "login.html";
+				}
+
+				document
+					.getElementById("logout-btn")
+					.addEventListener("click", function () {
+						sessionStorage.removeItem("loggedInUser");
+						sessionStorage.removeItem("adminUser"); // Clear admin session as well
+						window.location.href = "login.html";
+					});
+
+				// Admin Dashboard Button Logic
+				const adminDashboardBtn = document.getElementById(
+					"admin-dashboard-btn",
+				);
+				const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
+				if (adminUser) {
+					adminDashboardBtn.style.display = "block"; // Show the button
+					adminDashboardBtn.addEventListener("click", function () {
+						window.location.href = "dashboard.html";
+					});
+				}
+
+				async function loadReporterInfo() {
+					const nameSpan = document.getElementById("observerNameText");
+					const companySpan = document.getElementById("observerCompanyText");
+					const positionSpan = document.getElementById("observerPositionText");
+					const locationInput = document.getElementById("obsLocation");
+
+					let name = "N/A";
+					let company = "N/A";
+					let position = "N/A";
+
+					// Try to get data from Firestore first
+					try {
+						const userDoc = await db
+							.collection("users")
+							.doc(loggedInUser.uid)
+							.get();
+						if (userDoc.exists) {
+							const userData = userDoc.data();
+							name = userData.displayName || loggedInUser.displayName || "N/A";
+							company = userData.company || "N/A";
+							position = userData.position || "N/A";
+						} else {
+							name = loggedInUser.displayName || "N/A";
+						}
+					} catch (error) {
+						console.error("Error fetching user data from Firestore:", error);
+						name = loggedInUser.displayName || "N/A";
+					}
+
+					// Load location from localStorage
+					const location = localStorage.getItem(
+						`${loggedInUser.uid}_reporterLocation`,
+					);
+
+					nameSpan.textContent = name;
+					companySpan.textContent = company;
+					positionSpan.textContent = position;
+					if (location) locationInput.value = location;
+
+					// Set today's date
+					const today = new Date();
+					const yyyy = today.getFullYear();
+					const mm = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+					const dd = String(today.getDate()).padStart(2, "0");
+					const todayFormatted = `${yyyy}-${mm}-${dd}`;
+					document.getElementById("obsDate").value = todayFormatted;
+					document
+						.getElementById("obsDate")
+						.setAttribute("max", todayFormatted);
+				}
+
+				function saveReporterInfo() {
+					localStorage.setItem(
+						`${loggedInUser.uid}_reporterLocation`,
+						document.getElementById("obsLocation").value,
+					);
+				}
+
+				loadReporterInfo();
+
+				// --- FORM & TRANSLATION SETUP ---
+				const safetyForm = document.getElementById("safetyForm");
+				const messageDiv = document.getElementById("formMessage");
+				const langButtons = document.querySelectorAll(".language-button");
+
+				const translations = {
+					id: {
+						formTitle: "Form Observasi Keselamatan (K3)",
+						reporterInfo: "Informasi Pelapor",
+						observerNameLabel: "Nama Observer:",
+						observerCompanyLabel: "Perusahaan:",
+						observerPositionLabel: "Jabatan:",
+						contactAdmin: "Hubungi admin untuk melakukan perubahan.",
+						obsLocationLabel: "Lokasi Observasi:",
+						obsLocationPlaceholder: "Contoh: Area Workshop, Gudang B",
+						observationDetails: "Detail Observasi",
+						obsDateLabel: "Tanggal Observasi:",
+						categoriesLabel: "Kategori Observasi:",
+						hraTitle: "HRA (High-Risk Activity)",
+						nonHraTitle: "Non HRA/Lainnya",
+						catHeights: "Bekerja di Ketinggian",
+						catLifting: "Operasi Pengangkatan",
+						catMobile: "Peralatan Bergerak",
+						catGround: "Gangguan Tanah",
+						catDriving: "Mengemudi & Kendaraan Off-Road",
+						catMaterial: "Penanganan Material",
+						catEnergy: "Isolasi Energi",
+						catConfined: "Ruang Terbatas",
+						catElectrical: "Listrik",
+						catNoise: "Kebisingan",
+						catThermal: "Stres Termal",
+						catHazardous: "Bahan Berbahaya",
+						catAnimals: "Hewan dan Serangga",
+						catBarricades: "Barikade",
+						catBiological: "Biologis",
+						catDocumentation: "Dokumentasi",
+						catEmergency: "Kesiapan Darurat",
+						catEnvironmental: "Lingkungan",
+						catErgonomic: "Ergonomis",
+						catFatigue: "Kelelahan",
+						catFire: "Proteksi Kebakaran",
+						catTools: "Peralatan Tangan atau Listrik",
+						catHousekeeping: "Tata Graha",
+						catLasers: "Laser",
+						catLighting: "Pencahayaan",
+						catLof: "Line of Fire",
+						catLogistics: "Logistik",
+						catManualLifting: "Pengangkatan Manual",
+						catOffice: "Peralatan Kantor",
+						catOtherNew: "Lainnya",
+						catPpe: "Alat Pelindung Diri (APD)",
+						catCulture: "Budaya Keselamatan",
+						catSanitation: "Sanitasi",
+						catAccess: "Akses dan Kontrol Situs",
+						catTraining: "Pelatihan",
+						catVentilation: "Ventilasi",
+						catSurfaces: "Permukaan Jalan/Kerja",
+						catWelding: "Pengelasan, Pemotongan, dan Gerinda",
+						obsTypeLabel: "Jenis Observasi:",
+						safeActAndCondition: "Tindakan dan Kondisi Aman",
+						unsafeActAndCondition: "Tindakan dan Kondisi Tidak Aman",
+						descriptionLabel: "Deskripsi Observasi:",
+						descriptionPlaceholder: "Jelaskan apa yang Anda lihat...",
+						immediateActionAndRecommendationLabel:
+							"Tindakan Segera yang Diambil dan Rekomendasi/Saran Perbaikan:",
+						immediateActionPlaceholder:
+							"Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan...",
+						unsafeEmailLabel: "Alamat Email (Untuk Tindak Lanjut):",
+						unsafeEmailPlaceholder: "Contoh: nama@perusahaan.com",
+						uploadPhotoLabel: "Unggah Foto (Opsional):",
+						submitButton: "Kirim Laporan",
+						submittingButton: "Mengirim...",
+						successMessage:
+							"<strong>Laporan berhasil dikirim!</strong> Terima kasih atas observasi Anda.",
+						errorMessage:
+							"<strong>Terjadi kesalahan saat mengirim laporan.</strong> Mohon coba lagi.",
+						errorFutureDate: "Tanggal observasi tidak boleh di masa depan.",
+						errorInvalidEmail: "Format email tidak valid.",
+						shareButton: "Bagikan ke WhatsApp",
+						shareText: "Ayo laporkan temuan K3 di sini:",
+					},
+					en: {
+						formTitle: "Safety Observation Form (HSE)",
+						reporterInfo: "Reporter Information",
+						observerNameLabel: "Observer Name:",
+						observerCompanyLabel: "Company:",
+						observerPositionLabel: "Position:",
+						contactAdmin: "Contact admin to make changes.",
+						obsLocationLabel: "Observation Location:",
+						obsLocationPlaceholder: "Example: Workshop Area, Warehouse B",
+						observationDetails: "Observation Details",
+						obsDateLabel: "Observation Date:",
+						categoriesLabel: "Observation Categories:",
+						hraTitle: "HRA (High-Risk Activity)",
+						nonHraTitle: "Non HRA/Other",
+						catHeights: "Working from Heights",
+						catLifting: "Lifting Operations",
+						catMobile: "Mobile Equipment",
+						catGround: "Ground Disturbance",
+						catDriving: "Driving & Off-Road Vehicles",
+						catMaterial: "Material Handling",
+						catEnergy: "Energy Isolation",
+						catConfined: "Confined Spaces",
+						catElectrical: "Electrical",
+						catNoise: "Noise",
+						catThermal: "Thermal Stress",
+						catHazardous: "Hazardous Materials",
+						catAnimals: "Animals and Insects",
+						catBarricades: "Barricades",
+						catBiological: "Biological",
+						catDocumentation: "Documentation",
+						catEmergency: "Emergency Preparedness",
+						catEnvironmental: "Environmental",
+						catErgonomic: "Ergonomic",
+						catFatigue: "Fatigue",
+						catFire: "Fire Protection",
+						catTools: "Hand or Power Tools",
+						catHousekeeping: "Housekeeping",
+						catLasers: "Lasers",
+						catLighting: "Lighting",
+						catLof: "Line of Fire",
+						catLogistics: "Logistics",
+						catManualLifting: "Manual Lifting",
+						catOffice: "Office Tools and Equipment",
+						catOtherNew: "Other",
+						catPpe: "Personal Protective Equipment",
+						catCulture: "Safety Culture",
+						catSanitation: "Sanitation",
+						catAccess: "Site Access and Control",
+						catTraining: "Training",
+						catVentilation: "Ventilation",
+						catSurfaces: "Walking, Working Surfaces",
+						catWelding: "Welding, Cutting and Grinding",
+						obsTypeLabel: "Observation Type:",
+						safeActAndCondition: "Safe Act and Condition",
+						unsafeActAndCondition: "Unsafe Act and Condition",
+						descriptionLabel: "Observation Description:",
+						descriptionPlaceholder: "Describe what you observed...",
+						immediateActionAndRecommendationLabel:
+							"Immediate Action taken and Recommendations/ Improvement Suggestions:",
+						immediateActionPlaceholder:
+							"Example: Reprimanding workers, stopping work, cleaning spills...",
+						unsafeEmailLabel: "Email Address (For Follow Up):",
+						unsafeEmailPlaceholder: "Example: name@company.com",
+						uploadPhotoLabel: "Upload Photo (Optional):",
+						submitButton: "Submit Report",
+						submittingButton: "Submitting...",
+						successMessage:
+							"<strong>Report successfully submitted!</strong> Thank you for your observation.",
+						errorMessage:
+							"<strong>An error occurred while submitting the report.</strong> Please try again.",
+						errorFutureDate: "Observation date cannot be in the future.",
+						errorInvalidEmail: "Invalid email format.",
+						shareButton: "Share to WhatsApp",
+						shareText: "Let's report HSE findings here:",
+					},
+				};
+
+				let currentLang = "en";
+
+				function applyTranslation(lang) {
+					document.querySelectorAll("[data-key]").forEach((element) => {
+						const key = element.getAttribute("data-key");
+						if (translations[lang][key]) {
+							element.textContent = translations[lang][key];
+						}
+					});
+					document
+						.querySelectorAll("[data-placeholder-key]")
+						.forEach((element) => {
+							const key = element.getAttribute("data-placeholder-key");
+							if (translations[lang][key]) {
+								element.placeholder = translations[lang][key];
+							}
+						});
+					langButtons.forEach((button) => {
+						button.classList.remove("active");
+						if (button.dataset.lang === lang) {
+							button.classList.add("active");
+						}
+					});
+					currentLang = lang;
+				}
+
+				langButtons.forEach((button) => {
+					button.addEventListener("click", function () {
+						const lang = this.dataset.lang;
+						applyTranslation(lang);
+					});
+				});
+
+				applyTranslation(currentLang);
+
+				// --- DYNAMIC FORM LOGIC ---
+				const immediateActionGroup = document.getElementById(
+					"immediateActionGroup",
+				);
+				const obsTypeRadios = document.querySelectorAll(
+					'input[name="obsType"]',
+				);
+				const immediateActionInput = document.getElementById("immediateAction");
+				const unsafeEmailInput = document.getElementById("unsafeEmail");
+
+				function updateRequiredFields(isUnsafe) {
+					if (isUnsafe) {
+						immediateActionGroup.style.display = "block";
+						immediateActionInput.setAttribute("required", "required");
+						unsafeEmailInput.setAttribute("required", "required");
+					} else {
+						immediateActionGroup.style.display = "none";
+						immediateActionInput.removeAttribute("required");
+						unsafeEmailInput.removeAttribute("required");
+						immediateActionInput.value = ""; // Optional: clear value if hidden
+						unsafeEmailInput.value = ""; // Optional: clear value if hidden
+					}
+				}
+
+				obsTypeRadios.forEach((radio) => {
+					radio.addEventListener("change", function () {
+						updateRequiredFields(this.value === "Unsafe Act and Condition");
+					});
+				});
+
+				            // --- TRANSLATION LOGIC (MyMemory API) ---
+				            async function translateText(text, targetLang = 'en') {
+				                if (!text || text.trim() === '') return null;
+				                // MyMemory API endpoint
+				                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=id|${targetLang}`;
+				                
+				                try {
+				                    const response = await fetch(url);
+				                    const data = await response.json();
+				                    if (data.responseStatus === 200) {
+				                        return data.responseData.translatedText;
+				                    } else {
+				                        console.error("Translation API Error:", data.responseDetails);
+				                        return null;
+				                    }
+				                } catch (error) {
+				                    console.error("Network Error during translation:", error);
+				                    return null;
+				                }
+				            }
+				
+				            document.querySelectorAll('.translate-btn').forEach(btn => {
+				                btn.addEventListener('click', async function() {
+				                    const targetId = this.getAttribute('data-target');
+				                    const textarea = document.getElementById(targetId);
+				                    const originalText = textarea.value;
+				
+				                    if (!originalText) {
+				                        alert("Please enter text to translate first.");
+				                        return;
+				                    }
+				
+				                    // Visual feedback
+				                    const originalBtnText = this.innerHTML;
+				                    this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Translating...';
+				                    this.disabled = true;
+				
+				                    const translatedText = await translateText(originalText, 'en');
+				
+				                    if (translatedText) {
+				                        textarea.value = translatedText;
+				                    } else {
+				                        alert("Translation failed. Please try again or check your connection.");
+				                    }
+				
+				                    // Restore button state
+				                    this.innerHTML = originalBtnText;
+				                    this.disabled = false;
+				                });
+				            });
+				
+				
+				            function shareViaWhatsApp(data, photoURL) {					const phoneNumber = "6281285989142";
+					let message = `*Laporan Observasi Keselamatan Baru*\n\n`;
+					message += `*Nama Observer:* ${data.observerName || "N/A"}\n`;
+					message += `*Perusahaan:* ${data.observerCompany || "N/A"}\n`;
+					message += `*Jabatan:* ${data.observerPosition || "N/A"}\n`;
+					message += `*Lokasi:* ${data.obsLocation || "N/A"}\n`;
+					message += `*Tanggal:* ${data.obsDate || "N/A"}\n\n`;
+					message += `*--- Detail Observasi ---*\n`;
+					message += `*Kategori:* ${data.category || "N/A"}\n`;
+					message += `*Jenis:* ${data.obsType || "N/A"}\n`;
+					message += `*Deskripsi:*\n${data.description || "N/A"}\n\n`;
+					message += `*Tindakan & Rekomendasi:*\n${data.immediateAction || "N/A"}\n\n`;
+
+					if (photoURL) {
+						message += `*Link Foto:* ${photoURL}\n`;
+					} else {
+						message += `*Foto:* Tidak ada foto yang dilampirkan.\n`;
+					}
+
+					const encodedMessage = encodeURIComponent(message);
+					const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+					window.open(whatsappUrl, "_blank");
+				}
+
+				safetyForm.addEventListener("submit", async function (event) {
+					event.preventDefault();
+					const submitAction = event.submitter
+						? event.submitter.value
+						: "submit";
+
+					const obsDateInput = document.getElementById("obsDate");
+					const dateValue = obsDateInput.value;
+					const dateParts = dateValue.split("-"); // YYYY-MM-DD
+					// Create date in local timezone at midnight to avoid timezone issues
+					const selectedDate = new Date(
+						dateParts[0],
+						dateParts[1] - 1,
+						dateParts[2],
+					);
+
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+
+					if (selectedDate > today) {
+						messageDiv.innerHTML = translations[currentLang].errorFutureDate;
+						messageDiv.className = "form-message error";
+						messageDiv.style.display = "block";
+						setTimeout(() => {
+							messageDiv.style.display = "none";
+						}, 6000);
+						return; // Prevent form submission
+					}
+
+					// Email Validation
+					const emailInput = document.getElementById("unsafeEmail");
+					if (emailInput && emailInput.value) {
+						const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+						if (!emailPattern.test(emailInput.value)) {
+							messageDiv.innerHTML =
+								translations[currentLang].errorInvalidEmail;
+							messageDiv.className = "form-message error";
+							messageDiv.style.display = "block";
+							setTimeout(() => {
+								messageDiv.style.display = "none";
+							}, 6000);
+							return; // Prevent form submission
+						}
+					}
+
+					const submitButtons = safetyForm.querySelectorAll(
+						'button[type="submit"]',
+					);
+					submitButtons.forEach((btn) => (btn.disabled = true));
+
+					const originalButton =
+						event.submitter || document.querySelector(".submit-btn");
+					const originalButtonText = originalButton.textContent;
+					originalButton.textContent =
+						translations[currentLang].submittingButton;
+
+					messageDiv.style.display = "none";
+
+					try {
+						// 1. Save reporter info for next time
+						saveReporterInfo();
+
+						// 2. Handle File Upload to Cloudinary
+						const fileInput = document.getElementById("uploadPhoto");
+						let file = fileInput.files[0];
+						let photoURL = "";
+
+						if (file) {
+							console.log(`Original file size: ${file.size / 1024 / 1024} MB`);
+							const options = {
+								maxSizeMB: 0.05,
+								maxWidthOrHeight: 1920,
+								useWebWorker: true,
+							};
+							const compressedFile = await imageCompression(file, options);
+							console.log(
+								`Compressed file size: ${compressedFile.size / 1024 / 1024} MB`,
+							);
+							file = compressedFile; // Use the compressed file for upload
+
+							const cloudName = "dnk3hccmm";
+							const uploadPreset = "unsigned_reports";
+							const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+							const formData = new FormData();
+							formData.append("file", file);
+							formData.append("upload_preset", uploadPreset);
+							formData.append("folder", "observationform");
+
+							const response = await fetch(cloudinaryUrl, {
+								method: "POST",
+								body: formData,
+							});
+
+							if (!response.ok) {
+								throw new Error("Cloudinary upload failed");
+							}
+
+							const cloudinaryData = await response.json();
+							photoURL = cloudinaryData.secure_url;
+						}
+
+						// 3. Prepare data for Firestore
+						const formElementData = new FormData(safetyForm);
+						const dataToSave = {};
+						formElementData.forEach((value, key) => {
+							if (key !== "uploadPhoto" && key !== "submitAction") {
+								dataToSave[key] = value;
+							}
+						});
+
+						// Add the static reporter info to the data to be saved
+						dataToSave.observerName =
+							document.getElementById("observerNameText").textContent;
+						dataToSave.observerCompany = document.getElementById(
+							"observerCompanyText",
+						).textContent;
+						dataToSave.observerPosition = document.getElementById(
+							"observerPositionText",
+						).textContent;
+
+						dataToSave.photoURL = photoURL;
+						dataToSave.submittedAt =
+							firebase.firestore.FieldValue.serverTimestamp();
+						dataToSave.submittedBy = loggedInUser.email;
+
+						// 4. Save to Firestore
+						await db.collection("observations").add(dataToSave);
+
+						// 5. Send Email via EmailJS (if email provided)
+						if (dataToSave.unsafeEmail) {
+							try {
+								const templateParams = {
+									to_email: dataToSave.unsafeEmail,
+									observer_name: dataToSave.observerName,
+									company: dataToSave.observerCompany,
+									position: dataToSave.observerPosition,
+									location: dataToSave.obsLocation,
+									date: dataToSave.obsDate,
+									category: dataToSave.category,
+									obs_type: dataToSave.obsType,
+									description: dataToSave.description,
+									immediate_action: dataToSave.immediateAction,
+									photo_url: dataToSave.photoURL || "No photo attached",
+								};
+
+								// Ganti 'YOUR_SERVICE_ID' dan 'YOUR_TEMPLATE_ID' dengan ID dari dashboard EmailJS Anda
+								await emailjs.send(
+									"service_nwzjwla",
+									"template_bfxlsi5",
+									templateParams,
+								);
+								console.log("Email sent successfully via EmailJS");
+							} catch (emailError) {
+								console.error("Failed to send email via EmailJS:", emailError);
+								// We don't block the success message if email fails, but we log it.
+							}
+						}
+
+						// 6. Handle WhatsApp sharing if needed
+						if (submitAction === "whatsapp") {
+							shareViaWhatsApp(dataToSave, photoURL);
+						}
+
+						// 6. Success Feedback
+						messageDiv.innerHTML = translations[currentLang].successMessage;
+						messageDiv.className = "form-message success";
+						safetyForm.reset();
+						loadReporterInfo();
+						window.scrollTo(0, 0);
+					} catch (error) {
+						// 7. Error Feedback
+						console.error("Error submitting report: ", error);
+						messageDiv.innerHTML = translations[currentLang].errorMessage;
+						messageDiv.className = "form-message error";
+					} finally {
+						// 8. Reset button state
+						submitButtons.forEach((btn) => (btn.disabled = false));
+						originalButton.textContent = originalButtonText;
+						setTimeout(() => {
+							messageDiv.style.display = "none";
+						}, 6000);
+					}
+				});
+			});
+		</script>
+	</body>
 </html>
