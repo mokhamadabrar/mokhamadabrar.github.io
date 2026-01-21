@@ -252,6 +252,20 @@
 				height: 100%;
 				object-fit: cover; /* This crops the image to fit */
 			}
+			.table-img {
+				width: 60px;
+				height: 60px;
+				object-fit: cover;
+				border-radius: 4px;
+				cursor: pointer;
+				display: block;
+			}
+			.col-desc {
+				max-width: 250px;
+				white-space: normal;
+				word-wrap: break-word;
+				overflow-wrap: break-word;
+			}
 		</style>
 	</head>
 	<body>
@@ -334,11 +348,15 @@
 				<table>
 					<thead>
 						<tr>
-							<th data-key="colDate">Date</th>
-							<th data-key="colObserver">Observer</th>
+							<th data-key="colName">Name</th>
+							<th data-key="colRole">Roles</th>
 							<th data-key="colLocation">Location</th>
+							<th data-key="colDate">Date</th>
+							<th data-key="colObsType">Observation Type</th>
+							<th data-key="colObsDesc">Observation Description</th>
 							<th data-key="colCategory">Category</th>
-							<th data-key="colActions">Actions</th>
+							<th data-key="colImage">Image</th>
+							<th data-key="colDetail">Detail</th>
 						</tr>
 					</thead>
 					<tbody id="dashboard-content"></tbody>
@@ -397,11 +415,15 @@
 						applyFilterButton: "Terapkan Filter",
 						resetFilterButton: "Atur Ulang",
 						loading: "Memuat data...",
-						colDate: "Tanggal",
-						colObserver: "Observer",
+						colName: "Nama",
+						colRole: "Jabatan",
 						colLocation: "Lokasi",
+						colDate: "Tanggal",
+						colObsType: "Jenis Observasi",
+						colObsDesc: "Deskripsi Observasi",
 						colCategory: "Kategori",
-						colActions: "Aksi",
+						colImage: "Foto",
+						colDetail: "Detail",
 						detailsButton: "Detail",
 						noReports: "Tidak ada laporan ditemukan.",
 						chartTitlePosition: "Observasi berdasarkan Jabatan",
@@ -450,11 +472,15 @@
 						applyFilterButton: "Apply Filter",
 						resetFilterButton: "Reset",
 						loading: "Loading data...",
-						colDate: "Date",
-						colObserver: "Observer",
+						colName: "Name",
+						colRole: "Roles",
 						colLocation: "Location",
+						colDate: "Date",
+						colObsType: "Observation Type",
+						colObsDesc: "Observation Description",
 						colCategory: "Category",
-						colActions: "Actions",
+						colImage: "Image",
+						colDetail: "Detail",
 						detailsButton: "Details",
 						noReports: "No reports found.",
 						chartTitlePosition: "Observations by Position",
@@ -636,42 +662,41 @@
 				}
 
 								function renderObservationsTable(reports) {
+					if (reports.length === 0) {
+						contentDiv.innerHTML = `<tr><td colspan="9" style="text-align: center;">${translations[currentLang].noReports}</td></tr>`;
+						return;
+					}
 
-									if (reports.length === 0) {
+					let html = "";
+					reports.forEach((report) => {
+						const date =
+							report.obsDate ||
+							(report.submittedAt
+								? report.submittedAt.toDate().toLocaleDateString()
+								: "N/A");
 
-										contentDiv.innerHTML = `<tr><td colspan="5" style="text-align: center;">${translations[currentLang].noReports}</td></tr>`;
+						const photoHtml = report.photoURL
+							? `<img src="${report.photoURL}" alt="Observation" class="table-img" onclick="window.open('${report.photoURL}', '_blank')">`
+							: "No Image";
 
-										return;
+						html += `
+                        <tr>
+                            <td>${report.observerName || "N/A"}</td>
+                            <td>${report.observerPosition || "N/A"}</td>
+                            <td>${report.obsLocation || "N/A"}</td>
+                            <td>${date}</td>
+                            <td>${report.obsType || "N/A"}</td>
+                            <td class="col-desc">${report.description || "N/A"}</td>
+                            <td>${report.category || "N/A"}</td>
+                            <td>${photoHtml}</td>
+                            <td><button class="details-btn" data-id="${
+															report.id
+														}">${translations[currentLang].detailsButton}</button></td>
+                        </tr>`;
+					});
 
-									}
-
-									let html = "";
-
-									reports.forEach((report) => {
-
-										const date = report.obsDate || (report.submittedAt ? report.submittedAt.toDate().toLocaleDateString() : "N/A");
-
-										html += `
-
-				                        <tr>
-
-				                            <td>${date}</td>
-
-											<td>${report.observerName || "N/A"}</td>
-
-				                            <td>${report.obsLocation || "N/A"}</td>
-
-											<td>${report.category || "N/A"}</td>
-
-				                            <td><button class="details-btn" data-id="${report.id}">${translations[currentLang].detailsButton}</button></td>
-
-				                        </tr>`;
-
-									});
-
-									contentDiv.innerHTML = html;
-
-								}
+					contentDiv.innerHTML = html;
+				}
 
 				
 
