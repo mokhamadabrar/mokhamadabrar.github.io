@@ -11,6 +11,8 @@
 			rel="stylesheet"
 		/>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 		<style>
 			body {
 				font-family: "Inter", sans-serif;
@@ -336,6 +338,13 @@
 					<button id="resetDateFilter" data-key="resetFilterButton">
 						Reset
 					</button>
+					<button
+						id="exportPdfBtn"
+						data-key="exportPdfButton"
+						style="margin-left: auto; background-color: #e67e22; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;"
+					>
+						Export PDF
+					</button>
 				</div>
 				<div class="charts-container">
 					<div class="chart-box"><canvas id="positionChart"></canvas></div>
@@ -414,6 +423,7 @@
 						endDateLabel: "Tanggal Akhir:",
 						applyFilterButton: "Terapkan Filter",
 						resetFilterButton: "Atur Ulang",
+						exportPdfButton: "Ekspor PDF",
 						loading: "Memuat data...",
 						colName: "Nama",
 						colRole: "Jabatan",
@@ -471,6 +481,7 @@
 						endDateLabel: "End Date:",
 						applyFilterButton: "Apply Filter",
 						resetFilterButton: "Reset",
+						exportPdfButton: "Export PDF",
 						loading: "Loading data...",
 						colName: "Name",
 						colRole: "Roles",
@@ -965,6 +976,199 @@
 				observationFormBtn.addEventListener("click", () => {
 					window.location.href = "index.html";
 				});
+
+				// --- PDF EXPORT LOGIC ---
+				document.getElementById("exportPdfBtn").addEventListener("click", exportToPDF);
+
+				async function exportToPDF() {
+					const btn = document.getElementById("exportPdfBtn");
+					const originalText = btn.textContent;
+					btn.textContent = "Processing Images...";
+					btn.disabled = true;
+
+					try {
+						const { jsPDF } = window.jspdf;
+						const doc = new jsPDF("l", "mm", "a4"); // Landscape
+						const pageWidth = doc.internal.pageSize.getWidth();
+						const pageHeight = doc.internal.pageSize.getHeight();
+						const margin = 14;
+
+						const startDate = startDateInput.value || "All Time";
+						const endDate = endDateInput.value || "All Time";
+						const timestamp = new Date().toLocaleString();
+
+						// --- HELPER: HEADER & FOOTER ---
+						const addHeaderFooter = (data) => {
+							// Header
+							doc.setFontSize(16);
+							doc.setFont("helvetica", "bold");
+							doc.text("JKT 09 GOLDEN HOURS OBSERVATION", pageWidth / 2, 15, { align: "center" });
+							
+							doc.setFontSize(10);
+							doc.setFont("helvetica", "normal");
+							doc.text(`Period: ${startDate} to ${endDate}`, pageWidth / 2, 21, { align: "center" });
+							
+							// Footer
+							doc.setFontSize(8);
+							doc.setFont("helvetica", "normal");
+							const pageCount = doc.internal.getNumberOfPages();
+							const adminEmail = adminUser ? (adminUser.email || "Admin") : "System";
+							doc.text(`Exported at: ${timestamp} | By: ${adminEmail}`, margin, pageHeight - 10);
+							doc.text(`Page ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: "right" });
+						};
+
+						// --- HELPER: FETCH IMAGE AS BASE64 ---
+						const getBase64ImageFromUrl = async (imageUrl) => {
+							try {
+								const res = await fetch(imageUrl);
+								const blob = await res.blob();
+								return new Promise((resolve, reject) => {
+									const reader = new FileReader();
+									reader.onloadend = () => resolve(reader.result);
+									reader.onerror = reject;
+									reader.readAsDataURL(blob);
+								});
+							} catch (error) {
+								console.error("Error converting image:", error);
+								return null;
+							}
+						};
+
+						// --- PAGE 1: CHARTS ---
+						addHeaderFooter();
+						
+						// doc.setFontSize(12);
+						// doc.text(`Filter Period: ${startDate} to ${endDate}`, margin, 25);
+
+						try {
+							const chart1 = document.getElementById("positionChart");
+							const chart2 = document.getElementById("categoryChart");
+							const chart3 = document.getElementById("typeChart");
+
+							if (chart1 && chart2 && chart3) {
+								const img1 = chart1.toDataURL("image/png");
+								const img2 = chart2.toDataURL("image/png");
+								const img3 = chart3.toDataURL("image/png");
+
+								// Layout: 3 charts side-by-side
+								const chartY = 35;
+								const chartWidth = 85;
+								const chartHeight = 85;
+
+								doc.addImage(img1, "PNG", margin, chartY, chartWidth, chartHeight);
+								doc.addImage(img2, "PNG", margin + chartWidth + 5, chartY, chartWidth, chartHeight);
+								doc.addImage(img3, "PNG", margin + (chartWidth * 2) + 10, chartY, chartWidth, chartHeight);
+							}
+						} catch (err) {
+							console.error("Error adding charts to PDF:", err);
+							doc.text("Error rendering charts.", margin, 40);
+						}
+
+						// --- PAGE 2: TABLE ---
+						doc.addPage(); // Start table on new page
+
+						const tableHead = [
+							[
+								"No",
+								translations[currentLang].colDate,
+								translations[currentLang].colName,
+								translations[currentLang].colRole,
+								translations[currentLang].colLocation,
+								translations[currentLang].colObsType,
+								translations[currentLang].colObsDesc,
+								translations[currentLang].colCategory,
+								translations[currentLang].colImage
+							]
+						];
+
+						// Filter Logic
+						let reportsToExport = allReports;
+						if (startDateInput.value && endDateInput.value) {
+							reportsToExport = allReports.filter((report) => {
+								if (!report.obsDate) return false;
+								return report.obsDate >= startDateInput.value && report.obsDate <= endDateInput.value;
+							});
+						}
+
+						// Pre-process body data (Fetch images)
+						const tableBody = await Promise.all(reportsToExport.map(async (report, index) => {
+							const date = report.obsDate || (report.submittedAt ? report.submittedAt.toDate().toLocaleDateString() : "N/A");
+							
+							let imageBase64 = null;
+							if (report.photoURL) {
+								imageBase64 = await getBase64ImageFromUrl(report.photoURL);
+							}
+
+							return [
+								index + 1, // Row Number
+								date,
+								report.observerName || "N/A",
+								report.observerPosition || "N/A",
+								report.obsLocation || "N/A",
+								report.obsType || "N/A",
+								report.description || "N/A",
+								report.category || "N/A",
+								imageBase64 // This will be the Base64 string or null
+							];
+						}));
+
+						doc.autoTable({
+							head: tableHead,
+							body: tableBody,
+							startY: 25,
+							margin: { top: 25, bottom: 15, left: margin, right: margin },
+							styles: { fontSize: 8, cellPadding: 2, valign: 'middle' },
+							columnStyles: {
+								0: { cellWidth: 10 }, // No
+								6: { cellWidth: 50 }, // Description
+								8: { cellWidth: 20 }  // Image column width
+							},
+							bodyStyles: { minCellHeight: 15 }, // Smaller row height
+							rowPageBreak: 'avoid', // Avoid splitting rows
+							didDrawPage: function (data) {
+								addHeaderFooter();
+							},
+							didParseCell: function(data) {
+								// Check Image Column (Index 8)
+								if (data.section === 'body' && data.column.index === 8) {
+									if (data.cell.raw) {
+										// Has image data -> Clear text to prevent dump
+										data.cell.text = "";
+									} else {
+										// No image data -> Show "No Image" text
+										data.cell.text = "No Image";
+									}
+								}
+							},
+							didDrawCell: function(data) {
+								// Draw Image in the Image Column (Index 8)
+								if (data.section === 'body' && data.column.index === 8 && data.cell.raw) {
+									const imgData = data.cell.raw; // This is the Base64 string
+									if (imgData) {
+										const dim = 12; // Smaller Image dimension (12mm)
+										// Center image in cell
+										const x = data.cell.x + (data.cell.width - dim) / 2;
+										const y = data.cell.y + (data.cell.height - dim) / 2;
+										try {
+											doc.addImage(imgData, x, y, dim, dim);
+										} catch (e) {
+											console.warn("Failed to draw image", e);
+										}
+									}
+								}
+							}
+						});
+
+						doc.save(`Observation_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+
+					} catch (error) {
+						console.error("Export failed:", error);
+						alert("Failed to export PDF. Check console for details.");
+					} finally {
+						btn.textContent = originalText;
+						btn.disabled = false;
+					}
+				}
 			});
 		</script>
 	</body>
