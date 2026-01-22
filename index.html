@@ -1392,22 +1392,22 @@
 				
 				
 				            function shareViaWhatsApp(data, photoURL) {					const phoneNumber = "6281285989142";
-					let message = `*Laporan Observasi Keselamatan Baru*\n\n`;
-					message += `*Nama Observer:* ${data.observerName || "N/A"}\n`;
-					message += `*Perusahaan:* ${data.observerCompany || "N/A"}\n`;
-					message += `*Jabatan:* ${data.observerPosition || "N/A"}\n`;
-					message += `*Lokasi:* ${data.obsLocation || "N/A"}\n`;
-					message += `*Tanggal:* ${data.obsDate || "N/A"}\n\n`;
-					message += `*--- Detail Observasi ---*\n`;
-					message += `*Kategori:* ${data.category || "N/A"}\n`;
-					message += `*Jenis:* ${data.obsType || "N/A"}\n`;
-					message += `*Deskripsi:*\n${data.description || "N/A"}\n\n`;
-					message += `*Tindakan & Rekomendasi:*\n${data.immediateAction || "N/A"}\n\n`;
+					let message = `*New Safety Observation Report*\n\n`;
+					message += `*Observer Name:* ${data.observerName || "N/A"}\n`;
+					message += `*Company:* ${data.observerCompany || "N/A"}\n`;
+					message += `*Position:* ${data.observerPosition || "N/A"}\n`;
+					message += `*Location:* ${data.obsLocation || "N/A"}\n`;
+					message += `*Date:* ${data.obsDate || "N/A"}\n\n`;
+					message += `*--- Observation Details ---*\n`;
+					message += `*Category:* ${data.category || "N/A"}\n`;
+					message += `*Type:* ${data.obsType || "N/A"}\n`;
+					message += `*Description:*\n${data.description || "N/A"}\n\n`;
+					message += `*Actions & Recommendations:*\n${data.immediateAction || "N/A"}\n\n`;
 
 					if (photoURL) {
-						message += `*Link Foto:* ${photoURL}\n`;
+						message += `*Photo Link:* ${photoURL}\n`;
 					} else {
-						message += `*Foto:* Tidak ada foto yang dilampirkan.\n`;
+						message += `*Photo:* No photo attached.\n`;
 					}
 
 					const encodedMessage = encodeURIComponent(message);
