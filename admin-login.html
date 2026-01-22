@@ -335,8 +335,9 @@
                         return userDocRef.get();
                     })
                     .then((doc) => {
-                        if (doc.exists && doc.data().role === 'admin') {
-                            sessionStorage.setItem('adminUser', JSON.stringify({ email: doc.data().email, uid: doc.id }));
+                        const role = doc.data().role;
+                        if (doc.exists && (role === 'admin' || role === 'superadmin')) {
+                            sessionStorage.setItem('adminUser', JSON.stringify({ email: doc.data().email, uid: doc.id, role: role }));
                             window.location.href = 'dashboard.html';
                         } else {
                             messageDiv.textContent = translations[currentLang].errorAccessDenied;

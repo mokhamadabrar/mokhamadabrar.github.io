@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -51,7 +51,9 @@
 				border-radius: 50%;
 				overflow: hidden;
 				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				transition:
+					transform 0.2s ease,
+					box-shadow 0.2s ease;
 				border: 2px solid transparent;
 			}
 			.language-button:hover {
@@ -272,11 +274,7 @@
 	</head>
 	<body>
 		<div class="header">
-			<img
-				src="https://res.cloudinary.com/dnk3hccmm/image/upload/v1763541373/lgo1_aipv7n.png"
-				alt="Company Logo"
-				class="header-logo"
-			/>
+			<img src="img/logo.webp" alt="Company Logo" class="header-logo" />
 			<h1 data-key="dashboardTitle">Admin Dashboard</h1>
 			<div class="header-controls">
 				<button
@@ -341,7 +339,16 @@
 					<button
 						id="exportPdfBtn"
 						data-key="exportPdfButton"
-						style="margin-left: auto; background-color: #e67e22; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;"
+						style="
+							margin-left: auto;
+							background-color: #e67e22;
+							color: white;
+							border: none;
+							padding: 8px 12px;
+							border-radius: 4px;
+							cursor: pointer;
+							font-weight: bold;
+						"
 					>
 						Export PDF
 					</button>
@@ -549,7 +556,7 @@
 				const usersTableBody = document.getElementById("users-table-content");
 				const loadingUsersDiv = document.getElementById("loading-users");
 				const observationFormBtn = document.getElementById(
-					"observation-form-btn"
+					"observation-form-btn",
 				);
 
 				// --- GLOBAL STATE ---
@@ -599,11 +606,59 @@
 				}
 
 				// --- USER MANAGEMENT ---
-				function renderUsersTable() {
-					if (allUsers.length === 0) {
-						usersTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>`;
+				window.changeUserRole = async function(uid, newRole) {
+					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
+					if (!adminUser || adminUser.role !== 'superadmin') {
+						alert("Only superadmins can change roles.");
+						renderUsersTable();
 						return;
 					}
+					
+					const originalBtnText = document.body.style.cursor;
+					document.body.style.cursor = 'wait';
+
+					try {
+						const updateRoleFn = firebase.functions().httpsCallable('updateUserRole');
+						await updateRoleFn({ uid: uid, newRole: newRole });
+						alert('Role updated successfully.');
+					} catch (error) {
+						console.error("Error updating role:", error);
+						alert("Failed to update role: " + error.message);
+						renderUsersTable(); // Revert UI on error
+					} finally {
+						document.body.style.cursor = originalBtnText;
+					}
+				};
+
+				function renderUsersTable() {
+					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
+					const isSuperAdmin = adminUser && adminUser.role === 'superadmin';
+
+					// Update Header dynamically
+					const headerRow = document.querySelector('#users-content thead tr');
+					let roleHeader = headerRow.querySelector('.col-role-header');
+					
+					if (isSuperAdmin && !roleHeader) {
+						const th = document.createElement('th');
+						th.className = 'col-role-header';
+						th.textContent = 'Role';
+						// Insert before Status (Index 3: Name, Email, Registered, Status, Actions)
+						// Name=0, Email=1, Registered=2, Status=3
+						if (headerRow.children.length > 3) {
+							headerRow.insertBefore(th, headerRow.children[3]);
+						} else {
+							headerRow.appendChild(th);
+						}
+					} else if (!isSuperAdmin && roleHeader) {
+						roleHeader.remove();
+					}
+
+					if (allUsers.length === 0) {
+						const colSpan = isSuperAdmin ? 6 : 5;
+						usersTableBody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center;">No users found.</td></tr>`;
+						return;
+					}
+
 					let html = "";
 					allUsers.forEach((user) => {
 						const registeredDate = user.createdAt
@@ -615,11 +670,25 @@
 						const statusText =
 							translations[currentLang][statusKey] || user.status;
 						const statusClass = `status-${user.status}`;
+						
+						let roleCell = "";
+						if (isSuperAdmin) {
+							const isSelf = user.uid === adminUser.uid;
+							roleCell = `
+							<td>
+								<select onchange="changeUserRole('${user.uid}', this.value)" ${isSelf ? 'disabled' : ''} style="padding:4px; border-radius:4px; border:1px solid #ccc;">
+									<option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+									<option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+								</select>
+							</td>`;
+						}
+
 						html += `
                         <tr>
                             <td>${user.displayName || "N/A"}</td>
                             <td>${user.email || "N/A"}</td>
                             <td>${registeredDate}</td>
+							${roleCell}
                             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                             <td>
                                 ${
@@ -652,7 +721,7 @@
 						"positionChart",
 						translations[currentLang].chartTitlePosition,
 						positionChart,
-						(c) => (positionChart = c)
+						(c) => (positionChart = c),
 					);
 					updatePieChart(
 						filteredReports,
@@ -660,7 +729,7 @@
 						"categoryChart",
 						translations[currentLang].chartTitleCategory,
 						categoryChart,
-						(c) => (categoryChart = c)
+						(c) => (categoryChart = c),
 					);
 					updatePieChart(
 						filteredReports,
@@ -668,11 +737,11 @@
 						"typeChart",
 						translations[currentLang].chartTitleType,
 						typeChart,
-						(c) => (typeChart = c)
+						(c) => (typeChart = c),
 					);
 				}
 
-								function renderObservationsTable(reports) {
+				function renderObservationsTable(reports) {
 					if (reports.length === 0) {
 						contentDiv.innerHTML = `<tr><td colspan="9" style="text-align: center;">${translations[currentLang].noReports}</td></tr>`;
 						return;
@@ -709,123 +778,136 @@
 					contentDiv.innerHTML = html;
 				}
 
-				
+				function generateColors(numColors) {
+					const colors = [];
 
-								function generateColors(numColors) {
+					const hueStep = 360 / numColors;
 
-									const colors = [];
+					for (let i = 0; i < numColors; i++) {
+						const hue = i * hueStep;
 
-									const hueStep = 360 / numColors;
+						colors.push(`hsl(${hue}, 70%, 60%)`);
+					}
 
-									for (let i = 0; i < numColors; i++) {
+					return colors;
+				}
 
-										const hue = i * hueStep;
+				function updatePieChart(
+					reports,
+					field,
+					canvasId,
+					title,
+					chartInstance,
+					setChartInstance,
+				) {
+					const totalObservations = reports.length;
+					const counts = reports.reduce((acc, report) => {
+						const key = report[field] || "Unknown";
+						acc[key] = (acc[key] || 0) + 1;
+						return acc;
+					}, {});
 
-										colors.push(`hsl(${hue}, 70%, 60%)`);
+					if (chartInstance) {
+						chartInstance.destroy();
+					}
 
-									}
+					const centerTextPlugin = {
+						id: "centerText",
+						beforeDraw: function (chart) {
+							if (chart.config.options.plugins.centerText.display) {
+								const ctx = chart.ctx;
+								const centerConfig = chart.config.options.plugins.centerText;
+								const fontWeight = centerConfig.fontWeight || "normal";
+								const fontStyle = centerConfig.fontStyle || "Arial";
+								const txt = centerConfig.text;
+								const color = centerConfig.color || "#000";
+								const maxFontSize = centerConfig.maxFontSize || 75;
+								const minFontSize = centerConfig.minFontSize || 20;
 
-									return colors;
+								ctx.save();
+								let fontSize = chart.innerRadius / 1.2; // Aggressive font sizing
+								if (fontSize > maxFontSize) fontSize = maxFontSize;
+								if (fontSize < minFontSize) fontSize = minFontSize;
 
-								}
+								ctx.font = `${fontWeight} ${fontSize}px ${fontStyle}`;
+								ctx.textBaseline = "middle";
+								ctx.textAlign = "center";
 
-				
+								const textX = Math.round(
+									(chart.chartArea.left + chart.chartArea.right) / 2,
+								);
+								const textY = Math.round(
+									(chart.chartArea.top + chart.chartArea.bottom) / 2,
+								);
 
-								                                function updatePieChart(reports, field, canvasId, title, chartInstance, setChartInstance) {
-								                					const totalObservations = reports.length;
-								                					const counts = reports.reduce((acc, report) => {
-								                						const key = report[field] || "Unknown";
-								                						acc[key] = (acc[key] || 0) + 1;
-								                						return acc;
-								                					}, {});
-								                
-								                					if (chartInstance) {
-								                						chartInstance.destroy();
-								                					}
-								                
-								                					const centerTextPlugin = {
-								                						id: 'centerText',
-								                						beforeDraw: function(chart) {
-								                							if (chart.config.options.plugins.centerText.display) {
-								                								const ctx = chart.ctx;
-								                								const centerConfig = chart.config.options.plugins.centerText;
-								                								const fontWeight = centerConfig.fontWeight || 'normal';
-								                								const fontStyle = centerConfig.fontStyle || 'Arial';
-								                								const txt = centerConfig.text;
-								                								const color = centerConfig.color || '#000';
-								                								const maxFontSize = centerConfig.maxFontSize || 75;
-								                								const minFontSize = centerConfig.minFontSize || 20;
-								                
-								                								ctx.save();
-								                								let fontSize = (chart.innerRadius / 1.2); // Aggressive font sizing
-								                								if (fontSize > maxFontSize) fontSize = maxFontSize;
-								                								if (fontSize < minFontSize) fontSize = minFontSize;
-								                								
-								                								ctx.font = `${fontWeight} ${fontSize}px ${fontStyle}`;
-								                								ctx.textBaseline = 'middle';
-								                								ctx.textAlign = 'center';
-								                
-								                								const textX = Math.round((chart.chartArea.left + chart.chartArea.right) / 2);
-								                								const textY = Math.round((chart.chartArea.top + chart.chartArea.bottom) / 2);
-								                								
-								                								ctx.fillStyle = color;
-								                								ctx.fillText(txt, textX, textY);
-								                								ctx.restore();
-								                							}
-								                						}
-								                					};
-								                
-								                					const newChart = new Chart(document.getElementById(canvasId), {
-								                						type: "doughnut",
-								                						data: {
-								                							labels: Object.keys(counts),
-								                							datasets: [{
-								                								data: Object.values(counts),
-								                								backgroundColor: generateColors(Object.keys(counts).length),
-								                							}],
-								                						},
-								                						plugins: [centerTextPlugin],
-								                						options: {
-								                							responsive: true,
-								                							plugins: {
-								                								legend: {
-								                									position: 'top',
-								                									labels: {
-								                										generateLabels: function(chart) {
-								                											const data = chart.data;
-								                											if (data.labels.length && data.datasets.length) {
-								                																								return data.labels.map((label, i) => {
-								                																									const meta = chart.getDatasetMeta(0);
-								                																									const ds = data.datasets[0];
-								                																									const value = ds.data[i];
-								                																									// Attempt to translate the label
-								                																									const translatedLabel = translations[currentLang][`cat${label.replace(/\s/g, '')}`] || translations[currentLang][label.replace(/\s/g, '')] || label;
-								                																									return {
-								                																										text: `${translatedLabel}: ${value}`,
-								                																										fillStyle: ds.backgroundColor[i],
-								                																										hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
-								                																										index: i
-								                																									};
-								                																								});								                											}
-								                											return [];
-								                										}
-								                									}
-								                								},
-								                								title: { display: true, text: title },
-								                								centerText: {
-								                									display: true,
-								                									text: totalObservations,
-								                									color: '#2c3e50',
-								                									fontWeight: 'bold', // Corrected property
-								                									fontStyle: 'Arial',
-								                									maxFontSize: 70,
-								                									minFontSize: 30 
-								                								}
-								                							}
-								                						},
-								                					});
-								                					setChartInstance(newChart);
-								                				}				// --- DATA FETCHING ---
+								ctx.fillStyle = color;
+								ctx.fillText(txt, textX, textY);
+								ctx.restore();
+							}
+						},
+					};
+
+					const newChart = new Chart(document.getElementById(canvasId), {
+						type: "doughnut",
+						data: {
+							labels: Object.keys(counts),
+							datasets: [
+								{
+									data: Object.values(counts),
+									backgroundColor: generateColors(Object.keys(counts).length),
+								},
+							],
+						},
+						plugins: [centerTextPlugin],
+						options: {
+							responsive: true,
+							plugins: {
+								legend: {
+									position: "top",
+									labels: {
+										generateLabels: function (chart) {
+											const data = chart.data;
+											if (data.labels.length && data.datasets.length) {
+												return data.labels.map((label, i) => {
+													const meta = chart.getDatasetMeta(0);
+													const ds = data.datasets[0];
+													const value = ds.data[i];
+													// Attempt to translate the label
+													const translatedLabel =
+														translations[currentLang][
+															`cat${label.replace(/\s/g, "")}`
+														] ||
+														translations[currentLang][
+															label.replace(/\s/g, "")
+														] ||
+														label;
+													return {
+														text: `${translatedLabel}: ${value}`,
+														fillStyle: ds.backgroundColor[i],
+														hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+														index: i,
+													};
+												});
+											}
+											return [];
+										},
+									},
+								},
+								title: { display: true, text: title },
+								centerText: {
+									display: true,
+									text: totalObservations,
+									color: "#2c3e50",
+									fontWeight: "bold", // Corrected property
+									fontStyle: "Arial",
+									maxFontSize: 70,
+									minFontSize: 30,
+								},
+							},
+						},
+					});
+					setChartInstance(newChart);
+				} // --- DATA FETCHING ---
 				db.collection("observations")
 					.orderBy("obsDate", "desc")
 					.onSnapshot(
@@ -840,7 +922,7 @@
 						(error) => {
 							console.error("Error fetching observations: ", error);
 							loadingDiv.textContent = "Error loading data.";
-						}
+						},
 					);
 
 				db.collection("users")
@@ -858,19 +940,19 @@
 						(error) => {
 							console.error("Error fetching users: ", error);
 							loadingUsersDiv.textContent = "Error loading users.";
-						}
+						},
 					);
 
 				// --- EVENT LISTENERS ---
 				langButtons.forEach((button) =>
 					button.addEventListener("click", function () {
 						applyTranslation(this.dataset.lang);
-					})
+					}),
 				);
 				tabButtons.forEach((button) =>
 					button.addEventListener("click", function () {
 						switchView(this.dataset.tab);
-					})
+					}),
 				);
 				document.getElementById("logout-btn").addEventListener("click", () => {
 					sessionStorage.removeItem("adminUser");
@@ -878,7 +960,7 @@
 				});
 				applyDateFilterBtn.addEventListener(
 					"click",
-					updateObservationsDashboard
+					updateObservationsDashboard,
 				);
 				resetDateFilterBtn.addEventListener("click", () => {
 					startDateInput.value = "";
@@ -900,7 +982,7 @@
 							console.error("Error approving user: ", error);
 							button.disabled = false;
 							alert(
-								`${translations[currentLang].actionError}: ${error.message}`
+								`${translations[currentLang].actionError}: ${error.message}`,
 							);
 						}
 					}
@@ -938,34 +1020,34 @@
 						<h2>${translations[currentLang].modalTitle}</h2>
 						<p><strong>${translations[currentLang].modalDate}:</strong> ${date}</p>
 						<p><strong>${translations[currentLang].modalObserver}:</strong> ${
-						report.observerName || "N/A"
-					}</p>
+							report.observerName || "N/A"
+						}</p>
 						<p><strong>${translations[currentLang].modalCompany}:</strong> ${
-						report.observerCompany || "N/A"
-					}</p>
+							report.observerCompany || "N/A"
+						}</p>
 						<p><strong>${translations[currentLang].modalPosition}:</strong> ${
-						report.observerPosition || "N/A"
-					}</p>
+							report.observerPosition || "N/A"
+						}</p>
 						<p><strong>${translations[currentLang].modalLocation}:</strong> ${
-						report.obsLocation || "N/A"
-					}</p>
+							report.obsLocation || "N/A"
+						}</p>
 						<h3>${translations[currentLang].modalHeaderObservation}</h3>
 						<p><strong>${translations[currentLang].modalCategory}:</strong> ${
-						report.category || "N/A"
-					}</p>
+							report.category || "N/A"
+						}</p>
 						<p><strong>${translations[currentLang].modalType}:</strong> ${
-						report.obsType || "N/A"
-					}</p>
+							report.obsType || "N/A"
+						}</p>
 						<p><strong>${translations[currentLang].modalDescription}:</strong> ${
-						report.description || "N/A"
-					}</p>
+							report.description || "N/A"
+						}</p>
 						<h3>${translations[currentLang].modalHeaderFollowUp}</h3>
 						<p><strong>${translations[currentLang].modalImmediateAction}:</strong> ${
-						report.immediateAction || "N/A"
-					}</p>
+							report.immediateAction || "N/A"
+						}</p>
 						<p><strong>${translations[currentLang].modalRecommendation}:</strong> ${
-						report.recommendation || "N/A"
-					}</p>
+							report.recommendation || "N/A"
+						}</p>
 						${photoContent}`;
 					modal.style.display = "flex";
 				}
@@ -978,7 +1060,9 @@
 				});
 
 				// --- PDF EXPORT LOGIC ---
-				document.getElementById("exportPdfBtn").addEventListener("click", exportToPDF);
+				document
+					.getElementById("exportPdfBtn")
+					.addEventListener("click", exportToPDF);
 
 				async function exportToPDF() {
 					const btn = document.getElementById("exportPdfBtn");
@@ -1002,19 +1086,37 @@
 							// Header
 							doc.setFontSize(16);
 							doc.setFont("helvetica", "bold");
-							doc.text("JKT 09 GOLDEN HOURS OBSERVATION", pageWidth / 2, 15, { align: "center" });
-							
+							doc.text("JKT 09 GOLDEN HOURS OBSERVATION", pageWidth / 2, 15, {
+								align: "center",
+							});
+
 							doc.setFontSize(10);
 							doc.setFont("helvetica", "normal");
-							doc.text(`Period: ${startDate} to ${endDate}`, pageWidth / 2, 21, { align: "center" });
-							
+							doc.text(
+								`Period: ${startDate} to ${endDate}`,
+								pageWidth / 2,
+								21,
+								{ align: "center" },
+							);
+
 							// Footer
 							doc.setFontSize(8);
 							doc.setFont("helvetica", "normal");
 							const pageCount = doc.internal.getNumberOfPages();
-							const adminEmail = adminUser ? (adminUser.email || "Admin") : "System";
-							doc.text(`Exported at: ${timestamp} | By: ${adminEmail}`, margin, pageHeight - 10);
-							doc.text(`Page ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: "right" });
+							const adminEmail = adminUser
+								? adminUser.email || "Admin"
+								: "System";
+							doc.text(
+								`Exported at: ${timestamp} | By: ${adminEmail}`,
+								margin,
+								pageHeight - 10,
+							);
+							doc.text(
+								`Page ${pageCount}`,
+								pageWidth - margin,
+								pageHeight - 10,
+								{ align: "right" },
+							);
 						};
 
 						// --- HELPER: FETCH IMAGE AS BASE64 ---
@@ -1036,7 +1138,7 @@
 
 						// --- PAGE 1: CHARTS ---
 						addHeaderFooter();
-						
+
 						// doc.setFontSize(12);
 						// doc.text(`Filter Period: ${startDate} to ${endDate}`, margin, 25);
 
@@ -1055,9 +1157,30 @@
 								const chartWidth = 85;
 								const chartHeight = 85;
 
-								doc.addImage(img1, "PNG", margin, chartY, chartWidth, chartHeight);
-								doc.addImage(img2, "PNG", margin + chartWidth + 5, chartY, chartWidth, chartHeight);
-								doc.addImage(img3, "PNG", margin + (chartWidth * 2) + 10, chartY, chartWidth, chartHeight);
+								doc.addImage(
+									img1,
+									"PNG",
+									margin,
+									chartY,
+									chartWidth,
+									chartHeight,
+								);
+								doc.addImage(
+									img2,
+									"PNG",
+									margin + chartWidth + 5,
+									chartY,
+									chartWidth,
+									chartHeight,
+								);
+								doc.addImage(
+									img3,
+									"PNG",
+									margin + chartWidth * 2 + 10,
+									chartY,
+									chartWidth,
+									chartHeight,
+								);
 							}
 						} catch (err) {
 							console.error("Error adding charts to PDF:", err);
@@ -1077,8 +1200,8 @@
 								"Type",
 								"Description",
 								"Category",
-								"Image"
-							]
+								"Image",
+							],
 						];
 
 						// Filter Logic
@@ -1086,51 +1209,60 @@
 						if (startDateInput.value && endDateInput.value) {
 							reportsToExport = allReports.filter((report) => {
 								if (!report.obsDate) return false;
-								return report.obsDate >= startDateInput.value && report.obsDate <= endDateInput.value;
+								return (
+									report.obsDate >= startDateInput.value &&
+									report.obsDate <= endDateInput.value
+								);
 							});
 						}
 
 						// Pre-process body data (Fetch images)
-						const tableBody = await Promise.all(reportsToExport.map(async (report, index) => {
-							const date = report.obsDate || (report.submittedAt ? report.submittedAt.toDate().toLocaleDateString() : "N/A");
-							
-							let imageBase64 = null;
-							if (report.photoURL) {
-								imageBase64 = await getBase64ImageFromUrl(report.photoURL);
-							}
+						const tableBody = await Promise.all(
+							reportsToExport.map(async (report, index) => {
+								const date =
+									report.obsDate ||
+									(report.submittedAt
+										? report.submittedAt.toDate().toLocaleDateString()
+										: "N/A");
 
-							return [
-								index + 1, // Row Number
-								date,
-								report.observerName || "N/A",
-								report.observerPosition || "N/A",
-								report.obsLocation || "N/A",
-								report.obsType || "N/A",
-								report.description || "N/A",
-								report.category || "N/A",
-								imageBase64 // This will be the Base64 string or null
-							];
-						}));
+								let imageBase64 = null;
+								if (report.photoURL) {
+									imageBase64 = await getBase64ImageFromUrl(report.photoURL);
+								}
+
+								return [
+									index + 1, // Row Number
+									date,
+									report.observerName || "N/A",
+									report.observerPosition || "N/A",
+									report.obsLocation || "N/A",
+									report.obsType || "N/A",
+									report.description || "N/A",
+									report.category || "N/A",
+									imageBase64, // This will be the Base64 string or null
+								];
+							}),
+						);
 
 						doc.autoTable({
 							head: tableHead,
 							body: tableBody,
 							startY: 25,
 							margin: { top: 25, bottom: 15, left: margin, right: margin },
-							styles: { fontSize: 8, cellPadding: 2, valign: 'middle' },
+							styles: { fontSize: 8, cellPadding: 2, valign: "middle" },
 							columnStyles: {
 								0: { cellWidth: 10 }, // No
 								6: { cellWidth: 50 }, // Description
-								8: { cellWidth: 20 }  // Image column width
+								8: { cellWidth: 20 }, // Image column width
 							},
 							bodyStyles: { minCellHeight: 15 }, // Smaller row height
-							rowPageBreak: 'avoid', // Avoid splitting rows
+							rowPageBreak: "avoid", // Avoid splitting rows
 							didDrawPage: function (data) {
 								addHeaderFooter();
 							},
-							didParseCell: function(data) {
+							didParseCell: function (data) {
 								// Check Image Column (Index 8)
-								if (data.section === 'body' && data.column.index === 8) {
+								if (data.section === "body" && data.column.index === 8) {
 									if (data.cell.raw) {
 										// Has image data -> Clear text to prevent dump
 										data.cell.text = "";
@@ -1140,9 +1272,13 @@
 									}
 								}
 							},
-							didDrawCell: function(data) {
+							didDrawCell: function (data) {
 								// Draw Image in the Image Column (Index 8)
-								if (data.section === 'body' && data.column.index === 8 && data.cell.raw) {
+								if (
+									data.section === "body" &&
+									data.column.index === 8 &&
+									data.cell.raw
+								) {
 									const imgData = data.cell.raw; // This is the Base64 string
 									if (imgData) {
 										const dim = 12; // Smaller Image dimension (12mm)
@@ -1156,11 +1292,12 @@
 										}
 									}
 								}
-							}
+							},
 						});
 
-						doc.save(`Observation_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
-
+						doc.save(
+							`Observation_Report_${new Date().toISOString().slice(0, 10)}.pdf`,
+						);
 					} catch (error) {
 						console.error("Export failed:", error);
 						alert("Failed to export PDF. Check console for details.");

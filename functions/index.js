@@ -113,7 +113,7 @@ exports.deleteUserAndSendEmail = functions.https.onCall(async (data, context) =>
   }
 
   const adminUserDoc = await db.collection('users').doc(context.auth.uid).get();
-  if (!adminUserDoc.exists || adminUserDoc.data().role !== 'admin') {
+  if (!adminUserDoc.exists || !['admin', 'superadmin'].includes(adminUserDoc.data().role)) {
     throw new functions.https.HttpsError('permission-denied', 'Only administrators can delete users.');
   }
 
@@ -139,6 +139,42 @@ exports.deleteUserAndSendEmail = functions.https.onCall(async (data, context) =>
   } catch (error) {
     console.error(`Error deleting user ${uid}:`, error);
     throw new functions.https.HttpsError('internal', 'Unable to delete user.', error.message);
+  }
+});
+
+// HTTP Callable Cloud Function to update user role
+exports.updateUserRole = functions.https.onCall(async (data, context) => {
+  // Ensure the request is made by an authenticated user
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Only authenticated users can perform this action.');
+  }
+
+  const callerUid = context.auth.uid;
+  const callerUserDoc = await db.collection('users').doc(callerUid).get();
+  
+  if (!callerUserDoc.exists || callerUserDoc.data().role !== 'superadmin') {
+    throw new functions.https.HttpsError('permission-denied', 'Only superadmins can change user roles.');
+  }
+
+  const { uid, newRole } = data;
+  if (!uid || !newRole) {
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with uid and newRole.');
+  }
+  
+  if (!['user', 'admin'].includes(newRole)) {
+       throw new functions.https.HttpsError('invalid-argument', 'Invalid role specified. Must be "user" or "admin".');
+  }
+
+  try {
+    // Update Firestore
+    await db.collection('users').doc(uid).update({ role: newRole });
+    // Update Custom Claims
+    await admin.auth().setCustomUserClaims(uid, { role: newRole });
+    
+    return { success: true, message: `User ${uid} role updated to ${newRole}.` };
+  } catch (error) {
+    console.error(`Error updating role for user ${uid}:`, error);
+    throw new functions.https.HttpsError('internal', 'Unable to update user role.', error.message);
   }
 });
 

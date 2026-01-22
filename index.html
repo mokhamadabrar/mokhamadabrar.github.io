@@ -407,11 +407,7 @@
 						class="header-banner"
 						style="margin: -25px -25px 25px -25px; border-radius: 12px 12px 0 0"
 					>
-						<img
-							src="https://res.cloudinary.com/dnk3hccmm/image/upload/v1763541373/lgo1_aipv7n.png"
-							alt="Company Logo"
-							class="header-logo"
-						/>
+						<img src="img/logo.webp" alt="Company Logo" class="header-logo" />
 						<button id="logout-btn">Logout</button>
 						<button
 							id="admin-dashboard-btn"
@@ -932,39 +928,89 @@
 					</div>
 				</div>
 
-				                <div class="form-card">
-				                    <div class="form-group" style="position: relative;">
-				                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-				                            <label for="description" data-key="descriptionLabel" style="margin-bottom: 0;">Deskripsi Observasi:</label>
-				                            <button type="button" class="translate-btn" data-target="description" style="background: none; border: none; color: #007bff; cursor: pointer; font-size: 12px; font-weight: bold;">
-				                                <i class="fa fa-language"></i> Translate to English
-				                            </button>
-				                        </div>
-				                        <textarea
-				                            id="description"
-				                            name="description"
-				                            rows="5"
-				                            data-placeholder-key="descriptionPlaceholder"
-				                            placeholder="Jelaskan apa yang Anda lihat..."
-				                            required
-				                        ></textarea>
-				                    </div>
-				                    <div id="immediateActionGroup" style="display: none">
-				                        <div class="form-group" style="position: relative;">
-				                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-				                                <label for="immediateAction" data-key="immediateActionAndRecommendationLabel" style="margin-bottom: 0;">Immediate Action taken and Recommendations/ Improvement Suggestions:</label>
-				                                <button type="button" class="translate-btn" data-target="immediateAction" style="background: none; border: none; color: #007bff; cursor: pointer; font-size: 12px; font-weight: bold;">
-				                                    <i class="fa fa-language"></i> Translate to English
-				                                </button>
-				                            </div>
-				                            <textarea
-				                                id="immediateAction"
-				                                name="immediateAction"
-				                                rows="3"
-				                                data-placeholder-key="immediateActionPlaceholder"
-				                                placeholder="Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan..."
-				                            ></textarea>
-				                        </div>						<div class="form-group" style="margin-bottom: 0">
+				<div class="form-card">
+					<div class="form-group" style="position: relative">
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+								margin-bottom: 6px;
+							"
+						>
+							<label
+								for="description"
+								data-key="descriptionLabel"
+								style="margin-bottom: 0"
+								>Deskripsi Observasi:</label
+							>
+							<button
+								type="button"
+								class="translate-btn"
+								data-target="description"
+								style="
+									background: none;
+									border: none;
+									color: #007bff;
+									cursor: pointer;
+									font-size: 12px;
+									font-weight: bold;
+								"
+							>
+								<i class="fa fa-language"></i> Translate to English
+							</button>
+						</div>
+						<textarea
+							id="description"
+							name="description"
+							rows="5"
+							data-placeholder-key="descriptionPlaceholder"
+							placeholder="Jelaskan apa yang Anda lihat..."
+							required
+						></textarea>
+					</div>
+					<div id="immediateActionGroup" style="display: none">
+						<div class="form-group" style="position: relative">
+							<div
+								style="
+									display: flex;
+									justify-content: space-between;
+									align-items: center;
+									margin-bottom: 6px;
+								"
+							>
+								<label
+									for="immediateAction"
+									data-key="immediateActionAndRecommendationLabel"
+									style="margin-bottom: 0"
+									>Immediate Action taken and Recommendations/ Improvement
+									Suggestions:</label
+								>
+								<button
+									type="button"
+									class="translate-btn"
+									data-target="immediateAction"
+									style="
+										background: none;
+										border: none;
+										color: #007bff;
+										cursor: pointer;
+										font-size: 12px;
+										font-weight: bold;
+									"
+								>
+									<i class="fa fa-language"></i> Translate to English
+								</button>
+							</div>
+							<textarea
+								id="immediateAction"
+								name="immediateAction"
+								rows="3"
+								data-placeholder-key="immediateActionPlaceholder"
+								placeholder="Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan..."
+							></textarea>
+						</div>
+						<div class="form-group" style="margin-bottom: 0">
 							<label for="unsafeEmail" data-key="unsafeEmailLabel"
 								>Email Address:</label
 							>
@@ -1339,59 +1385,62 @@
 					});
 				});
 
-				            // --- TRANSLATION LOGIC (MyMemory API) ---
-				            async function translateText(text, targetLang = 'en') {
-				                if (!text || text.trim() === '') return null;
-				                // MyMemory API endpoint
-				                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=id|${targetLang}`;
-				                
-				                try {
-				                    const response = await fetch(url);
-				                    const data = await response.json();
-				                    if (data.responseStatus === 200) {
-				                        return data.responseData.translatedText;
-				                    } else {
-				                        console.error("Translation API Error:", data.responseDetails);
-				                        return null;
-				                    }
-				                } catch (error) {
-				                    console.error("Network Error during translation:", error);
-				                    return null;
-				                }
-				            }
-				
-				            document.querySelectorAll('.translate-btn').forEach(btn => {
-				                btn.addEventListener('click', async function() {
-				                    const targetId = this.getAttribute('data-target');
-				                    const textarea = document.getElementById(targetId);
-				                    const originalText = textarea.value;
-				
-				                    if (!originalText) {
-				                        alert("Please enter text to translate first.");
-				                        return;
-				                    }
-				
-				                    // Visual feedback
-				                    const originalBtnText = this.innerHTML;
-				                    this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Translating...';
-				                    this.disabled = true;
-				
-				                    const translatedText = await translateText(originalText, 'en');
-				
-				                    if (translatedText) {
-				                        textarea.value = translatedText;
-				                    } else {
-				                        alert("Translation failed. Please try again or check your connection.");
-				                    }
-				
-				                    // Restore button state
-				                    this.innerHTML = originalBtnText;
-				                    this.disabled = false;
-				                });
-				            });
-				
-				
-				            function shareViaWhatsApp(data, photoURL) {					const phoneNumber = "6281285989142";
+				// --- TRANSLATION LOGIC (MyMemory API) ---
+				async function translateText(text, targetLang = "en") {
+					if (!text || text.trim() === "") return null;
+					// MyMemory API endpoint
+					const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=id|${targetLang}`;
+
+					try {
+						const response = await fetch(url);
+						const data = await response.json();
+						if (data.responseStatus === 200) {
+							return data.responseData.translatedText;
+						} else {
+							console.error("Translation API Error:", data.responseDetails);
+							return null;
+						}
+					} catch (error) {
+						console.error("Network Error during translation:", error);
+						return null;
+					}
+				}
+
+				document.querySelectorAll(".translate-btn").forEach((btn) => {
+					btn.addEventListener("click", async function () {
+						const targetId = this.getAttribute("data-target");
+						const textarea = document.getElementById(targetId);
+						const originalText = textarea.value;
+
+						if (!originalText) {
+							alert("Please enter text to translate first.");
+							return;
+						}
+
+						// Visual feedback
+						const originalBtnText = this.innerHTML;
+						this.innerHTML =
+							'<i class="fa fa-spinner fa-spin"></i> Translating...';
+						this.disabled = true;
+
+						const translatedText = await translateText(originalText, "en");
+
+						if (translatedText) {
+							textarea.value = translatedText;
+						} else {
+							alert(
+								"Translation failed. Please try again or check your connection.",
+							);
+						}
+
+						// Restore button state
+						this.innerHTML = originalBtnText;
+						this.disabled = false;
+					});
+				});
+
+				function shareViaWhatsApp(data, photoURL) {
+					const phoneNumber = "6281285989142";
 					let message = `*New Safety Observation Report*\n\n`;
 					message += `*Observer Name:* ${data.observerName || "N/A"}\n`;
 					message += `*Company:* ${data.observerCompany || "N/A"}\n`;
