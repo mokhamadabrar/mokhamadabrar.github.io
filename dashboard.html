@@ -403,6 +403,75 @@
 			</div>
 		</div>
 
+		<!-- Edit User Modal -->
+		<div id="editUserModal" class="modal-overlay">
+			<div class="modal-content">
+				<span class="modal-close">&times;</span>
+				<h2 data-key="editUserTitle">Edit User</h2>
+				<form id="editUserForm">
+					<div class="filter-group" style="display: block; margin-bottom: 10px;">
+						<label for="editDisplayName" data-key="labelDisplayName">Full Name</label>
+						<input type="text" id="editDisplayName" style="width: 100%; padding: 8px; margin-top: 5px;" required>
+					</div>
+					<div class="filter-group" style="display: block; margin-bottom: 10px;">
+						<label for="editEmail" data-key="labelEmail">Email</label>
+						<input type="email" id="editEmail" style="width: 100%; padding: 8px; margin-top: 5px; background-color: #f0f0f0;" readonly>
+					</div>
+					<div class="filter-group" style="display: block; margin-bottom: 10px;">
+						<label for="editCompany" data-key="labelCompany">Company</label>
+						<input type="text" id="editCompany" style="width: 100%; padding: 8px; margin-top: 5px;" required>
+					</div>
+					<div class="filter-group" style="display: block; margin-bottom: 10px;">
+						<label for="editPosition" data-key="labelPosition">Position</label>
+						<select id="editPosition" style="width: 100%; padding: 8px; margin-top: 5px;">
+							<option value="Construction Manager">Construction Manager</option>
+							<option value="Site Manager">Site Manager</option>
+							<option value="Construction Supervisor">Construction Supervisor</option>
+							<option value="Safety Supervisor">Safety Supervisor</option>
+							<option value="Safety Manager">Safety Manager</option>
+							<option value="Worker">Worker</option>
+						</select>
+					</div>
+					<div class="filter-group" style="display: block; margin-bottom: 10px;">
+						<label for="editStatus" data-key="labelStatus">Status</label>
+						<select id="editStatus" style="width: 100%; padding: 8px; margin-top: 5px;">
+							<option value="approved" data-key="statusApproved">Approved</option>
+							<option value="pending" data-key="statusPending">Pending</option>
+							<option value="unverified" data-key="statusUnverified">Unverified</option>
+						</select>
+					</div>
+					<div id="editRoleWrapper" class="filter-group" style="display: none; margin-bottom: 10px;">
+						<label for="editRole" data-key="labelRole">Role</label>
+						<select id="editRole" style="width: 100%; padding: 8px; margin-top: 5px;">
+							<option value="user" data-key="roleUser">User</option>
+							<option value="admin" data-key="roleAdmin">Admin</option>
+						</select>
+					</div>
+					<div class="filter-group" style="display: block; margin-bottom: 10px;">
+						<label for="editCreatedAt" data-key="labelCreatedAt">Registered At</label>
+						<input type="text" id="editCreatedAt" style="width: 100%; padding: 8px; margin-top: 5px; background-color: #f0f0f0;" readonly>
+					</div>
+					
+					<div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+						<button type="button" id="editUserCancelBtn" class="approve-btn" style="background-color: #95a5a6;" data-key="cancelButton">Cancel</button>
+						<button type="submit" class="approve-btn" data-key="saveButton">Save</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Save Confirmation Modal -->
+		<div id="saveUserConfirmModal" class="modal-overlay" style="z-index: 1001;">
+			<div class="modal-content" style="max-width: 400px; text-align: center;">
+				<h3 data-key="confirmSaveTitle">Save Changes</h3>
+				<p data-key="confirmSaveMessage">Are you sure you want to save changes for this user?</p>
+				<div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+					<button id="confirmSaveNoBtn" class="approve-btn" style="background-color: #95a5a6;" data-key="confirmNo">Cancel</button>
+					<button id="confirmSaveYesBtn" class="approve-btn" data-key="confirmYes">Yes, Save</button>
+				</div>
+			</div>
+		</div>
+
 		<!-- Firebase Scripts -->
 		<!-- These scripts are now served by Firebase Hosting -->
 		<script src="/__/firebase/8.6.1/firebase-app.js"></script>
@@ -414,6 +483,35 @@
 
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
+				// ... (previous code) ...
+
+				// --- EVENT LISTENERS ---
+				// ... (previous listeners) ...
+
+				// New Edit User Listeners
+				if (editUserCloseBtn) editUserCloseBtn.onclick = () => editUserModal.style.display = "none";
+				if (editUserCancelBtn) editUserCancelBtn.onclick = () => editUserModal.style.display = "none";
+				if (editUserForm) editUserForm.onsubmit = initiateSaveUser;
+				
+				if (confirmSaveNoBtn) confirmSaveNoBtn.onclick = () => saveUserConfirmModal.style.display = "none";
+				if (confirmSaveYesBtn) confirmSaveYesBtn.onclick = confirmSaveUser;
+
+				// Global click to close modals
+				window.addEventListener('click', (event) => {
+					if (event.target == editUserModal) editUserModal.style.display = "none";
+					if (event.target == saveUserConfirmModal) saveUserConfirmModal.style.display = "none";
+					if (event.target == modal) modal.style.display = "none";
+				});
+
+				// Delegated click for Edit button in table
+				usersTableBody.addEventListener("click", (e) => {
+					if (e.target && e.target.classList.contains("edit-user-btn")) {
+						const uid = e.target.dataset.uid;
+						openEditUserModal(uid);
+					}
+					// ... (existing approve logic) ...
+				});
+
 				// --- AUTH CHECK ---
 				const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
 				if (!adminUser) {
@@ -479,6 +577,28 @@
 						observationFormButton: "Kembali ke Form Observasi",
 						modalPhotoLink: "Lihat Foto",
 						modalNoPhotoPlaceholder: "Tidak ada foto dokumentasi.",
+						// Edit User Modal
+						editUserTitle: "Edit Pengguna",
+						labelCompany: "Perusahaan",
+						labelCreatedAt: "Terdaftar Pada",
+						labelDisplayName: "Nama Lengkap",
+						labelEmail: "Email",
+						labelPosition: "Jabatan",
+						labelRole: "Peran",
+						labelStatus: "Status",
+						saveButton: "Simpan",
+						cancelButton: "Batal",
+						// Save Confirmation
+						confirmSaveTitle: "Simpan Perubahan",
+						confirmSaveMessage: "Apakah Anda yakin ingin menyimpan perubahan data pengguna ini?",
+						confirmYes: "Ya, Simpan",
+						confirmNo: "Batal",
+						editButton: "Edit",
+						roleUser: "User",
+						roleAdmin: "Admin",
+						statusApproved: "Disetujui",
+						statusPending: "Menunggu",
+						statusUnverified: "Belum Diverifikasi"
 					},
 					en: {
 						dashboardTitle: "Admin Dashboard",
@@ -535,6 +655,25 @@
 						observationFormButton: "Go to Observation Form",
 						modalPhotoLink: "View Photo",
 						modalNoPhotoPlaceholder: "No documentation photo provided.",
+						// Edit User Modal
+						editUserTitle: "Edit User",
+						labelCompany: "Company",
+						labelCreatedAt: "Registered At",
+						labelDisplayName: "Full Name",
+						labelEmail: "Email",
+						labelPosition: "Position",
+						labelRole: "Role",
+						labelStatus: "Status",
+						saveButton: "Save",
+						cancelButton: "Cancel",
+						// Save Confirmation
+						confirmSaveTitle: "Save Changes",
+						confirmSaveMessage: "Are you sure you want to save changes for this user?",
+						confirmYes: "Yes, Save",
+						confirmNo: "Cancel",
+						editButton: "Edit",
+						roleUser: "User",
+						roleAdmin: "Admin",
 					},
 				};
 				let currentLang = "en";
@@ -548,6 +687,16 @@
 				const modal = document.getElementById("detailsModal");
 				const modalBody = document.getElementById("modal-body-content");
 				const closeModalBtn = document.querySelector(".modal-close");
+				
+				// Edit Modal Elements
+				const editUserModal = document.getElementById("editUserModal");
+				const editUserCloseBtn = editUserModal.querySelector(".modal-close");
+				const editUserCancelBtn = document.getElementById("editUserCancelBtn");
+				const editUserForm = document.getElementById("editUserForm");
+				const saveUserConfirmModal = document.getElementById("saveUserConfirmModal");
+				const confirmSaveYesBtn = document.getElementById("confirmSaveYesBtn");
+				const confirmSaveNoBtn = document.getElementById("confirmSaveNoBtn");
+				
 				const startDateInput = document.getElementById("startDate");
 				const endDateInput = document.getElementById("endDate");
 				const applyDateFilterBtn = document.getElementById("applyDateFilter");
@@ -563,6 +712,7 @@
 				let allUsers = [];
 				let positionChart, categoryChart, typeChart;
 				let currentView = "observations";
+				let userEditingId = null; // Track which user is being edited
 
 				// --- INITIAL SETUP ---
 				function setDateFiltersMaxDate() {
@@ -605,52 +755,15 @@
 				}
 
 				// --- USER MANAGEMENT ---
-				window.changeUserRole = async function (uid, newRole) {
-					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
-					if (!adminUser || adminUser.role !== "superadmin") {
-						alert("Only superadmins can change roles.");
-						renderUsersTable();
-						return;
-					}
-
-					const originalBtnText = document.body.style.cursor;
-					document.body.style.cursor = "wait";
-
-					try {
-						// DIRECT FIRESTORE UPDATE (Replaces Cloud Function)
-						await db.collection("users").doc(uid).update({ role: newRole });
-						alert("Role updated successfully.");
-					} catch (error) {
-						console.error("Error updating role:", error);
-						alert("Failed to update role: " + error.message);
-						renderUsersTable(); // Revert UI on error
-					} finally {
-						document.body.style.cursor = originalBtnText;
-					}
-				};
-
+				
 				function renderUsersTable() {
 					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
 					const isSuperAdmin = adminUser && adminUser.role === "superadmin";
 
-					// Update Header dynamically
+					// Clean up any previously added Role headers if they exist from old logic
 					const headerRow = document.querySelector("#users-content thead tr");
-					let roleHeader = headerRow.querySelector(".col-role-header");
-
-					if (isSuperAdmin && !roleHeader) {
-						const th = document.createElement("th");
-						th.className = "col-role-header";
-						th.textContent = "Role";
-						// Insert before Status (Index 3: Name, Email, Registered, Status, Actions)
-						// Name=0, Email=1, Registered=2, Status=3
-						if (headerRow.children.length > 3) {
-							headerRow.insertBefore(th, headerRow.children[3]);
-						} else {
-							headerRow.appendChild(th);
-						}
-					} else if (!isSuperAdmin && roleHeader) {
-						roleHeader.remove();
-					}
+					const roleHeader = headerRow.querySelector(".col-role-header");
+					if (roleHeader) roleHeader.remove();
 
 					// Filter users based on role
 					let usersToDisplay = allUsers;
@@ -659,52 +772,120 @@
 					}
 
 					if (usersToDisplay.length === 0) {
-						const colSpan = isSuperAdmin ? 6 : 5;
-						usersTableBody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center;">No users found.</td></tr>`;
+						usersTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>`;
 						return;
 					}
 
 					let html = "";
 					usersToDisplay.forEach((user) => {
 						const registeredDate = user.createdAt
-							? user.createdAt.toDate().toLocaleDateString()
+							? user.createdAt.toDate().toLocaleDateString() + " " + user.createdAt.toDate().toLocaleTimeString()
 							: "N/A";
+						
 						const statusKey = `status${
 							user.status.charAt(0).toUpperCase() + user.status.slice(1)
 						}`;
-						const statusText =
-							translations[currentLang][statusKey] || user.status;
+						const statusText = translations[currentLang][statusKey] || user.status;
 						const statusClass = `status-${user.status}`;
-
-						let roleCell = "";
-						if (isSuperAdmin) {
-							const isSelf = user.uid === adminUser.uid;
-							roleCell = `
-							<td>
-								<select onchange="changeUserRole('${user.uid}', this.value)" ${isSelf ? "disabled" : ""} style="padding:4px; border-radius:4px; border:1px solid #ccc;">
-									<option value="user" ${user.role === "user" ? "selected" : ""}>User</option>
-									<option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
-								</select>
-							</td>`;
-						}
 
 						html += `
                         <tr>
                             <td>${user.displayName || "N/A"}</td>
                             <td>${user.email || "N/A"}</td>
                             <td>${registeredDate}</td>
-							${roleCell}
                             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                             <td>
+								<div style="display: flex; gap: 5px;">
                                 ${
-																	user.status !== "approved"
-																		? `<button class="approve-btn" data-uid="${user.uid}">${translations[currentLang].approveButton}</button>`
-																		: ""
-																}
+									user.status !== "approved"
+										? `<button class="approve-btn" data-uid="${user.uid}">${translations[currentLang].approveButton}</button>`
+										: ""
+								}
+								<button class="details-btn edit-user-btn" data-uid="${user.uid}">${translations[currentLang].editButton}</button>
+								</div>
                             </td>
                         </tr>`;
 					});
 					usersTableBody.innerHTML = html;
+				}
+
+				// Open Edit Modal
+				window.openEditUserModal = function(uid) {
+					const user = allUsers.find(u => u.uid === uid);
+					if (!user) return;
+					
+					userEditingId = uid;
+					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
+					const isSuperAdmin = adminUser && adminUser.role === "superadmin";
+
+					// Populate fields
+					document.getElementById('editCompany').value = user.company || '';
+					
+					// Format Date for display
+					const dateVal = user.createdAt ? 
+						(user.createdAt.toDate().toLocaleDateString() + " " + user.createdAt.toDate().toLocaleTimeString()) : "N/A";
+					document.getElementById('editCreatedAt').value = dateVal;
+
+					document.getElementById('editDisplayName').value = user.displayName || '';
+					document.getElementById('editEmail').value = user.email || '';
+					document.getElementById('editPosition').value = user.position || '';
+					document.getElementById('editStatus').value = user.status || 'unverified';
+					
+					// Handle Role Field
+					const roleWrapper = document.getElementById('editRoleWrapper');
+					if (isSuperAdmin) {
+						roleWrapper.style.display = 'block';
+						document.getElementById('editRole').value = user.role || 'user';
+					} else {
+						roleWrapper.style.display = 'none';
+					}
+
+					editUserModal.style.display = "flex";
+				}
+
+				// Initiate Save (Show Confirm)
+				window.initiateSaveUser = function(e) {
+					e.preventDefault();
+					saveUserConfirmModal.style.display = "flex";
+				}
+
+				// Execute Save
+				window.confirmSaveUser = async function() {
+					if (!userEditingId) return;
+					
+					const originalBtnText = confirmSaveYesBtn.textContent;
+					confirmSaveYesBtn.textContent = "Saving...";
+					confirmSaveYesBtn.disabled = true;
+
+					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
+					const isSuperAdmin = adminUser && adminUser.role === "superadmin";
+
+					const updates = {
+						company: document.getElementById('editCompany').value,
+						displayName: document.getElementById('editDisplayName').value,
+						position: document.getElementById('editPosition').value,
+						status: document.getElementById('editStatus').value,
+					};
+
+					// Only update role if Superadmin
+					if (isSuperAdmin) {
+						updates.role = document.getElementById('editRole').value;
+					}
+
+					try {
+						await db.collection("users").doc(userEditingId).update(updates);
+						alert(translations[currentLang].actionSuccess);
+						saveUserConfirmModal.style.display = "none";
+						editUserModal.style.display = "none";
+					} catch (error) {
+						console.error("Error updating user:", error);
+						alert(translations[currentLang].actionError + " " + error.message);
+						saveUserConfirmModal.style.display = "none";
+					} finally {
+						confirmSaveYesBtn.textContent = originalBtnText;
+						confirmSaveYesBtn.disabled = false;
+						userEditingId = null;
+					}
 				}
 
 				// --- OBSERVATIONS DASHBOARD ---
