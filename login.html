@@ -163,52 +163,15 @@
 				<div class="form-group">
 					<label for="password" data-key="passwordLabel">Password</label>
 					<input type="password" id="password" name="password" required />
-					<div style="text-align: right; margin-top: 5px">
-						<a
-							href="#"
-							id="showResetForm"
-							data-key="forgotPassword"
-							style="font-size: 12px; color: #007bff; text-decoration: none"
-							>Forgot Password?</a
-						>
-					</div>
 				</div>
 				<button type="submit" class="submit-btn" data-key="loginButton">
 					Login
 				</button>
+				<div style="text-align: center; margin-top: 15px;">
+					<a href="#" id="forgot-password-link" data-key="forgotPassword" style="font-size: 14px; color: #007bff; text-decoration: none;">Forgot Password?</a>
+				</div>
 			</form>
 
-			<form id="resetForm" style="display: none">
-				<h1 data-key="resetPasswordTitle">Reset Password</h1>
-				<div id="resetMessage" class="message"></div>
-				<p
-					data-key="resetPasswordDesc"
-					style="
-						margin-bottom: 15px;
-						font-size: 14px;
-						color: #666;
-						text-align: center;
-					"
-				>
-					Enter your email to receive a password reset link.
-				</p>
-				<div class="form-group">
-					<label for="resetEmail" data-key="emailLabel">Email</label>
-					<input type="email" id="resetEmail" name="resetEmail" required />
-				</div>
-				<button type="submit" class="submit-btn" data-key="sendResetLink">
-					Send Reset Link
-				</button>
-				<div style="text-align: center; margin-top: 15px">
-					<a
-						href="#"
-						id="backToLogin"
-						data-key="backToLogin"
-						style="font-size: 14px; color: #007bff; text-decoration: none"
-						>Back to Login</a
-					>
-				</div>
-			</form>
 			<div class="switch-form">
 				<p>
 					<span data-key="loginAs">Login as</span>
@@ -220,6 +183,8 @@
 				</p>
 			</div>
 		</div>
+
+		<div id="modal-container"></div>
 
 		<!-- Firebase Scripts -->
 		<!-- These scripts are now served by Firebase Hosting -->
@@ -262,6 +227,9 @@
 							"Tautan atur ulang password telah dikirim ke email Anda. Cek email Anda (termasuk folder Spam) untuk verifikasi.",
 						resetPasswordError:
 							"Gagal mengirim tautan atur ulang password. Silakan periksa email Anda.",
+						resetPasswordInstruction: "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk menyetel ulang kata sandi Anda.",
+                        cancelButton: "Batal",
+                        resetButton: "Setel Ulang Kata Sandi"
 					},
 					en: {
 						loginTitle: "Login",
@@ -292,6 +260,9 @@
 							"Password reset link sent to your email. Check your email (including Spam folder) for verification.",
 						resetPasswordError:
 							"Failed to send password reset link. Please check your email.",
+						resetPasswordInstruction: "Enter your email address and we will send you a link to reset your password.",
+                        cancelButton: "Cancel",
+                        resetButton: "Reset Password"
 					},
 				};
 
@@ -325,6 +296,55 @@
 				});
 
 				applyTranslation(currentLang); // Apply default language on load
+
+				// Load modal
+				fetch('modal.html')
+					.then(response => response.text())
+					.then(data => {
+						document.getElementById('modal-container').innerHTML = data;
+						const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+						const closeModal = document.querySelector('.close-button');
+						const cancelReset = document.getElementById('cancelReset');
+						const forgotPasswordLink = document.getElementById('forgot-password-link');
+
+						forgotPasswordLink.addEventListener('click', (e) => {
+							e.preventDefault();
+							forgotPasswordModal.style.display = 'flex';
+						});
+
+						closeModal.addEventListener('click', () => {
+							forgotPasswordModal.style.display = 'none';
+						});
+
+						cancelReset.addEventListener('click', () => {
+							forgotPasswordModal.style.display = 'none';
+						});
+
+						window.addEventListener('click', (e) => {
+							if (e.target == forgotPasswordModal) {
+								forgotPasswordModal.style.display = 'none';
+							}
+						});
+
+						document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
+							event.preventDefault();
+							const email = document.getElementById('resetEmail').value;
+							const resetMessage = document.getElementById('resetMessage');
+
+							firebase.auth().sendPasswordResetEmail(email)
+								.then(() => {
+									resetMessage.textContent = translations[currentLang].resetPasswordSuccess;
+									resetMessage.className = 'message success';
+									resetMessage.style.display = 'block';
+								})
+								.catch((error) => {
+									resetMessage.textContent = translations[currentLang].resetPasswordError;
+									resetMessage.className = 'message error';
+									resetMessage.style.display = 'block';
+								});
+						});
+						applyTranslation(currentLang);
+					});
 
 				let currentUser = null; // Declare currentUser in a broader scope
 
@@ -430,55 +450,6 @@
 								firebase.auth().signOut(); // Ensure user is signed out on any login failure
 							});
 					});
-
-				// Password Reset Logic
-				const loginForm = document.getElementById("loginForm");
-				const resetForm = document.getElementById("resetForm");
-				const showResetFormLink = document.getElementById("showResetForm");
-				const backToLoginLink = document.getElementById("backToLogin");
-				const switchFormDiv = document.querySelector(".switch-form");
-
-				showResetFormLink.addEventListener("click", function (e) {
-					e.preventDefault();
-					loginForm.style.display = "none";
-					switchFormDiv.style.display = "none";
-					resetForm.style.display = "block";
-					document.getElementById("message").style.display = "none";
-				});
-
-				backToLoginLink.addEventListener("click", function (e) {
-					e.preventDefault();
-					resetForm.style.display = "none";
-					loginForm.style.display = "block";
-					switchFormDiv.style.display = "block";
-					document.getElementById("resetMessage").style.display = "none";
-				});
-
-				resetForm.addEventListener("submit", function (e) {
-					e.preventDefault();
-					const email = document.getElementById("resetEmail").value;
-					const resetMessageDiv = document.getElementById("resetMessage");
-
-					firebase
-						.auth()
-						.sendPasswordResetEmail(email)
-						.then(() => {
-							resetMessageDiv.textContent =
-								translations[currentLang].resetPasswordSuccess;
-							resetMessageDiv.className = "message";
-							resetMessageDiv.style.color = "green";
-							resetMessageDiv.style.backgroundColor = "#d4edda";
-							resetMessageDiv.style.borderColor = "#c3e6cb";
-							resetMessageDiv.style.display = "block";
-						})
-						.catch((error) => {
-							console.error("Reset password error:", error);
-							resetMessageDiv.textContent =
-								translations[currentLang].resetPasswordError;
-							resetMessageDiv.className = "message error";
-							resetMessageDiv.style.display = "block";
-						});
-				});
 			});
 		</script>
 	</body>
