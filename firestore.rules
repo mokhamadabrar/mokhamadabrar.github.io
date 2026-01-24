@@ -12,14 +12,24 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(userId)).data;
     }
 
-    // Function to check if a user is an admin
+    // Function to check if a user is an admin or superadmin
     function isAdmin() {
-      return isAuthenticated() && getUserData(request.auth.uid).role == 'admin';
+      // Using explicit variable assignment to avoid repeating get() cost if possible, 
+      // though Firestore rules usually optimize. 
+      // Safer readable check:
+      return isAuthenticated() && (
+        getUserData(request.auth.uid).role == 'admin' || 
+        getUserData(request.auth.uid).role == 'superadmin'
+      );
     }
 
     // Function to check if a user is approved
+    // Admins and Superadmins are implicitly approved/trusted
     function isApproved() {
-      return isAuthenticated() && getUserData(request.auth.uid).status == 'approved';
+      return isAuthenticated() && (
+        getUserData(request.auth.uid).status == 'approved' || 
+        isAdmin()
+      );
     }
 
     // Rules for the 'users' collection
@@ -29,18 +39,19 @@ service cloud.firestore {
       allow create: if !isAuthenticated() && request.resource.data.status == 'unverified' && request.resource.data.role == 'user';
 
       // Allow a user to read their own document
-      allow read: if isAuthenticated() && request.auth.uid == userId;
+      // AND Allow admins/superadmins to read ALL documents (for User Management table)
+      allow read: if (isAuthenticated() && request.auth.uid == userId) || isAdmin();
 
-      // Allow admin to update any user's document (e.g., change status to 'approved')
+      // Allow admin/superadmin to update any user's document (e.g., change status to 'approved')
       allow update: if isAdmin();
 
-      // Deny delete for all users
+      // Deny delete for all users (Deletions should be handled via Cloud Functions for safety/cleanup)
       allow delete: if false;
     }
 
     // Rules for the 'observations' collection
     match /observations/{observationId} {
-      // Allow read/write only for approved users
+      // Allow read/write only for approved users (including admins)
       allow read, write: if isApproved();
     }
 

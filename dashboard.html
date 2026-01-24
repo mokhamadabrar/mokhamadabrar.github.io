@@ -409,7 +409,6 @@
 		<script src="/__/firebase/8.6.1/firebase-auth.js"></script>
 		<script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
 		<script src="/__/firebase/8.6.1/firebase-storage.js"></script>
-		<script src="/__/firebase/8.6.1/firebase-functions.js"></script>
 		<script src="/__/firebase/init.js"></script>
 		<script src="js/firebase-init.js"></script>
 
@@ -606,21 +605,21 @@
 				}
 
 				// --- USER MANAGEMENT ---
-				window.changeUserRole = async function(uid, newRole) {
+				window.changeUserRole = async function (uid, newRole) {
 					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
-					if (!adminUser || adminUser.role !== 'superadmin') {
+					if (!adminUser || adminUser.role !== "superadmin") {
 						alert("Only superadmins can change roles.");
 						renderUsersTable();
 						return;
 					}
-					
+
 					const originalBtnText = document.body.style.cursor;
-					document.body.style.cursor = 'wait';
+					document.body.style.cursor = "wait";
 
 					try {
-						const updateRoleFn = firebase.functions().httpsCallable('updateUserRole');
-						await updateRoleFn({ uid: uid, newRole: newRole });
-						alert('Role updated successfully.');
+						// DIRECT FIRESTORE UPDATE (Replaces Cloud Function)
+						await db.collection("users").doc(uid).update({ role: newRole });
+						alert("Role updated successfully.");
 					} catch (error) {
 						console.error("Error updating role:", error);
 						alert("Failed to update role: " + error.message);
@@ -632,16 +631,16 @@
 
 				function renderUsersTable() {
 					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
-					const isSuperAdmin = adminUser && adminUser.role === 'superadmin';
+					const isSuperAdmin = adminUser && adminUser.role === "superadmin";
 
 					// Update Header dynamically
-					const headerRow = document.querySelector('#users-content thead tr');
-					let roleHeader = headerRow.querySelector('.col-role-header');
-					
+					const headerRow = document.querySelector("#users-content thead tr");
+					let roleHeader = headerRow.querySelector(".col-role-header");
+
 					if (isSuperAdmin && !roleHeader) {
-						const th = document.createElement('th');
-						th.className = 'col-role-header';
-						th.textContent = 'Role';
+						const th = document.createElement("th");
+						th.className = "col-role-header";
+						th.textContent = "Role";
 						// Insert before Status (Index 3: Name, Email, Registered, Status, Actions)
 						// Name=0, Email=1, Registered=2, Status=3
 						if (headerRow.children.length > 3) {
@@ -670,15 +669,15 @@
 						const statusText =
 							translations[currentLang][statusKey] || user.status;
 						const statusClass = `status-${user.status}`;
-						
+
 						let roleCell = "";
 						if (isSuperAdmin) {
 							const isSelf = user.uid === adminUser.uid;
 							roleCell = `
 							<td>
-								<select onchange="changeUserRole('${user.uid}', this.value)" ${isSelf ? 'disabled' : ''} style="padding:4px; border-radius:4px; border:1px solid #ccc;">
-									<option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-									<option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+								<select onchange="changeUserRole('${user.uid}', this.value)" ${isSelf ? "disabled" : ""} style="padding:4px; border-radius:4px; border:1px solid #ccc;">
+									<option value="user" ${user.role === "user" ? "selected" : ""}>User</option>
+									<option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
 								</select>
 							</td>`;
 						}
