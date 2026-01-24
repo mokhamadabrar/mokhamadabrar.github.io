@@ -34,9 +34,9 @@ service cloud.firestore {
 
     // Rules for the 'users' collection
     match /users/{userId} {
-      // Allow a user to create their own document if not authenticated (during registration)
-      // and set initial status to 'unverified' and role to 'user'.
-      allow create: if !isAuthenticated() && request.resource.data.status == 'unverified' && request.resource.data.role == 'user';
+      // Allow a user to create their own document upon registration
+      // The user is authenticated at this point.
+      allow create: if isAuthenticated() && request.auth.uid == userId && request.resource.data.status == 'unverified' && request.resource.data.role == 'user';
 
       // Allow a user to read their own document
       // AND Allow admins/superadmins to read ALL documents (for User Management table)
