@@ -652,14 +652,20 @@
 						roleHeader.remove();
 					}
 
-					if (allUsers.length === 0) {
+					// Filter users based on role
+					let usersToDisplay = allUsers;
+					if (!isSuperAdmin) {
+						usersToDisplay = allUsers.filter(u => u.role !== 'admin' && u.role !== 'superadmin');
+					}
+
+					if (usersToDisplay.length === 0) {
 						const colSpan = isSuperAdmin ? 6 : 5;
 						usersTableBody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center;">No users found.</td></tr>`;
 						return;
 					}
 
 					let html = "";
-					allUsers.forEach((user) => {
+					usersToDisplay.forEach((user) => {
 						const registeredDate = user.createdAt
 							? user.createdAt.toDate().toLocaleDateString()
 							: "N/A";
