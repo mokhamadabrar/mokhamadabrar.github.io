@@ -290,74 +290,10 @@
             <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
             <script src="/__/firebase/init.js"></script>
             <script src="js/firebase-init.js"></script>
+            <script src="js/translations.js"></script>
         
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
-                    const translations = {
-                        'id': {
-                            registerTitle: "Registrasi",
-                            nameLabel: "Nama Observer",
-                            companyLabel: "Perusahaan",
-                            positionLabel: "Jabatan",
-                            posCM: "Manajer Konstruksi",
-                            posSM: "Manajer Lapangan",
-                            posCS: "Supervisor Konstruksi",
-                            posSS: "Supervisor Keselamatan",
-                            posSEM: "Manajer Keselamatan",
-                            posW: "Pekerja",
-                            emailLabel: "Email",
-                            passwordLabel: "Kata Sandi",
-                            confirmPasswordLabel: "Konfirmasi Kata Sandi",
-                            registerButton: "Daftar",
-                            haveAccount: "Sudah punya akun?",
-                            loginLink: "Masuk di sini",
-                            passwordMismatch: "Password dan konfirmasi password tidak cocok.",
-                            successMessage: "Registrasi berhasil! Silakan periksa email Anda untuk verifikasi.",
-                            errorEmailInUse: "Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.",
-                            errorWeakPassword: "Password harus terdiri dari minimal 6 karakter.",
-                            errorGeneric: "Terjadi kesalahan saat registrasi. Silakan coba lagi.",
-                            errorFieldsRequired: "Semua kolom wajib diisi.",
-                            emailConfirmationTitle: "Verifikasi Email Anda",
-                            emailConfirmationMessage: "Registrasi berhasil! Silakan periksa kotak masuk email Anda (dan folder spam) untuk tautan verifikasi. Anda perlu memverifikasi email Anda sebelum admin dapat menyetujui akun Anda.",
-                            emailConfirmationButton: "Oke",
-                            registrationConfirmTitle: "Konfirmasi Registrasi",
-                            registrationConfirmMessage: "Data yang sudah terdaftar tidak akan diubah kembali, siap registrasi?",
-                            confirmRegisterBtn: "Oke",
-                            cancelRegisterBtn: "Batal"
-                        },
-                        'en': {
-                            registerTitle: "Register",
-                            nameLabel: "Observer Name",
-                            companyLabel: "Company",
-                            positionLabel: "Position",
-                            posCM: "Construction Manager",
-                            posSM: "Site Manager",
-                            posCS: "Construction Supervisor",
-                            posSS: "Safety Supervisor",
-                            posSEM: "Safety Manager",
-                            posW: "Worker",
-                            emailLabel: "Email",
-                            passwordLabel: "Password",
-                            confirmPasswordLabel: "Confirm Password",
-                            registerButton: "Register",
-                            haveAccount: "Already have an account?",
-                            loginLink: "Login here",
-                            passwordMismatch: "Password and confirmation do not match.",
-                            successMessage: "Registration successful! Please check your email for verification.",
-                            errorEmailInUse: "This email is already in use.",
-                            errorWeakPassword: "Password should be at least 6 characters.",
-                            errorGeneric: "An error occurred during registration. Please try again.",
-                            errorFieldsRequired: "All fields are required.",
-                            emailConfirmationTitle: "Verify Your Email",
-                            emailConfirmationMessage: "Registration successful! Please check your email inbox (and spam folder) for a verification link. You need to verify your email before an admin can approve your account.",
-                            emailConfirmationButton: "Okay",
-                            registrationConfirmTitle: "Confirm Registration",
-                            registrationConfirmMessage: "Data that has been registered cannot be changed, are you ready to register?",
-                            confirmRegisterBtn: "OK",
-                            cancelRegisterBtn: "Cancel"
-                        }
-                    };
-        
                     let currentLang = 'en';
                     const langButtons = document.querySelectorAll(".language-button");
                     const registerForm = document.getElementById('registerForm');

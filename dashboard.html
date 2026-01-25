@@ -85,6 +85,31 @@
 				background-color: #c0392b;
 			}
 
+			/* Modern Form Styles */
+			input[type="text"],
+			input[type="email"],
+			select {
+				width: 100%;
+				padding: 10px 12px;
+				border: 1px solid #dfe6e9;
+				border-radius: 6px;
+				box-sizing: border-box;
+				font-size: 15px;
+				background-color: #fdfdfd;
+				transition:
+					border-color 0.3s ease,
+					box-shadow 0.3s ease;
+				margin-top: 5px;
+			}
+
+			input[type="text"]:focus,
+			input[type="email"]:focus,
+			select:focus {
+				border-color: #007bff;
+				box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+				outline: none;
+			}
+
 			/* Tab Navigation */
 			.tab-nav {
 				display: flex;
@@ -137,14 +162,86 @@
 				border-radius: 4px;
 				border: 1px solid #ccc;
 			}
-			.charts-container {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			.dashboard-grid {
+				display: flex;
 				gap: 20px;
 				padding: 10px 0;
+				align-items: stretch; /* Make columns equal height */
 			}
-			.chart-box {
+			.chart-col-left {
+				flex: 3; /* Wider column for Bar Chart */
+				display: flex;
+				flex-direction: column;
+			}
+									.chart-col-right {
+										flex: 1; /* Narrower column for Pie Charts */
+										display: flex;
+										flex-direction: column;
+										gap: 20px;
+										min-width: 350px; /* Ensure pie charts aren't too squashed */
+									}
+									.chart-box {
+										width: 100%;
+										display: flex;
+										flex-direction: column; /* Changed to column to allow canvas to grow */
+										align-items: center;
+										background: #fff;
+										padding: 15px;
+										border-radius: 8px;
+										box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+										flex: 1; /* Expand to fill parent */
+										min-height: 0; /* Allow flex shrinking if needed */
+									}
+									.chart-col-left .chart-box {
+										flex-direction: column; /* Bar chart stack */
+									}
+									.chart-col-right .chart-box {
+										/* flex-direction: row;  Removed to allow vertical stretch */
+									}
+									.chart-canvas-container {
+										flex: 1;
+										position: relative;
+										width: 100%;
+										min-height: 200px; /* Reduced base min-height */
+									}
+															/* Specific height override for the left bar chart to ensure it's tall enough */
+															.chart-col-left .chart-canvas-container {
+																min-height: 400px; 
+															}
+															.chart-row {
+				display: flex;
+				gap: 10px;
 				width: 100%;
+			}
+			.chart-legend {
+				width: 180px;
+				max-height: 300px;
+				overflow-y: auto;
+				padding-left: 15px;
+				font-size: 12px;
+			}
+			.legend-item {
+				display: flex;
+				align-items: center;
+				margin-bottom: 8px;
+				cursor: pointer;
+				opacity: 1;
+				transition: opacity 0.2s;
+			}
+			.legend-item.hidden {
+				opacity: 0.5;
+				text-decoration: line-through;
+			}
+			.legend-color {
+				width: 12px;
+				height: 12px;
+				min-width: 12px;
+				margin-right: 8px;
+				border-radius: 2px;
+			}
+			canvas {
+				width: 100% !important;
+				height: 100% !important;
 			}
 			table {
 				width: 100%;
@@ -352,11 +449,55 @@
 					>
 						Export PDF
 					</button>
+					<button
+						id="exportCsvBtn"
+						style="
+							margin-left: 10px;
+							background-color: #27ae60;
+							color: white;
+							border: none;
+							padding: 8px 12px;
+							border-radius: 4px;
+							cursor: pointer;
+							font-weight: bold;
+						"
+					>
+						Export CSV
+					</button>
 				</div>
-				<div class="charts-container">
-					<div class="chart-box"><canvas id="positionChart"></canvas></div>
-					<div class="chart-box"><canvas id="categoryChart"></canvas></div>
-					<div class="chart-box"><canvas id="typeChart"></canvas></div>
+				<div class="dashboard-grid">
+					<div class="chart-col-left">
+						<div class="chart-row">
+							<div class="chart-box" style="flex: 1; min-width: 0">
+								<div class="chart-canvas-container">
+									<canvas id="hraChart"></canvas>
+								</div>
+							</div>
+							<div class="chart-box" style="flex: 1; min-width: 0">
+								<div class="chart-canvas-container">
+									<canvas id="nonHraChart"></canvas>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="chart-col-right">
+						<div class="chart-box">
+							<div style="display: flex; width: 100%; flex: 1; align-items: center;">
+								<div class="chart-canvas-container">
+									<canvas id="positionChart"></canvas>
+								</div>
+								<div id="positionLegend" class="chart-legend"></div>
+							</div>
+						</div>
+						<div class="chart-box">
+							<div style="display: flex; width: 100%; flex: 1; align-items: center;">
+								<div class="chart-canvas-container">
+									<canvas id="typeChart"></canvas>
+								</div>
+								<div id="typeLegend" class="chart-legend"></div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div id="table-container">
@@ -368,6 +509,7 @@
 							<th data-key="colRole">Roles</th>
 							<th data-key="colLocation">Location</th>
 							<th data-key="colDate">Date</th>
+							<th data-key="colTime">Time</th>
 							<th data-key="colObsType">Observation Type</th>
 							<th data-key="colObsDesc">Observation Description</th>
 							<th data-key="colCategory">Category</th>
@@ -403,74 +545,7 @@
 			</div>
 		</div>
 
-		<!-- Edit User Modal -->
-		<div id="editUserModal" class="modal-overlay">
-			<div class="modal-content">
-				<span class="modal-close">&times;</span>
-				<h2 data-key="editUserTitle">Edit User</h2>
-				<form id="editUserForm">
-					<div class="filter-group" style="display: block; margin-bottom: 10px;">
-						<label for="editDisplayName" data-key="labelDisplayName">Full Name</label>
-						<input type="text" id="editDisplayName" style="width: 100%; padding: 8px; margin-top: 5px;" required>
-					</div>
-					<div class="filter-group" style="display: block; margin-bottom: 10px;">
-						<label for="editEmail" data-key="labelEmail">Email</label>
-						<input type="email" id="editEmail" style="width: 100%; padding: 8px; margin-top: 5px; background-color: #f0f0f0;" readonly>
-					</div>
-					<div class="filter-group" style="display: block; margin-bottom: 10px;">
-						<label for="editCompany" data-key="labelCompany">Company</label>
-						<input type="text" id="editCompany" style="width: 100%; padding: 8px; margin-top: 5px;" required>
-					</div>
-					<div class="filter-group" style="display: block; margin-bottom: 10px;">
-						<label for="editPosition" data-key="labelPosition">Position</label>
-						<select id="editPosition" style="width: 100%; padding: 8px; margin-top: 5px;">
-							<option value="Construction Manager">Construction Manager</option>
-							<option value="Site Manager">Site Manager</option>
-							<option value="Construction Supervisor">Construction Supervisor</option>
-							<option value="Safety Supervisor">Safety Supervisor</option>
-							<option value="Safety Manager">Safety Manager</option>
-							<option value="Worker">Worker</option>
-						</select>
-					</div>
-					<div class="filter-group" style="display: block; margin-bottom: 10px;">
-						<label for="editStatus" data-key="labelStatus">Status</label>
-						<select id="editStatus" style="width: 100%; padding: 8px; margin-top: 5px;">
-							<option value="approved" data-key="statusApproved">Approved</option>
-							<option value="pending" data-key="statusPending">Pending</option>
-							<option value="unverified" data-key="statusUnverified">Unverified</option>
-						</select>
-					</div>
-					<div id="editRoleWrapper" class="filter-group" style="display: none; margin-bottom: 10px;">
-						<label for="editRole" data-key="labelRole">Role</label>
-						<select id="editRole" style="width: 100%; padding: 8px; margin-top: 5px;">
-							<option value="user" data-key="roleUser">User</option>
-							<option value="admin" data-key="roleAdmin">Admin</option>
-						</select>
-					</div>
-					<div class="filter-group" style="display: block; margin-bottom: 10px;">
-						<label for="editCreatedAt" data-key="labelCreatedAt">Registered At</label>
-						<input type="text" id="editCreatedAt" style="width: 100%; padding: 8px; margin-top: 5px; background-color: #f0f0f0;" readonly>
-					</div>
-					
-					<div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-						<button type="button" id="editUserCancelBtn" class="approve-btn" style="background-color: #95a5a6;" data-key="cancelButton">Cancel</button>
-						<button type="submit" class="approve-btn" data-key="saveButton">Save</button>
-					</div>
-				</form>
-			</div>
-		</div>
-
-		<!-- Save Confirmation Modal -->
-		<div id="saveUserConfirmModal" class="modal-overlay" style="z-index: 1001;">
-			<div class="modal-content" style="max-width: 400px; text-align: center;">
-				<h3 data-key="confirmSaveTitle">Save Changes</h3>
-				<p data-key="confirmSaveMessage">Are you sure you want to save changes for this user?</p>
-				<div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
-					<button id="confirmSaveNoBtn" class="approve-btn" style="background-color: #95a5a6;" data-key="confirmNo">Cancel</button>
-					<button id="confirmSaveYesBtn" class="approve-btn" data-key="confirmYes">Yes, Save</button>
-				</div>
-			</div>
-		</div>
+		<div id="edit-user-modal-container"></div>
 
 		<!-- Firebase Scripts -->
 		<!-- These scripts are now served by Firebase Hosting -->
@@ -480,37 +555,11 @@
 		<script src="/__/firebase/8.6.1/firebase-storage.js"></script>
 		<script src="/__/firebase/init.js"></script>
 		<script src="js/firebase-init.js"></script>
+		<script src="js/translations.js"></script>
 
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
 				// ... (previous code) ...
-
-				// --- EVENT LISTENERS ---
-				// ... (previous listeners) ...
-
-				// New Edit User Listeners
-				if (editUserCloseBtn) editUserCloseBtn.onclick = () => editUserModal.style.display = "none";
-				if (editUserCancelBtn) editUserCancelBtn.onclick = () => editUserModal.style.display = "none";
-				if (editUserForm) editUserForm.onsubmit = initiateSaveUser;
-				
-				if (confirmSaveNoBtn) confirmSaveNoBtn.onclick = () => saveUserConfirmModal.style.display = "none";
-				if (confirmSaveYesBtn) confirmSaveYesBtn.onclick = confirmSaveUser;
-
-				// Global click to close modals
-				window.addEventListener('click', (event) => {
-					if (event.target == editUserModal) editUserModal.style.display = "none";
-					if (event.target == saveUserConfirmModal) saveUserConfirmModal.style.display = "none";
-					if (event.target == modal) modal.style.display = "none";
-				});
-
-				// Delegated click for Edit button in table
-				usersTableBody.addEventListener("click", (e) => {
-					if (e.target && e.target.classList.contains("edit-user-btn")) {
-						const uid = e.target.dataset.uid;
-						openEditUserModal(uid);
-					}
-					// ... (existing approve logic) ...
-				});
 
 				// --- AUTH CHECK ---
 				const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
@@ -519,163 +568,6 @@
 				}
 
 				// --- TRANSLATIONS ---
-				const translations = {
-					id: {
-						dashboardTitle: "Dasbor Admin",
-						logoutButton: "Keluar",
-						startDateLabel: "Tanggal Mulai:",
-						endDateLabel: "Tanggal Akhir:",
-						applyFilterButton: "Terapkan Filter",
-						resetFilterButton: "Atur Ulang",
-						exportPdfButton: "Ekspor PDF",
-						loading: "Memuat data...",
-						colName: "Nama",
-						colRole: "Jabatan",
-						colLocation: "Lokasi",
-						colDate: "Tanggal",
-						colObsType: "Jenis Observasi",
-						colObsDesc: "Deskripsi Observasi",
-						colCategory: "Kategori",
-						colImage: "Foto",
-						colDetail: "Detail",
-						detailsButton: "Detail",
-						noReports: "Tidak ada laporan ditemukan.",
-						chartTitlePosition: "Observasi berdasarkan Jabatan",
-						chartTitleCategory: "Observasi berdasarkan Kategori",
-						chartTitleType: "Observasi berdasarkan Jenis",
-						modalTitle: "Detail Observasi",
-						modalDate: "Tanggal",
-						modalObserver: "Observer",
-						modalCompany: "Perusahaan",
-						modalPosition: "Jabatan",
-						modalLocation: "Lokasi",
-						modalHeaderObservation: "Observasi",
-						modalCategory: "Kategori",
-						modalType: "Jenis",
-						modalDescription: "Deskripsi",
-						modalHeaderFollowUp: "Tindak Lanjut",
-						modalImmediateAction: "Tindakan Segera",
-						modalRecommendation: "Rekomendasi",
-						modalPhoto: "Foto",
-						modalNoPhoto: "Tidak ada foto.",
-						tabObservations: "Observasi",
-						tabUserManagement: "Manajemen Pengguna",
-						loadingUsers: "Memuat pengguna...",
-						colUserName: "Nama",
-						colUserEmail: "Email",
-						colUserRegistered: "Terdaftar",
-						colUserStatus: "Status",
-						colUserActions: "Aksi",
-						approveButton: "Setujui",
-						disapproveButton: "Tolak",
-						deleteButton: "Hapus",
-						statusApproved: "Disetujui",
-						statusPending: "Menunggu",
-						statusUnverified: "Belum Diverifikasi",
-						actionSuccess: "Berhasil!",
-						actionError: "Terjadi kesalahan.",
-						observationFormButton: "Kembali ke Form Observasi",
-						modalPhotoLink: "Lihat Foto",
-						modalNoPhotoPlaceholder: "Tidak ada foto dokumentasi.",
-						// Edit User Modal
-						editUserTitle: "Edit Pengguna",
-						labelCompany: "Perusahaan",
-						labelCreatedAt: "Terdaftar Pada",
-						labelDisplayName: "Nama Lengkap",
-						labelEmail: "Email",
-						labelPosition: "Jabatan",
-						labelRole: "Peran",
-						labelStatus: "Status",
-						saveButton: "Simpan",
-						cancelButton: "Batal",
-						// Save Confirmation
-						confirmSaveTitle: "Simpan Perubahan",
-						confirmSaveMessage: "Apakah Anda yakin ingin menyimpan perubahan data pengguna ini?",
-						confirmYes: "Ya, Simpan",
-						confirmNo: "Batal",
-						editButton: "Edit",
-						roleUser: "User",
-						roleAdmin: "Admin",
-						statusApproved: "Disetujui",
-						statusPending: "Menunggu",
-						statusUnverified: "Belum Diverifikasi"
-					},
-					en: {
-						dashboardTitle: "Admin Dashboard",
-						logoutButton: "Logout",
-						startDateLabel: "Start Date:",
-						endDateLabel: "End Date:",
-						applyFilterButton: "Apply Filter",
-						resetFilterButton: "Reset",
-						exportPdfButton: "Export PDF",
-						loading: "Loading data...",
-						colName: "Name",
-						colRole: "Roles",
-						colLocation: "Location",
-						colDate: "Date",
-						colObsType: "Observation Type",
-						colObsDesc: "Observation Description",
-						colCategory: "Category",
-						colImage: "Image",
-						colDetail: "Detail",
-						detailsButton: "Details",
-						noReports: "No reports found.",
-						chartTitlePosition: "Observations by Position",
-						chartTitleCategory: "Observations by Category",
-						chartTitleType: "Observations by Type",
-						modalTitle: "Observation Details",
-						modalDate: "Date",
-						modalObserver: "Observer",
-						modalCompany: "Company",
-						modalPosition: "Position",
-						modalLocation: "Location",
-						modalHeaderObservation: "Observation",
-						modalCategory: "Category",
-						modalType: "Type",
-						modalDescription: "Description",
-						modalHeaderFollowUp: "Follow-up",
-						modalImmediateAction: "Immediate Action",
-						modalRecommendation: "Recommendation",
-						modalPhoto: "Photo",
-						modalNoPhoto: "No photo submitted.",
-						tabObservations: "Observations",
-						tabUserManagement: "User Management",
-						loadingUsers: "Loading users...",
-						colUserName: "Name",
-						colUserEmail: "Email",
-						colUserRegistered: "Registered",
-						colUserStatus: "Status",
-						colUserActions: "Actions",
-						approveButton: "Approve",
-						statusApproved: "Approved",
-						statusPending: "Pending",
-						statusUnverified: "Unverified",
-						actionSuccess: "Success!",
-						actionError: "An error occurred.",
-						observationFormButton: "Go to Observation Form",
-						modalPhotoLink: "View Photo",
-						modalNoPhotoPlaceholder: "No documentation photo provided.",
-						// Edit User Modal
-						editUserTitle: "Edit User",
-						labelCompany: "Company",
-						labelCreatedAt: "Registered At",
-						labelDisplayName: "Full Name",
-						labelEmail: "Email",
-						labelPosition: "Position",
-						labelRole: "Role",
-						labelStatus: "Status",
-						saveButton: "Save",
-						cancelButton: "Cancel",
-						// Save Confirmation
-						confirmSaveTitle: "Save Changes",
-						confirmSaveMessage: "Are you sure you want to save changes for this user?",
-						confirmYes: "Yes, Save",
-						confirmNo: "Cancel",
-						editButton: "Edit",
-						roleUser: "User",
-						roleAdmin: "Admin",
-					},
-				};
 				let currentLang = "en";
 
 				// --- DOM ELEMENTS ---
@@ -687,16 +579,11 @@
 				const modal = document.getElementById("detailsModal");
 				const modalBody = document.getElementById("modal-body-content");
 				const closeModalBtn = document.querySelector(".modal-close");
-				
-				// Edit Modal Elements
-				const editUserModal = document.getElementById("editUserModal");
-				const editUserCloseBtn = editUserModal.querySelector(".modal-close");
-				const editUserCancelBtn = document.getElementById("editUserCancelBtn");
-				const editUserForm = document.getElementById("editUserForm");
-				const saveUserConfirmModal = document.getElementById("saveUserConfirmModal");
-				const confirmSaveYesBtn = document.getElementById("confirmSaveYesBtn");
-				const confirmSaveNoBtn = document.getElementById("confirmSaveNoBtn");
-				
+
+				// Edit Modal Variables (initialized after fetch)
+				let editUserModal, editUserCloseBtn, editUserCancelBtn, editUserForm;
+				let saveUserConfirmModal, confirmSaveYesBtn, confirmSaveNoBtn;
+
 				const startDateInput = document.getElementById("startDate");
 				const endDateInput = document.getElementById("endDate");
 				const applyDateFilterBtn = document.getElementById("applyDateFilter");
@@ -707,10 +594,62 @@
 					"observation-form-btn",
 				);
 
+				// --- DYNAMIC MODAL LOADING ---
+				fetch("edit-user-modal.html")
+					.then((response) => response.text())
+					.then((html) => {
+						document.getElementById("edit-user-modal-container").innerHTML =
+							html;
+						initializeEditUserModal();
+						applyTranslation(currentLang);
+					})
+					.catch((err) =>
+						console.error("Failed to load edit user modal:", err),
+					);
+
+				function initializeEditUserModal() {
+					editUserModal = document.getElementById("editUserModal");
+					editUserCloseBtn = editUserModal
+						? editUserModal.querySelector(".modal-close")
+						: null;
+					editUserCancelBtn = document.getElementById("editUserCancelBtn");
+					editUserForm = document.getElementById("editUserForm");
+					saveUserConfirmModal = document.getElementById(
+						"saveUserConfirmModal",
+					);
+					confirmSaveYesBtn = document.getElementById("confirmSaveYesBtn");
+					confirmSaveNoBtn = document.getElementById("confirmSaveNoBtn");
+
+					// Event Listeners for Edit Modal
+					if (editUserCloseBtn)
+						editUserCloseBtn.onclick = () =>
+							(editUserModal.style.display = "none");
+					if (editUserCancelBtn)
+						editUserCancelBtn.onclick = () =>
+							(editUserModal.style.display = "none");
+					if (editUserForm) editUserForm.onsubmit = window.initiateSaveUser;
+
+					if (confirmSaveNoBtn)
+						confirmSaveNoBtn.onclick = () =>
+							(saveUserConfirmModal.style.display = "none");
+					if (confirmSaveYesBtn)
+						confirmSaveYesBtn.onclick = window.confirmSaveUser;
+
+					// Update global window onclick to include new modals
+					const existingOnclick = window.onclick;
+					window.onclick = (event) => {
+						if (existingOnclick) existingOnclick(event);
+						if (editUserModal && event.target == editUserModal)
+							editUserModal.style.display = "none";
+						if (saveUserConfirmModal && event.target == saveUserConfirmModal)
+							saveUserConfirmModal.style.display = "none";
+					};
+				}
+
 				// --- GLOBAL STATE ---
 				let allReports = [];
 				let allUsers = [];
-				let positionChart, categoryChart, typeChart;
+				let positionChart, hraChart, nonHraChart, typeChart;
 				let currentView = "observations";
 				let userEditingId = null; // Track which user is being edited
 
@@ -755,7 +694,7 @@
 				}
 
 				// --- USER MANAGEMENT ---
-				
+
 				function renderUsersTable() {
 					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
 					const isSuperAdmin = adminUser && adminUser.role === "superadmin";
@@ -768,7 +707,9 @@
 					// Filter users based on role
 					let usersToDisplay = allUsers;
 					if (!isSuperAdmin) {
-						usersToDisplay = allUsers.filter(u => u.role !== 'admin' && u.role !== 'superadmin');
+						usersToDisplay = allUsers.filter(
+							(u) => u.role !== "admin" && u.role !== "superadmin",
+						);
 					}
 
 					if (usersToDisplay.length === 0) {
@@ -779,13 +720,16 @@
 					let html = "";
 					usersToDisplay.forEach((user) => {
 						const registeredDate = user.createdAt
-							? user.createdAt.toDate().toLocaleDateString() + " " + user.createdAt.toDate().toLocaleTimeString()
+							? user.createdAt.toDate().toLocaleDateString() +
+								" " +
+								user.createdAt.toDate().toLocaleTimeString()
 							: "N/A";
-						
+
 						const statusKey = `status${
 							user.status.charAt(0).toUpperCase() + user.status.slice(1)
 						}`;
-						const statusText = translations[currentLang][statusKey] || user.status;
+						const statusText =
+							translations[currentLang][statusKey] || user.status;
 						const statusClass = `status-${user.status}`;
 
 						html += `
@@ -797,10 +741,10 @@
                             <td>
 								<div style="display: flex; gap: 5px;">
                                 ${
-									user.status !== "approved"
-										? `<button class="approve-btn" data-uid="${user.uid}">${translations[currentLang].approveButton}</button>`
-										: ""
-								}
+																	user.status !== "approved"
+																		? `<button class="approve-btn" data-uid="${user.uid}">${translations[currentLang].approveButton}</button>`
+																		: ""
+																}
 								<button class="details-btn edit-user-btn" data-uid="${user.uid}">${translations[currentLang].editButton}</button>
 								</div>
                             </td>
@@ -810,49 +754,54 @@
 				}
 
 				// Open Edit Modal
-				window.openEditUserModal = function(uid) {
-					const user = allUsers.find(u => u.uid === uid);
+				window.openEditUserModal = function (uid) {
+					const user = allUsers.find((u) => u.uid === uid);
 					if (!user) return;
-					
+
 					userEditingId = uid;
 					const adminUser = JSON.parse(sessionStorage.getItem("adminUser"));
 					const isSuperAdmin = adminUser && adminUser.role === "superadmin";
 
 					// Populate fields
-					document.getElementById('editCompany').value = user.company || '';
-					
-					// Format Date for display
-					const dateVal = user.createdAt ? 
-						(user.createdAt.toDate().toLocaleDateString() + " " + user.createdAt.toDate().toLocaleTimeString()) : "N/A";
-					document.getElementById('editCreatedAt').value = dateVal;
+					document.getElementById("editCompany").value = user.company || "";
 
-					document.getElementById('editDisplayName').value = user.displayName || '';
-					document.getElementById('editEmail').value = user.email || '';
-					document.getElementById('editPosition').value = user.position || '';
-					document.getElementById('editStatus').value = user.status || 'unverified';
-					
+					// Format Date for display
+					const dateVal = user.createdAt
+						? user.createdAt.toDate().toLocaleDateString() +
+							" " +
+							user.createdAt.toDate().toLocaleTimeString()
+						: "N/A";
+					document.getElementById("editCreatedAt").value = dateVal;
+
+					document.getElementById("editDisplayName").value =
+						user.displayName || "";
+					document.getElementById("editEmail").value = user.email || "";
+					document.getElementById("editPosition").value = user.position || "";
+					document.getElementById("editStatus").value =
+						user.status || "unverified";
+
 					// Handle Role Field
-					const roleWrapper = document.getElementById('editRoleWrapper');
+					const roleWrapper = document.getElementById("editRoleWrapper");
 					if (isSuperAdmin) {
-						roleWrapper.style.display = 'block';
-						document.getElementById('editRole').value = user.role || 'user';
+						roleWrapper.style.display = "block";
+						document.getElementById("editRole").value = user.role || "user";
 					} else {
-						roleWrapper.style.display = 'none';
+						roleWrapper.style.display = "none";
 					}
 
 					editUserModal.style.display = "flex";
-				}
+				};
 
 				// Initiate Save (Show Confirm)
-				window.initiateSaveUser = function(e) {
+				window.initiateSaveUser = function (e) {
 					e.preventDefault();
 					saveUserConfirmModal.style.display = "flex";
-				}
+				};
 
 				// Execute Save
-				window.confirmSaveUser = async function() {
+				window.confirmSaveUser = async function () {
 					if (!userEditingId) return;
-					
+
 					const originalBtnText = confirmSaveYesBtn.textContent;
 					confirmSaveYesBtn.textContent = "Saving...";
 					confirmSaveYesBtn.disabled = true;
@@ -861,15 +810,15 @@
 					const isSuperAdmin = adminUser && adminUser.role === "superadmin";
 
 					const updates = {
-						company: document.getElementById('editCompany').value,
-						displayName: document.getElementById('editDisplayName').value,
-						position: document.getElementById('editPosition').value,
-						status: document.getElementById('editStatus').value,
+						company: document.getElementById("editCompany").value,
+						displayName: document.getElementById("editDisplayName").value,
+						position: document.getElementById("editPosition").value,
+						status: document.getElementById("editStatus").value,
 					};
 
 					// Only update role if Superadmin
 					if (isSuperAdmin) {
-						updates.role = document.getElementById('editRole').value;
+						updates.role = document.getElementById("editRole").value;
 					}
 
 					try {
@@ -886,7 +835,7 @@
 						confirmSaveYesBtn.disabled = false;
 						userEditingId = null;
 					}
-				}
+				};
 
 				// --- OBSERVATIONS DASHBOARD ---
 				function updateObservationsDashboard() {
@@ -905,22 +854,17 @@
 						filteredReports,
 						"observerPosition",
 						"positionChart",
+						"positionLegend",
 						translations[currentLang].chartTitlePosition,
 						positionChart,
 						(c) => (positionChart = c),
 					);
-					updatePieChart(
-						filteredReports,
-						"category",
-						"categoryChart",
-						translations[currentLang].chartTitleCategory,
-						categoryChart,
-						(c) => (categoryChart = c),
-					);
+					updateCategoryCharts(filteredReports);
 					updatePieChart(
 						filteredReports,
 						"obsType",
 						"typeChart",
+						"typeLegend",
 						translations[currentLang].chartTitleType,
 						typeChart,
 						(c) => (typeChart = c),
@@ -941,6 +885,13 @@
 								? report.submittedAt.toDate().toLocaleDateString()
 								: "N/A");
 
+						const time = report.submittedAt
+							? report.submittedAt.toDate().toLocaleTimeString([], {
+									hour: "2-digit",
+									minute: "2-digit",
+								})
+							: "N/A";
+
 						const photoHtml = report.photoURL
 							? `<img src="${report.photoURL}" alt="Observation" class="table-img" onclick="window.open('${report.photoURL}', '_blank')">`
 							: "No Image";
@@ -951,6 +902,7 @@
                             <td>${report.observerPosition || "N/A"}</td>
                             <td>${report.obsLocation || "N/A"}</td>
                             <td>${date}</td>
+                            <td>${time}</td>
                             <td>${report.obsType || "N/A"}</td>
                             <td class="col-desc">${report.description || "N/A"}</td>
                             <td>${report.category || "N/A"}</td>
@@ -966,22 +918,168 @@
 
 				function generateColors(numColors) {
 					const colors = [];
-
 					const hueStep = 360 / numColors;
 
 					for (let i = 0; i < numColors; i++) {
 						const hue = i * hueStep;
 
-						colors.push(`hsl(${hue}, 70%, 60%)`);
+						// HSL to HEX conversion (S=70%, L=60%)
+						const s = 70 / 100;
+						const l = 60 / 100;
+						const k = (n) => (n + hue / 30) % 12;
+						const a = s * Math.min(l, 1 - l);
+						const f = (n) =>
+							l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+
+						const toHex = (x) => {
+							const hex = Math.round(x * 255).toString(16);
+							return hex.length === 1 ? "0" + hex : hex;
+						};
+
+						colors.push(`#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`);
 					}
 
 					return colors;
+				}
+
+				const hraCategories = [
+					"Working from Heights",
+					"Lifting Operations",
+					"Mobile Equipment",
+					"Ground Disturbance",
+					"Driving & Off-Road Vehicles",
+					"Material Handling",
+					"Energy Isolation",
+					"Confined Spaces",
+					"Electrical",
+					"Noise",
+					"Thermal Stress",
+					"Hazardous Materials",
+					"Other",
+				];
+
+				function updateCategoryCharts(reports) {
+					const counts = reports.reduce((acc, report) => {
+						const key = report.category || "Unknown";
+						acc[key] = (acc[key] || 0) + 1;
+						return acc;
+					}, {});
+
+					const hraData = {};
+					const nonHraData = {};
+
+					Object.keys(counts).forEach((key) => {
+						if (hraCategories.includes(key)) {
+							hraData[key] = counts[key];
+						} else {
+							nonHraData[key] = counts[key];
+						}
+					});
+
+					updateBarChart(
+						hraData,
+						"hraChart",
+						translations[currentLang].hraTitle || "HRA Categories",
+						hraChart,
+						(c) => (hraChart = c),
+						"#e74c3c",
+					);
+
+					updateBarChart(
+						nonHraData,
+						"nonHraChart",
+						translations[currentLang].nonHraTitle || "Non-HRA Categories",
+						nonHraChart,
+						(c) => (nonHraChart = c),
+						"#2ecc71",
+					);
+				}
+
+				function updateBarChart(
+					dataObj,
+					canvasId,
+					title,
+					chartInstance,
+					setChartInstance,
+					color,
+				) {
+					if (chartInstance) chartInstance.destroy();
+
+					const labels = Object.keys(dataObj);
+					const data = Object.values(dataObj);
+					const maxDataValue = data.length > 0 ? Math.max(...data) : 0;
+
+					const newChart = new Chart(document.getElementById(canvasId), {
+						type: "bar",
+						data: {
+							labels: labels.map((l) => {
+								return (
+									translations[currentLang][`cat${l.replace(/\s/g, "")}`] ||
+									translations[currentLang][l.replace(/\s/g, "")] ||
+									l
+								);
+							}),
+							datasets: [
+								{
+									label: "Observations",
+									data: data,
+									backgroundColor: color,
+									borderRadius: 4,
+									maxBarThickness: 50,
+								},
+							],
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: false,
+							layout: {
+								padding: {
+									bottom: 40,
+								},
+							},
+							plugins: {
+								legend: { display: false },
+								title: { display: true, text: title },
+								tooltip: {
+									callbacks: {
+										label: function (context) {
+											return `${context.raw} Observations`;
+										},
+									},
+								},
+							},
+							scales: {
+								y: {
+									beginAtZero: true,
+									suggestedMax: maxDataValue + 1,
+									ticks: {
+										stepSize: 1,
+										font: { weight: "bold", size: 13 },
+									},
+									grid: {
+										color: "rgba(0, 0, 0, 0.15)",
+										lineWidth: 1,
+									},
+								},
+								x: {
+									ticks: {
+										autoSkip: false,
+										maxRotation: 60,
+										minRotation: 60,
+										font: { size: 11 },
+									},
+								},
+							},
+						},
+					});
+					setChartInstance(newChart);
 				}
 
 				function updatePieChart(
 					reports,
 					field,
 					canvasId,
+					legendId,
 					title,
 					chartInstance,
 					setChartInstance,
@@ -1047,37 +1145,10 @@
 						plugins: [centerTextPlugin],
 						options: {
 							responsive: true,
+							maintainAspectRatio: false,
 							plugins: {
 								legend: {
-									position: "top",
-									labels: {
-										generateLabels: function (chart) {
-											const data = chart.data;
-											if (data.labels.length && data.datasets.length) {
-												return data.labels.map((label, i) => {
-													const meta = chart.getDatasetMeta(0);
-													const ds = data.datasets[0];
-													const value = ds.data[i];
-													// Attempt to translate the label
-													const translatedLabel =
-														translations[currentLang][
-															`cat${label.replace(/\s/g, "")}`
-														] ||
-														translations[currentLang][
-															label.replace(/\s/g, "")
-														] ||
-														label;
-													return {
-														text: `${translatedLabel}: ${value}`,
-														fillStyle: ds.backgroundColor[i],
-														hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
-														index: i,
-													};
-												});
-											}
-											return [];
-										},
-									},
+									display: false,
 								},
 								title: { display: true, text: title },
 								centerText: {
@@ -1093,6 +1164,45 @@
 						},
 					});
 					setChartInstance(newChart);
+
+					// Generate Custom HTML Legend
+					const legendContainer = document.getElementById(legendId);
+					if (legendContainer) {
+						legendContainer.innerHTML = "";
+
+						const labels = Object.keys(counts);
+						const values = Object.values(counts);
+						const colors = newChart.data.datasets[0].backgroundColor;
+
+						labels.forEach((label, i) => {
+							const translatedLabel =
+								translations[currentLang][`cat${label.replace(/\s/g, "")}`] ||
+								translations[currentLang][label.replace(/\s/g, "")] ||
+								label;
+
+							const item = document.createElement("div");
+							item.className = "legend-item";
+							item.onclick = () => {
+								const meta = newChart.getDatasetMeta(0);
+								// Toggle visibility
+								meta.data[i].hidden = !meta.data[i].hidden;
+								newChart.update();
+								// Toggle styling
+								item.classList.toggle("hidden");
+							};
+
+							const colorBox = document.createElement("div");
+							colorBox.className = "legend-color";
+							colorBox.style.backgroundColor = colors[i];
+
+							const text = document.createElement("span");
+							text.textContent = `${translatedLabel}: ${values[i]}`;
+
+							item.appendChild(colorBox);
+							item.appendChild(text);
+							legendContainer.appendChild(item);
+						});
+					}
 				} // --- DATA FETCHING ---
 				db.collection("observations")
 					.orderBy("obsDate", "desc")
@@ -1103,6 +1213,16 @@
 								id: doc.id,
 								...doc.data(),
 							}));
+							// Sort by submittedAt desc, fallback to obsDate desc
+							allReports.sort((a, b) => {
+								const dateA = a.submittedAt
+									? a.submittedAt.toDate()
+									: new Date(a.obsDate);
+								const dateB = b.submittedAt
+									? b.submittedAt.toDate()
+									: new Date(b.obsDate);
+								return dateB - dateA;
+							});
 							if (currentView === "observations") applyTranslation(currentLang);
 						},
 						(error) => {
@@ -1155,6 +1275,7 @@
 				});
 
 				usersTableBody.addEventListener("click", async (e) => {
+					// Handle Approve Button
 					if (e.target && e.target.classList.contains("approve-btn")) {
 						const button = e.target;
 						const uid = button.dataset.uid;
@@ -1172,6 +1293,11 @@
 							);
 						}
 					}
+					// Handle Edit Button
+					if (e.target && e.target.classList.contains("edit-user-btn")) {
+						const uid = e.target.dataset.uid;
+						openEditUserModal(uid);
+					}
 				});
 
 				contentDiv.addEventListener("click", (e) => {
@@ -1183,6 +1309,7 @@
 				});
 
 				closeModalBtn.onclick = () => (modal.style.display = "none");
+
 				window.onclick = (event) => {
 					if (event.target == modal) modal.style.display = "none";
 				};
@@ -1213,6 +1340,9 @@
 						}</p>
 						<p><strong>${translations[currentLang].modalPosition}:</strong> ${
 							report.observerPosition || "N/A"
+						}</p>
+						<p><strong><span data-key="roomAreaLabel">Room/Area:</span></strong> ${
+							report.roomArea || "N/A"
 						}</p>
 						<p><strong>${translations[currentLang].modalLocation}:</strong> ${
 							report.obsLocation || "N/A"
@@ -1249,6 +1379,149 @@
 				document
 					.getElementById("exportPdfBtn")
 					.addEventListener("click", exportToPDF);
+				
+				document
+					.getElementById("exportCsvBtn")
+					.addEventListener("click", exportToCSV);
+
+				function exportToCSV() {
+					const btn = document.getElementById("exportCsvBtn");
+					const originalText = btn.textContent;
+					btn.textContent = "Exporting...";
+					btn.disabled = true;
+
+					try {
+						// Filter Logic
+						let reportsToExport = allReports;
+						if (startDateInput.value && endDateInput.value) {
+							reportsToExport = allReports.filter((report) => {
+								if (!report.obsDate) return false;
+								return (
+									report.obsDate >= startDateInput.value &&
+									report.obsDate <= endDateInput.value
+								);
+							});
+						}
+
+						const headers = [
+							"CS \\ ID", "CS \\ Project", "Project Category", "Room/Area", "Prepared On", 
+							"Comments", "General Contractors", "Lease Providers", "Observation Category", 
+							"Observation Description", "CS \\ Responsible Party", "Interim Corrective Actions", 
+							"Final Corrective Actions", "Category Type", "CS \\ Phase of Contruction", 
+							"Notification Date", "High Risk + Significant Exposure", "General Category", 
+							"Worst Potential Severity", "CS1 \\ Person Notified", "Record Type", 
+							"Created On", "Attachments", "ID", "Link to Records \\ ", 
+							"Link to Event records for reports", "Responsible Party USER", "AKA MS", 
+							"Country", "Metro", "Region", "Person Notified users", 
+							"Privacy Data Notice for Rules \\ ", "Microsoft Data Privacy Notice", 
+							"Trail \\ ", "Created by"
+						];
+
+						// Helper to escape CSV fields
+						const escapeCsv = (str) => {
+							if (str === null || str === undefined) return "";
+							const stringValue = String(str);
+							// If contains comma, quote, or newline, wrap in quotes and escape internal quotes
+							if (stringValue.includes(",") || stringValue.includes("\"") || stringValue.includes("\n")) {
+								return `"${stringValue.replace(/"/g, '""')}"`;
+							}
+							return stringValue;
+						};
+
+						const formatDate = (dateString, includeTime = false) => {
+							 if (!dateString) return "";
+							 // Handle YYYY-MM-DD
+							 const parts = dateString.split("-");
+							 if (parts.length === 3) {
+								const date = new Date(parts[0], parts[1] - 1, parts[2]);
+								const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+								const m = months[date.getMonth()];
+								const d = String(date.getDate()).padStart(2, '0');
+								const y = date.getFullYear();
+								
+								if (includeTime) {
+									return `${m}-${d}-${y} 00:00`;
+								}
+								return `${m}-${d}-${y}`;
+							 }
+							 return dateString;
+						};
+						
+						// Format today's date for "Created On"
+						const today = new Date();
+						const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+						const createdOnStr = `${months[today.getMonth()]}-${String(today.getDate()).padStart(2, '0')}-${today.getFullYear()}`;
+
+						const csvContent = [
+							headers.join(","),
+							...reportsToExport.map(report => {
+								const isHRA = hraCategories.includes(report.category);
+								
+								const preparedOn = formatDate(report.obsDate, true);
+								const categoryType = isHRA ? "HRA (High-Risk Activity)" : "General Category";
+								const highRisk = isHRA ? report.category : "";
+								const generalCategory = !isHRA ? report.category : "";
+								const worstSeverity = isHRA ? "Major (1 Day)" : "Minor (7 Days)";
+
+								return [
+									 "", // CS \ ID
+									 "", // CS \ Project
+									 "", // Project Category
+									 escapeCsv(report.roomArea), // Room/Area
+									 escapeCsv(preparedOn), // Prepared On
+									 "JKT09", // Comments
+									 "Jaya Obayashi", // General Contractors
+									 "", // Lease Providers
+									 escapeCsv(report.obsType), // Observation Category
+									 escapeCsv(report.description), // Observation Description
+									 "", // CS \ Responsible Party
+									 "", // Interim Corrective Actions
+									 escapeCsv(report.immediateAction), // Final Corrective Actions
+									 escapeCsv(categoryType), // Category Type
+									 "Steel Erection", // CS \ Phase of Contruction
+									 "", // Notification Date
+									 escapeCsv(highRisk), // High Risk + Significant Exposure
+									 escapeCsv(generalCategory), // General Category
+									 escapeCsv(worstSeverity), // Worst Potential Severity
+									 "", // CS1 \ Person Notified
+									 "", // Record Type
+									 escapeCsv(createdOnStr), // Created On
+									 "", // Attachments
+									 "", // ID
+									 "", // Link to Records \ 
+									 "", // Link to Event records for reports
+									 "", // Responsible Party USER
+									 "", // AKA MS
+									 "Indonesia", // Country
+									 "Jakarta JKT", // Metro
+									 "APAC", // Region
+									 "", // Person Notified users
+									 "", // Privacy Data Notice for Rules \ 
+									 "", // Microsoft Data Privacy Notice
+									 "", // Trail \ 
+									 "EHS Form" // Created by
+								].join(",");
+							})
+						].join("\n");
+
+						const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+						const link = document.createElement("a");
+						const url = URL.createObjectURL(blob);
+						link.setAttribute("href", url);
+						link.setAttribute("download", `Observation_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+						link.style.visibility = 'hidden';
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+
+					} catch (error) {
+						console.error("Export CSV failed:", error);
+						alert("Failed to export CSV.");
+					} finally {
+						btn.textContent = originalText;
+						btn.disabled = false;
+					}
+				}
 
 				async function exportToPDF() {
 					const btn = document.getElementById("exportPdfBtn");
@@ -1325,63 +1598,149 @@
 						// --- PAGE 1: CHARTS ---
 						addHeaderFooter();
 
-						// doc.setFontSize(12);
-						// doc.text(`Filter Period: ${startDate} to ${endDate}`, margin, 25);
+						const startY = 30;
+						const chartGap = 10;
+						const availableWidth = pageWidth - (margin * 2);
+						const colWidth = (availableWidth - chartGap) / 2;
 
-						try {
-							const chart1 = document.getElementById("positionChart");
-							const chart2 = document.getElementById("categoryChart");
-							const chart3 = document.getElementById("typeChart");
+						// Define layout areas
+						// Top Left: HRA Bar Chart
+						// Top Right: Non-HRA Bar Chart
+						// Bottom Left: Position Pie Chart
+						// Bottom Right: Type Pie Chart
 
-							if (chart1 && chart2 && chart3) {
-								const img1 = chart1.toDataURL("image/png");
-								const img2 = chart2.toDataURL("image/png");
-								const img3 = chart3.toDataURL("image/png");
+						const drawChart = (chart, title, x, y, width, height) => {
+							if (!chart) return;
 
-								// Layout: 3 charts side-by-side
-								const chartY = 35;
-								const chartWidth = 85;
-								const chartHeight = 85;
+							// Title
+							doc.setFontSize(10);
+							doc.setFont("helvetica", "bold");
+							doc.text(title, x, y);
 
-								doc.addImage(
-									img1,
-									"PNG",
-									margin,
-									chartY,
-									chartWidth,
-									chartHeight,
-								);
-								doc.addImage(
-									img2,
-									"PNG",
-									margin + chartWidth + 5,
-									chartY,
-									chartWidth,
-									chartHeight,
-								);
-								doc.addImage(
-									img3,
-									"PNG",
-									margin + chartWidth * 2 + 10,
-									chartY,
-									chartWidth,
-									chartHeight,
-								);
-							}
-						} catch (err) {
-							console.error("Error adding charts to PDF:", err);
-							doc.text("Error rendering charts.", margin, 40);
+							// Chart Image
+							const imgData = chart.toBase64Image();
+							// Add some spacing below title
+							const imgY = y + 2; 
+							
+							// For pie charts, we need to handle the custom legend manually drawn
+							doc.addImage(imgData, "PNG", x, imgY, width, height);
+
+							return imgY + height;
+						};
+
+						const drawLegend = (chart, x, y, width) => {
+							if (!chart || chart.config.type === 'bar') return 0;
+							
+							const labels = chart.data.labels;
+							const dataValues = chart.data.datasets[0].data;
+							const colors = chart.data.datasets[0].backgroundColor;
+							
+							doc.setFontSize(8);
+							doc.setFont("helvetica", "normal");
+							
+							let legendY = y;
+							const boxSize = 3;
+							
+							labels.forEach((label, idx) => {
+								if (dataValues[idx] === 0) return;
+								
+								const translatedLabel =
+									translations[currentLang][`cat${label.replace(/\s/g, "")}`] ||
+									translations[currentLang][label.replace(/\s/g, "")] ||
+									label;
+								const text = `${translatedLabel}: ${dataValues[idx]}`;
+								
+								doc.setFillColor(colors[idx]);
+								doc.rect(x, legendY - boxSize, boxSize, boxSize, "F");
+								doc.text(text, x + 5, legendY);
+								
+								legendY += 4;
+							});
+							return legendY - y;
+						};
+
+						// --- ROW 1: BAR CHARTS ---
+						const row1Y = startY;
+						const barHeight = 60; // Increased height for bar charts
+						
+						// HRA Chart (Top Left)
+						if (hraChart) {
+							drawChart(
+								hraChart, 
+								translations[currentLang].hraTitle || "HRA", 
+								margin, 
+								row1Y, 
+								colWidth, 
+								barHeight
+							);
 						}
 
-						// --- PAGE 2: TABLE ---
+						// Non-HRA Chart (Top Right)
+						if (nonHraChart) {
+							drawChart(
+								nonHraChart, 
+								translations[currentLang].nonHraTitle || "Non-HRA", 
+								margin + colWidth + chartGap, 
+								row1Y, 
+								colWidth, 
+								barHeight
+							);
+						}
+
+						// --- ROW 2: PIE CHARTS ---
+						const row2Y = row1Y + barHeight + 15;
+						const pieDiameter = 45; 
+						const legendWidth = 60;
+						
+						// Position Chart (Bottom Left)
+						if (positionChart) {
+							drawChart(
+								positionChart, 
+								translations[currentLang].chartTitlePosition, 
+								margin, 
+								row2Y, 
+								pieDiameter, 
+								pieDiameter
+							);
+							// Draw Legend next to pie
+							drawLegend(
+								positionChart, 
+								margin + pieDiameter + 5, 
+								row2Y + 5, 
+								legendWidth
+							);
+						}
+
+						// Type Chart (Bottom Right) - Positioned under Non-HRA chart
+						if (typeChart) {
+							drawChart(
+								typeChart, 
+								translations[currentLang].chartTitleType, 
+								margin + colWidth + chartGap, 
+								row2Y, 
+								pieDiameter, 
+								pieDiameter
+							);
+							// Draw Legend next to pie
+							drawLegend(
+								typeChart, 
+								margin + colWidth + chartGap + pieDiameter + 5, 
+								row2Y + 5, 
+								legendWidth
+							);
+						}
+
+						// --- PAGE 2+: TABLE ---
 						doc.addPage(); // Start table on new page
 
 						const tableHead = [
 							[
 								"No",
 								"Date",
+								"Time",
 								"Observer Name",
 								"Role",
+								"Room/Area",
 								"Location",
 								"Type",
 								"Description",
@@ -1411,6 +1770,13 @@
 										? report.submittedAt.toDate().toLocaleDateString()
 										: "N/A");
 
+								const time = report.submittedAt
+									? report.submittedAt.toDate().toLocaleTimeString([], {
+											hour: "2-digit",
+											minute: "2-digit",
+										})
+									: "N/A";
+
 								let imageBase64 = null;
 								if (report.photoURL) {
 									imageBase64 = await getBase64ImageFromUrl(report.photoURL);
@@ -1419,8 +1785,10 @@
 								return [
 									index + 1, // Row Number
 									date,
+									time,
 									report.observerName || "N/A",
 									report.observerPosition || "N/A",
+									report.roomArea || "N/A",
 									report.obsLocation || "N/A",
 									report.obsType || "N/A",
 									report.description || "N/A",
@@ -1437,9 +1805,12 @@
 							margin: { top: 25, bottom: 15, left: margin, right: margin },
 							styles: { fontSize: 8, cellPadding: 2, valign: "middle" },
 							columnStyles: {
-								0: { cellWidth: 10 }, // No
-								6: { cellWidth: 50 }, // Description
-								8: { cellWidth: 20 }, // Image column width
+								0: { cellWidth: 8 }, // No
+								1: { cellWidth: 18 }, // Date
+								2: { cellWidth: 12 }, // Time
+								5: { cellWidth: 20 }, // Room/Area
+								8: { cellWidth: 40 }, // Description
+								10: { cellWidth: 20 }, // Image column width
 							},
 							bodyStyles: { minCellHeight: 15 }, // Smaller row height
 							rowPageBreak: "avoid", // Avoid splitting rows
@@ -1447,8 +1818,8 @@
 								addHeaderFooter();
 							},
 							didParseCell: function (data) {
-								// Check Image Column (Index 8)
-								if (data.section === "body" && data.column.index === 8) {
+								// Check Image Column (Index 10)
+								if (data.section === "body" && data.column.index === 10) {
 									if (data.cell.raw) {
 										// Has image data -> Clear text to prevent dump
 										data.cell.text = "";
@@ -1459,10 +1830,10 @@
 								}
 							},
 							didDrawCell: function (data) {
-								// Draw Image in the Image Column (Index 8)
+								// Draw Image in the Image Column (Index 10)
 								if (
 									data.section === "body" &&
-									data.column.index === 8 &&
+									data.column.index === 10 &&
 									data.cell.raw
 								) {
 									const imgData = data.cell.raw; // This is the Base64 string

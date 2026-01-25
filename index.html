@@ -205,11 +205,13 @@
 				font-size: 14px;
 			}
 
+			/* Modern Form Styles */
 			input[type="text"],
 			input[type="date"],
-			textarea,
-			input[type="file"],
-			input[type="email"] {
+			input[type="number"],
+			input[type="email"],
+			select,
+			textarea {
 				width: 100%;
 				padding: 10px 12px;
 				border: 1px solid #dfe6e9;
@@ -220,15 +222,35 @@
 				transition:
 					border-color 0.3s ease,
 					box-shadow 0.3s ease;
+				margin-top: 5px;
+				font-family: "Inter", sans-serif; /* Ensure font consistency */
+			}
+
+			select {
+				appearance: none;
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2334495e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+				background-repeat: no-repeat;
+				background-position: right 10px center;
+				background-size: 16px;
+				cursor: pointer;
+				padding-right: 35px; /* Space for the arrow */
 			}
 
 			input[type="text"]:focus,
 			input[type="date"]:focus,
-			textarea:focus,
-			input[type="email"]:focus {
+			input[type="number"]:focus,
+			input[type="email"]:focus,
+			select:focus,
+			textarea:focus {
 				border-color: #007bff;
 				box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 				outline: none;
+			}
+			
+			select:hover {
+				border-color: #b2bec3;
 			}
 
 			input[type="file"] {
@@ -390,6 +412,63 @@
 				margin-bottom: 20px;
 				margin-top: 0;
 			}
+
+			/* Photo Upload UI */
+			.photo-upload-container {
+				display: flex;
+				flex-direction: column;
+				gap: 15px;
+			}
+			.photo-buttons {
+				display: flex;
+				gap: 10px;
+			}
+			.photo-btn {
+				flex: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				padding: 10px;
+				border: 1px solid #007bff;
+				border-radius: 6px;
+				background-color: #fff;
+				color: #007bff;
+				cursor: pointer;
+				font-weight: 600;
+				transition: all 0.3s ease;
+			}
+			.photo-btn:hover {
+				background-color: #f0f7ff;
+			}
+			.photo-preview-container {
+				display: none;
+				position: relative;
+				width: 100%;
+				max-width: 300px;
+				margin: 0 auto;
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			}
+			#photoPreview {
+				width: 100%;
+				height: auto;
+				display: block;
+			}
+			.remove-photo-btn {
+				position: absolute;
+				top: 5px;
+				right: 5px;
+				background-color: rgba(244, 67, 54, 0.9);
+				color: white;
+				border: none;
+				padding: 5px 10px;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 12px;
+				font-weight: bold;
+			}
 		</style>
 	</head>
 	<body>
@@ -493,18 +572,28 @@
 					<h2 class="card-title" data-key="observationDetails">
 						Observation Details
 					</h2>
-					<div class="form-group" style="margin-bottom: 0">
-						<label for="obsLocation" data-key="obsLocationLabel"
-							>Lokasi Observasi:</label
-						>
-						<input
-							type="text"
-							id="obsLocation"
-							name="obsLocation"
-							data-placeholder-key="obsLocationPlaceholder"
-							placeholder="Contoh: Area Workshop, Gudang B"
-							required
-						/>
+					<div style="display: flex; gap: 15px; flex-wrap: wrap;">
+						<div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+							<label for="roomArea" data-key="roomAreaLabel">Room/Area:</label>
+							<select id="roomArea" name="roomArea" required>
+								<option value="" disabled selected data-key="selectOption">Select...</option>
+								<option value="COLO or AZ">COLO or AZ</option>
+								<option value="External Area">External Area</option>
+							</select>
+						</div>
+						<div class="form-group" style="flex: 2; min-width: 250px; margin-bottom: 0;">
+							<label for="obsLocation" data-key="obsLocationLabel"
+								>Lokasi Observasi:</label
+							>
+							<input
+								type="text"
+								id="obsLocation"
+								name="obsLocation"
+								data-placeholder-key="obsLocationPlaceholder"
+								placeholder="Contoh: Area Workshop, Gudang B"
+								required
+							/>
+						</div>
 					</div>
 				</div>
 
@@ -632,175 +721,6 @@
 									>Hazardous Materials</label
 								>
 							</div>
-						</div>
-						<div class="category-subtitle" data-key="nonHraTitle">
-							Non HRA/Other
-						</div>
-						<div class="radio-group-grid">
-							<div>
-								<input
-									type="radio"
-									id="cat-animals"
-									name="category"
-									value="Animals and Insects"
-								/><label for="cat-animals" data-key="catAnimals"
-									>Animals and Insects</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-barricades"
-									name="category"
-									value="Barricades"
-								/><label for="cat-barricades" data-key="catBarricades"
-									>Barricades</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-biological"
-									name="category"
-									value="Biological"
-								/><label for="cat-biological" data-key="catBiological"
-									>Biological</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-documentation"
-									name="category"
-									value="Documentation"
-								/><label for="cat-documentation" data-key="catDocumentation"
-									>Documentation</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-emergency"
-									name="category"
-									value="Emergency Preparedness"
-								/><label for="cat-emergency" data-key="catEmergency"
-									>Emergency Preparedness</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-environmental"
-									name="category"
-									value="Environmental"
-								/><label for="cat-environmental" data-key="catEnvironmental"
-									>Environmental</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-ergonomic"
-									name="category"
-									value="Ergonomic"
-								/><label for="cat-ergonomic" data-key="catErgonomic"
-									>Ergonomic</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-fatigue"
-									name="category"
-									value="Fatigue"
-								/><label for="cat-fatigue" data-key="catFatigue">Fatigue</label>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-fire"
-									name="category"
-									value="Fire Protection"
-								/><label for="cat-fire" data-key="catFire"
-									>Fire Protection</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-tools"
-									name="category"
-									value="Hand or Power Tools"
-								/><label for="cat-tools" data-key="catTools"
-									>Hand or Power Tools</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-housekeeping"
-									name="category"
-									value="Housekeeping"
-								/><label for="cat-housekeeping" data-key="catHousekeeping"
-									>Housekeeping</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-lasers"
-									name="category"
-									value="Lasers"
-								/><label for="cat-lasers" data-key="catLasers">Lasers</label>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-lighting"
-									name="category"
-									value="Lighting"
-								/><label for="cat-lighting" data-key="catLighting"
-									>Lighting</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-lof"
-									name="category"
-									value="Line of Fire"
-								/><label for="cat-lof" data-key="catLof">Line of Fire</label>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-logistics"
-									name="category"
-									value="Logistics"
-								/><label for="cat-logistics" data-key="catLogistics"
-									>Logistics</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-lifting-manual"
-									name="category"
-									value="Manual Lifting"
-								/><label for="cat-lifting-manual" data-key="catManualLifting"
-									>Manual Lifting</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-office"
-									name="category"
-									value="Office Tools and Equipment"
-								/><label for="cat-office" data-key="catOffice"
-									>Office Tools and Equipment</label
-								>
-							</div>
 							<div>
 								<input
 									type="radio"
@@ -811,85 +731,256 @@
 									>Other</label
 								>
 							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-ppe"
-									name="category"
-									value="Personal Protective Equipment"
-								/><label for="cat-ppe" data-key="catPpe"
-									>Personal Protective Equipment</label
-								>
+						</div>
+						<div id="nonHraSection" style="display: none;">
+							<div class="category-subtitle" data-key="nonHraTitle">
+								Non HRA/Other
 							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-culture"
-									name="category"
-									value="Safety Culture"
-								/><label for="cat-culture" data-key="catCulture"
-									>Safety Culture</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-sanitation"
-									name="category"
-									value="Sanitation"
-								/><label for="cat-sanitation" data-key="catSanitation"
-									>Sanitation</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-access"
-									name="category"
-									value="Site Access and Control"
-								/><label for="cat-access" data-key="catAccess"
-									>Site Access and Control</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-training"
-									name="category"
-									value="Training"
-								/><label for="cat-training" data-key="catTraining"
-									>Training</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-ventilation"
-									name="category"
-									value="Ventilation"
-								/><label for="cat-ventilation" data-key="catVentilation"
-									>Ventilation</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-surfaces"
-									name="category"
-									value="Walking, Working Surfaces"
-								/><label for="cat-surfaces" data-key="catSurfaces"
-									>Walking, Working Surfaces</label
-								>
-							</div>
-							<div>
-								<input
-									type="radio"
-									id="cat-welding"
-									name="category"
-									value="Welding, Cutting and Grinding"
-								/><label for="cat-welding" data-key="catWelding"
-									>Welding, Cutting and Grinding</label
-								>
+							<div class="radio-group-grid">
+								<div>
+									<input
+										type="radio"
+										id="cat-animals"
+										name="category"
+										value="Animals and Insects"
+									/><label for="cat-animals" data-key="catAnimals"
+										>Animals and Insects</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-barricades"
+										name="category"
+										value="Barricades"
+									/><label for="cat-barricades" data-key="catBarricades"
+										>Barricades</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-biological"
+										name="category"
+										value="Biological"
+									/><label for="cat-biological" data-key="catBiological"
+										>Biological</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-documentation"
+										name="category"
+										value="Documentation"
+									/><label for="cat-documentation" data-key="catDocumentation"
+										>Documentation</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-emergency"
+										name="category"
+										value="Emergency Preparedness"
+									/><label for="cat-emergency" data-key="catEmergency"
+										>Emergency Preparedness</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-environmental"
+										name="category"
+										value="Environmental"
+									/><label for="cat-environmental" data-key="catEnvironmental"
+										>Environmental</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-ergonomic"
+										name="category"
+										value="Ergonomic"
+									/><label for="cat-ergonomic" data-key="catErgonomic"
+										>Ergonomic</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-fatigue"
+										name="category"
+										value="Fatigue"
+									/><label for="cat-fatigue" data-key="catFatigue">Fatigue</label>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-fire"
+										name="category"
+										value="Fire Protection"
+									/><label for="cat-fire" data-key="catFire"
+										>Fire Protection</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-tools"
+										name="category"
+										value="Hand or Power Tools"
+									/><label for="cat-tools" data-key="catTools"
+										>Hand or Power Tools</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-housekeeping"
+										name="category"
+										value="Housekeeping"
+									/><label for="cat-housekeeping" data-key="catHousekeeping"
+										>Housekeeping</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-lasers"
+										name="category"
+										value="Lasers"
+									/><label for="cat-lasers" data-key="catLasers">Lasers</label>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-lighting"
+										name="category"
+										value="Lighting"
+									/><label for="cat-lighting" data-key="catLighting"
+										>Lighting</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-lof"
+										name="category"
+										value="Line of Fire"
+									/><label for="cat-lof" data-key="catLof">Line of Fire</label>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-logistics"
+										name="category"
+										value="Logistics"
+									/><label for="cat-logistics" data-key="catLogistics"
+										>Logistics</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-lifting-manual"
+										name="category"
+										value="Manual Lifting"
+									/><label for="cat-lifting-manual" data-key="catManualLifting"
+										>Manual Lifting</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-office"
+										name="category"
+										value="Office Tools and Equipment"
+									/><label for="cat-office" data-key="catOffice"
+										>Office Tools and Equipment</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-ppe"
+										name="category"
+										value="Personal Protective Equipment"
+									/><label for="cat-ppe" data-key="catPpe"
+										>Personal Protective Equipment</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-culture"
+										name="category"
+										value="Safety Culture"
+									/><label for="cat-culture" data-key="catCulture"
+										>Safety Culture</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-sanitation"
+										name="category"
+										value="Sanitation"
+									/><label for="cat-sanitation" data-key="catSanitation"
+										>Sanitation</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-access"
+										name="category"
+										value="Site Access and Control"
+									/><label for="cat-access" data-key="catAccess"
+										>Site Access and Control</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-training"
+										name="category"
+										value="Training"
+									/><label for="cat-training" data-key="catTraining"
+										>Training</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-ventilation"
+										name="category"
+										value="Ventilation"
+									/><label for="cat-ventilation" data-key="catVentilation"
+										>Ventilation</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-surfaces"
+										name="category"
+										value="Walking, Working Surfaces"
+									/><label for="cat-surfaces" data-key="catSurfaces"
+										>Walking, Working Surfaces</label
+									>
+								</div>
+								<div>
+									<input
+										type="radio"
+										id="cat-welding"
+										name="category"
+										value="Welding, Cutting and Grinding"
+									/><label for="cat-welding" data-key="catWelding"
+										>Welding, Cutting and Grinding</label
+									>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -898,30 +989,28 @@
 				<div class="form-card">
 					<div class="form-group" style="margin-bottom: 0">
 						<label data-key="obsTypeLabel">Jenis Observasi:</label>
-						<div class="radio-group">
+						<div class="radio-group-grid">
 							<div>
 								<input
 									type="radio"
-									id="safeActAndCondition"
+									id="newPositiveObservation"
 									name="obsType"
-									value="Safe Act and Condition"
+									value="New Positive Observation"
 									required
 								/>
-								<label for="safeActAndCondition" data-key="safeActAndCondition"
-									>Safe Act and Condition</label
+								<label for="newPositiveObservation" data-key="NewPositiveObservation"
+									>New Positive Observation</label
 								>
 							</div>
 							<div>
 								<input
 									type="radio"
-									id="unsafeActAndCondition"
+									id="newAtRiskObservation"
 									name="obsType"
-									value="Unsafe Act and Condition"
+									value="New At Risk Observation"
 								/>
-								<label
-									for="unsafeActAndCondition"
-									data-key="unsafeActAndCondition"
-									>Unsafe Act and Condition</label
+								<label for="newAtRiskObservation" data-key="NewAtRiskObservation"
+									>New At Risk Observation</label
 								>
 							</div>
 						</div>
@@ -981,10 +1070,9 @@
 							>
 								<label
 									for="immediateAction"
-									data-key="immediateActionAndRecommendationLabel"
+									data-key="immediateActionLabel"
 									style="margin-bottom: 0"
-									>Immediate Action taken and Recommendations/ Improvement
-									Suggestions:</label
+									>Immediate Action:</label
 								>
 								<button
 									type="button"
@@ -1010,7 +1098,8 @@
 								placeholder="Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan..."
 							></textarea>
 						</div>
-						<div class="form-group" style="margin-bottom: 0">
+						<!-- Akan digunakan di masa mendatang -->
+						<div class="form-group" style="margin-bottom: 0; display: none;">
 							<label for="unsafeEmail" data-key="unsafeEmailLabel"
 								>Email Address:</label
 							>
@@ -1027,15 +1116,27 @@
 
 				<div class="form-card">
 					<div class="form-group" style="margin-bottom: 0">
-						<label for="uploadPhoto" data-key="uploadPhotoLabel"
-							>Unggah Foto (Opsional):</label
-						>
-						<input
-							type="file"
-							id="uploadPhoto"
-							name="uploadPhoto"
-							accept="image/*"
-						/>
+						<label data-key="uploadPhotoLabel">Unggah Foto (Opsional):</label>
+						<div class="photo-upload-container">
+							<div class="photo-buttons">
+								<button type="button" class="photo-btn" id="galleryBtn">
+									<i class="fa fa-image"></i> <span data-key="galleryButton">Gallery</span>
+								</button>
+								<button type="button" class="photo-btn" id="cameraBtn">
+									<i class="fa fa-camera"></i> <span data-key="cameraButton">Camera</span>
+								</button>
+							</div>
+							
+							<!-- Hidden inputs -->
+							<input type="file" id="uploadPhotoGallery" accept="image/*" style="display: none;">
+							<input type="file" id="uploadPhotoCamera" accept="image/*" capture="environment" style="display: none;">
+							
+							<!-- Preview -->
+							<div id="previewContainer" class="photo-preview-container">
+								<img id="photoPreview" src="" alt="Preview">
+								<button type="button" id="removePhotoBtn" class="remove-photo-btn" data-key="removePhotoButton">Remove Photo</button>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -1062,6 +1163,29 @@
 			</form>
 		</div>
 
+		<!-- Confirmation Modal -->
+		<div id="confirmSubmitModal" class="modal-overlay" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+			<div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; border-radius: 8px; text-align: center;">
+				<h3 data-key="confirmSubmitTitle">Konfirmasi Pengiriman</h3>
+				<p data-key="confirmSubmitMessage">Apakah Anda yakin ingin mengirim laporan ini?</p>
+				<div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+					<button id="cancelSubmitBtn" class="submit-btn" style="background-color: #95a5a6; width: auto;" data-key="cancelButton">Batal</button>
+					<button id="confirmSubmitBtn" class="submit-btn" style="width: auto;" data-key="confirmYesButton">Ya, Kirim</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Success Modal -->
+		<div id="successSubmitModal" class="modal-overlay" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+			<div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; border-radius: 8px; text-align: center;">
+				<h3 data-key="successSubmitTitle">Berhasil!</h3>
+				<p data-key="successSubmitMessage">Laporan Anda telah berhasil dikirim.</p>
+				<div style="display: flex; justify-content: center; margin-top: 20px;">
+					<button id="closeSuccessBtn" class="submit-btn" style="width: auto;" data-key="closeButton">Tutup</button>
+				</div>
+			</div>
+		</div>
+
 		<!-- Firebase Scripts -->
 		<!-- These scripts are now served by Firebase Hosting -->
 		<script src="/__/firebase/8.6.1/firebase-app.js"></script>
@@ -1073,6 +1197,7 @@
 		<!-- Other scripts -->
 		<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 		<script src="js/firebase-init.js"></script>
+		<script src="js/translations.js"></script>
 
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
@@ -1107,6 +1232,7 @@
 					const companySpan = document.getElementById("observerCompanyText");
 					const positionSpan = document.getElementById("observerPositionText");
 					const locationInput = document.getElementById("obsLocation");
+					const roomAreaInput = document.getElementById("roomArea");
 
 					let name = "N/A";
 					let company = "N/A";
@@ -1131,15 +1257,19 @@
 						name = loggedInUser.displayName || "N/A";
 					}
 
-					// Load location from localStorage
+					// Load from localStorage
 					const location = localStorage.getItem(
 						`${loggedInUser.uid}_reporterLocation`,
+					);
+					const roomArea = localStorage.getItem(
+						`${loggedInUser.uid}_roomArea`,
 					);
 
 					nameSpan.textContent = name;
 					companySpan.textContent = company;
 					positionSpan.textContent = position;
 					if (location) locationInput.value = location;
+					if (roomArea) roomAreaInput.value = roomArea;
 
 					// Set today's date
 					const today = new Date();
@@ -1158,6 +1288,10 @@
 						`${loggedInUser.uid}_reporterLocation`,
 						document.getElementById("obsLocation").value,
 					);
+					localStorage.setItem(
+						`${loggedInUser.uid}_roomArea`,
+						document.getElementById("roomArea").value,
+					);
 				}
 
 				loadReporterInfo();
@@ -1166,159 +1300,6 @@
 				const safetyForm = document.getElementById("safetyForm");
 				const messageDiv = document.getElementById("formMessage");
 				const langButtons = document.querySelectorAll(".language-button");
-
-				const translations = {
-					id: {
-						formTitle: "Form Observasi Keselamatan (K3)",
-						reporterInfo: "Informasi Pelapor",
-						observerNameLabel: "Nama Observer:",
-						observerCompanyLabel: "Perusahaan:",
-						observerPositionLabel: "Jabatan:",
-						contactAdmin: "Hubungi admin untuk melakukan perubahan.",
-						obsLocationLabel: "Lokasi Observasi:",
-						obsLocationPlaceholder: "Contoh: Area Workshop, Gudang B",
-						observationDetails: "Detail Observasi",
-						obsDateLabel: "Tanggal Observasi:",
-						categoriesLabel: "Kategori Observasi:",
-						hraTitle: "HRA (High-Risk Activity)",
-						nonHraTitle: "Non HRA/Lainnya",
-						catHeights: "Bekerja di Ketinggian",
-						catLifting: "Operasi Pengangkatan",
-						catMobile: "Peralatan Bergerak",
-						catGround: "Gangguan Tanah",
-						catDriving: "Mengemudi & Kendaraan Off-Road",
-						catMaterial: "Penanganan Material",
-						catEnergy: "Isolasi Energi",
-						catConfined: "Ruang Terbatas",
-						catElectrical: "Listrik",
-						catNoise: "Kebisingan",
-						catThermal: "Stres Termal",
-						catHazardous: "Bahan Berbahaya",
-						catAnimals: "Hewan dan Serangga",
-						catBarricades: "Barikade",
-						catBiological: "Biologis",
-						catDocumentation: "Dokumentasi",
-						catEmergency: "Kesiapan Darurat",
-						catEnvironmental: "Lingkungan",
-						catErgonomic: "Ergonomis",
-						catFatigue: "Kelelahan",
-						catFire: "Proteksi Kebakaran",
-						catTools: "Peralatan Tangan atau Listrik",
-						catHousekeeping: "Tata Graha",
-						catLasers: "Laser",
-						catLighting: "Pencahayaan",
-						catLof: "Line of Fire",
-						catLogistics: "Logistik",
-						catManualLifting: "Pengangkatan Manual",
-						catOffice: "Peralatan Kantor",
-						catOtherNew: "Lainnya",
-						catPpe: "Alat Pelindung Diri (APD)",
-						catCulture: "Budaya Keselamatan",
-						catSanitation: "Sanitasi",
-						catAccess: "Akses dan Kontrol Situs",
-						catTraining: "Pelatihan",
-						catVentilation: "Ventilasi",
-						catSurfaces: "Permukaan Jalan/Kerja",
-						catWelding: "Pengelasan, Pemotongan, dan Gerinda",
-						obsTypeLabel: "Jenis Observasi:",
-						safeActAndCondition: "Tindakan dan Kondisi Aman",
-						unsafeActAndCondition: "Tindakan dan Kondisi Tidak Aman",
-						descriptionLabel: "Deskripsi Observasi:",
-						descriptionPlaceholder: "Jelaskan apa yang Anda lihat...",
-						immediateActionAndRecommendationLabel:
-							"Tindakan Segera yang Diambil dan Rekomendasi/Saran Perbaikan:",
-						immediateActionPlaceholder:
-							"Contoh: Menegur pekerja, menghentikan pekerjaan, membersihkan tumpahan...",
-						unsafeEmailLabel: "Alamat Email (Untuk Tindak Lanjut):",
-						unsafeEmailPlaceholder: "Contoh: nama@perusahaan.com",
-						uploadPhotoLabel: "Unggah Foto (Opsional):",
-						submitButton: "Kirim Laporan",
-						submittingButton: "Mengirim...",
-						successMessage:
-							"<strong>Laporan berhasil dikirim!</strong> Terima kasih atas observasi Anda.",
-						errorMessage:
-							"<strong>Terjadi kesalahan saat mengirim laporan.</strong> Mohon coba lagi.",
-						errorFutureDate: "Tanggal observasi tidak boleh di masa depan.",
-						errorInvalidEmail: "Format email tidak valid.",
-						shareButton: "Bagikan ke WhatsApp",
-						shareText: "Ayo laporkan temuan K3 di sini:",
-					},
-					en: {
-						formTitle: "Safety Observation Form (HSE)",
-						reporterInfo: "Reporter Information",
-						observerNameLabel: "Observer Name:",
-						observerCompanyLabel: "Company:",
-						observerPositionLabel: "Position:",
-						contactAdmin: "Contact admin to make changes.",
-						obsLocationLabel: "Observation Location:",
-						obsLocationPlaceholder: "Example: Workshop Area, Warehouse B",
-						observationDetails: "Observation Details",
-						obsDateLabel: "Observation Date:",
-						categoriesLabel: "Observation Categories:",
-						hraTitle: "HRA (High-Risk Activity)",
-						nonHraTitle: "Non HRA/Other",
-						catHeights: "Working from Heights",
-						catLifting: "Lifting Operations",
-						catMobile: "Mobile Equipment",
-						catGround: "Ground Disturbance",
-						catDriving: "Driving & Off-Road Vehicles",
-						catMaterial: "Material Handling",
-						catEnergy: "Energy Isolation",
-						catConfined: "Confined Spaces",
-						catElectrical: "Electrical",
-						catNoise: "Noise",
-						catThermal: "Thermal Stress",
-						catHazardous: "Hazardous Materials",
-						catAnimals: "Animals and Insects",
-						catBarricades: "Barricades",
-						catBiological: "Biological",
-						catDocumentation: "Documentation",
-						catEmergency: "Emergency Preparedness",
-						catEnvironmental: "Environmental",
-						catErgonomic: "Ergonomic",
-						catFatigue: "Fatigue",
-						catFire: "Fire Protection",
-						catTools: "Hand or Power Tools",
-						catHousekeeping: "Housekeeping",
-						catLasers: "Lasers",
-						catLighting: "Lighting",
-						catLof: "Line of Fire",
-						catLogistics: "Logistics",
-						catManualLifting: "Manual Lifting",
-						catOffice: "Office Tools and Equipment",
-						catOtherNew: "Other",
-						catPpe: "Personal Protective Equipment",
-						catCulture: "Safety Culture",
-						catSanitation: "Sanitation",
-						catAccess: "Site Access and Control",
-						catTraining: "Training",
-						catVentilation: "Ventilation",
-						catSurfaces: "Walking, Working Surfaces",
-						catWelding: "Welding, Cutting and Grinding",
-						obsTypeLabel: "Observation Type:",
-						safeActAndCondition: "Safe Act and Condition",
-						unsafeActAndCondition: "Unsafe Act and Condition",
-						descriptionLabel: "Observation Description:",
-						descriptionPlaceholder: "Describe what you observed...",
-						immediateActionAndRecommendationLabel:
-							"Immediate Action taken and Recommendations/ Improvement Suggestions:",
-						immediateActionPlaceholder:
-							"Example: Reprimanding workers, stopping work, cleaning spills...",
-						unsafeEmailLabel: "Email Address (For Follow Up):",
-						unsafeEmailPlaceholder: "Example: name@company.com",
-						uploadPhotoLabel: "Upload Photo (Optional):",
-						submitButton: "Submit Report",
-						submittingButton: "Submitting...",
-						successMessage:
-							"<strong>Report successfully submitted!</strong> Thank you for your observation.",
-						errorMessage:
-							"<strong>An error occurred while submitting the report.</strong> Please try again.",
-						errorFutureDate: "Observation date cannot be in the future.",
-						errorInvalidEmail: "Invalid email format.",
-						shareButton: "Share to WhatsApp",
-						shareText: "Let's report HSE findings here:",
-					},
-				};
 
 				let currentLang = "en";
 
@@ -1369,11 +1350,9 @@
 					if (isUnsafe) {
 						immediateActionGroup.style.display = "block";
 						immediateActionInput.setAttribute("required", "required");
-						unsafeEmailInput.setAttribute("required", "required");
 					} else {
 						immediateActionGroup.style.display = "none";
 						immediateActionInput.removeAttribute("required");
-						unsafeEmailInput.removeAttribute("required");
 						immediateActionInput.value = ""; // Optional: clear value if hidden
 						unsafeEmailInput.value = ""; // Optional: clear value if hidden
 					}
@@ -1381,9 +1360,35 @@
 
 				obsTypeRadios.forEach((radio) => {
 					radio.addEventListener("change", function () {
-						updateRequiredFields(this.value === "Unsafe Act and Condition");
+						updateRequiredFields(this.value === "New At Risk Observation");
 					});
 				});
+
+				// --- CATEGORY TOGGLE LOGIC ---
+				const categoryRadios = document.querySelectorAll('input[name="category"]');
+				const nonHraSection = document.getElementById('nonHraSection');
+				
+				function updateCategoryVisibility() {
+					const checkedRadio = document.querySelector('input[name="category"]:checked');
+					if (!checkedRadio) return;
+
+					if (checkedRadio.value === 'Other') {
+						nonHraSection.style.display = 'block';
+					} else if (checkedRadio.closest('#nonHraSection')) {
+						// Selected item is inside the Non-HRA section, do nothing (keep visible)
+						nonHraSection.style.display = 'block';
+					} else {
+						// Selected item is a standard HRA category
+						nonHraSection.style.display = 'none';
+					}
+				}
+
+				categoryRadios.forEach(radio => {
+					radio.addEventListener('change', updateCategoryVisibility);
+				});
+				
+				// Run on load
+				updateCategoryVisibility();
 
 				// --- TRANSLATION LOGIC (MyMemory API) ---
 				async function translateText(text, targetLang = "en") {
@@ -1439,12 +1444,81 @@
 					});
 				});
 
+				// --- PHOTO UPLOAD LOGIC ---
+				const galleryBtn = document.getElementById("galleryBtn");
+				const cameraBtn = document.getElementById("cameraBtn");
+				const galleryInput = document.getElementById("uploadPhotoGallery");
+				const cameraInput = document.getElementById("uploadPhotoCamera");
+				const previewContainer = document.getElementById("previewContainer");
+				const photoPreview = document.getElementById("photoPreview");
+				const removePhotoBtn = document.getElementById("removePhotoBtn");
+				let selectedFile = null;
+
+				galleryBtn.addEventListener("click", () => galleryInput.click());
+				cameraBtn.addEventListener("click", () => cameraInput.click());
+
+				function handleFileSelect(e) {
+					const file = e.target.files[0];
+					if (file) {
+						selectedFile = file;
+						const reader = new FileReader();
+						reader.onload = function(event) {
+							photoPreview.src = event.target.result;
+							previewContainer.style.display = "block";
+						};
+						reader.readAsDataURL(file);
+					}
+				}
+
+				galleryInput.addEventListener("change", handleFileSelect);
+				cameraInput.addEventListener("change", handleFileSelect);
+
+				removePhotoBtn.addEventListener("click", () => {
+					selectedFile = null;
+					galleryInput.value = "";
+					cameraInput.value = "";
+					previewContainer.style.display = "none";
+					photoPreview.src = "";
+				});
+
+				// --- MODAL ELEMENTS ---
+				const confirmSubmitModal = document.getElementById("confirmSubmitModal");
+				const successSubmitModal = document.getElementById("successSubmitModal");
+				const confirmSubmitBtn = document.getElementById("confirmSubmitBtn");
+				const cancelSubmitBtn = document.getElementById("cancelSubmitBtn");
+				const closeSuccessBtn = document.getElementById("closeSuccessBtn");
+				let pendingSubmitAction = null;
+
+				// Close modals on outside click
+				window.addEventListener("click", (event) => {
+					if (event.target == confirmSubmitModal) confirmSubmitModal.style.display = "none";
+					if (event.target == successSubmitModal) successSubmitModal.style.display = "none";
+				});
+
+				cancelSubmitBtn.addEventListener("click", () => {
+					confirmSubmitModal.style.display = "none";
+				});
+
+				closeSuccessBtn.addEventListener("click", () => {
+					successSubmitModal.style.display = "none";
+					safetyForm.reset();
+					removePhotoBtn.click();
+					loadReporterInfo();
+					window.scrollTo(0, 0);
+				});
+
+				confirmSubmitBtn.addEventListener("click", () => {
+					confirmSubmitModal.style.display = "none";
+					executeSubmission(pendingSubmitAction);
+				});
+
 				function shareViaWhatsApp(data, photoURL) {
 					const phoneNumber = "6281285989142";
 					let message = `*New Safety Observation Report*\n\n`;
 					message += `*Observer Name:* ${data.observerName || "N/A"}\n`;
 					message += `*Company:* ${data.observerCompany || "N/A"}\n`;
 					message += `*Position:* ${data.observerPosition || "N/A"}\n`;
+					message += `*Room/Area:* ${data.roomArea || "N/A"}\n`;
 					message += `*Location:* ${data.obsLocation || "N/A"}\n`;
 					message += `*Date:* ${data.obsDate || "N/A"}\n\n`;
 					message += `*--- Observation Details ---*\n`;
@@ -1466,14 +1540,11 @@
 
 				safetyForm.addEventListener("submit", async function (event) {
 					event.preventDefault();
-					const submitAction = event.submitter
-						? event.submitter.value
-						: "submit";
+					pendingSubmitAction = event.submitter ? event.submitter.value : "submit";
 
 					const obsDateInput = document.getElementById("obsDate");
 					const dateValue = obsDateInput.value;
 					const dateParts = dateValue.split("-"); // YYYY-MM-DD
-					// Create date in local timezone at midnight to avoid timezone issues
 					const selectedDate = new Date(
 						dateParts[0],
 						dateParts[1] - 1,
@@ -1490,7 +1561,25 @@
 						setTimeout(() => {
 							messageDiv.style.display = "none";
 						}, 6000);
-						return; // Prevent form submission
+						return;
+					}
+
+					// Category Validation: Cannot be "Other"
+					const selectedCategory = document.querySelector('input[name="category"]:checked');
+					if (selectedCategory && selectedCategory.value === 'Other') {
+						messageDiv.innerHTML = translations[currentLang].errorOtherCategory;
+						messageDiv.className = "form-message error";
+						messageDiv.style.display = "block";
+						// Scroll to category section
+						const nonHraSection = document.getElementById("nonHraSection");
+						if(nonHraSection) {
+							nonHraSection.style.display = "block"; // Ensure it's visible
+							nonHraSection.scrollIntoView({ behavior: "smooth" });
+						}
+						setTimeout(() => {
+							messageDiv.style.display = "none";
+						}, 6000);
+						return;
 					}
 
 					// Email Validation
@@ -1505,17 +1594,22 @@
 							setTimeout(() => {
 								messageDiv.style.display = "none";
 							}, 6000);
-							return; // Prevent form submission
+							return;
 						}
 					}
 
+					// Show Confirmation Modal
+					confirmSubmitModal.style.display = "flex";
+				});
+
+				async function executeSubmission(submitAction) {
 					const submitButtons = safetyForm.querySelectorAll(
 						'button[type="submit"]',
 					);
 					submitButtons.forEach((btn) => (btn.disabled = true));
 
-					const originalButton =
-						event.submitter || document.querySelector(".submit-btn");
+					// Use the "Submit" button for text feedback, or default if whatsapp was clicked
+					const originalButton = document.querySelector(".submit-btn"); 
 					const originalButtonText = originalButton.textContent;
 					originalButton.textContent =
 						translations[currentLang].submittingButton;
@@ -1527,8 +1621,7 @@
 						saveReporterInfo();
 
 						// 2. Handle File Upload to Cloudinary
-						const fileInput = document.getElementById("uploadPhoto");
-						let file = fileInput.files[0];
+						let file = selectedFile;
 						let photoURL = "";
 
 						if (file) {
@@ -1610,7 +1703,6 @@
 									photo_url: dataToSave.photoURL || "No photo attached",
 								};
 
-								// Ganti 'YOUR_SERVICE_ID' dan 'YOUR_TEMPLATE_ID' dengan ID dari dashboard EmailJS Anda
 								await emailjs.send(
 									"service_nwzjwla",
 									"template_bfxlsi5",
@@ -1619,7 +1711,6 @@
 								console.log("Email sent successfully via EmailJS");
 							} catch (emailError) {
 								console.error("Failed to send email via EmailJS:", emailError);
-								// We don't block the success message if email fails, but we log it.
 							}
 						}
 
@@ -1628,26 +1719,21 @@
 							shareViaWhatsApp(dataToSave, photoURL);
 						}
 
-						// 6. Success Feedback
-						messageDiv.innerHTML = translations[currentLang].successMessage;
-						messageDiv.className = "form-message success";
-						safetyForm.reset();
-						loadReporterInfo();
-						window.scrollTo(0, 0);
+						// 7. Show Success Modal
+						successSubmitModal.style.display = "flex";
+						
 					} catch (error) {
-						// 7. Error Feedback
+						// 8. Error Feedback
 						console.error("Error submitting report: ", error);
 						messageDiv.innerHTML = translations[currentLang].errorMessage;
 						messageDiv.className = "form-message error";
+						messageDiv.style.display = "block";
 					} finally {
-						// 8. Reset button state
+						// 9. Reset button state
 						submitButtons.forEach((btn) => (btn.disabled = false));
 						originalButton.textContent = originalButtonText;
-						setTimeout(() => {
-							messageDiv.style.display = "none";
-						}, 6000);
 					}
-				});
+				}
 			});
 		</script>
 	</body>

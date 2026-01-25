@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 	<head>
 		<meta charset="UTF-8" />
@@ -12,8 +12,15 @@
 		/>
 		<style>
 			body {
-				font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-					Roboto, Helvetica, Arial, sans-serif;
+				font-family:
+					"Inter",
+					-apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					Roboto,
+					Helvetica,
+					Arial,
+					sans-serif;
 				background-color: #f4f7f6;
 				background-image: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
 				margin: 0;
@@ -48,7 +55,9 @@
 				border-radius: 50%;
 				overflow: hidden;
 				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				transition:
+					transform 0.2s ease,
+					box-shadow 0.2s ease;
 				border: 2px solid transparent;
 			}
 			.language-button:hover {
@@ -88,7 +97,9 @@
 				box-sizing: border-box;
 				font-size: 15px;
 				background-color: #fdfdfd;
-				transition: border-color 0.3s ease, box-shadow 0.3s ease;
+				transition:
+					border-color 0.3s ease,
+					box-shadow 0.3s ease;
 			}
 			input[type="text"]:focus,
 			input[type="password"]:focus,
@@ -163,8 +174,14 @@
 				<div class="form-group">
 					<label for="password" data-key="passwordLabel">Password</label>
 					<input type="password" id="password" name="password" required />
-					<div style="text-align: right; margin-top: 5px;">
-						<a href="#" id="forgot-password-link" data-key="forgotPassword" style="font-size: 12px; color: #007bff; text-decoration: none;">Forgot Password?</a>
+					<div style="text-align: right; margin-top: 5px">
+						<a
+							href="#"
+							id="forgot-password-link"
+							data-key="forgotPassword"
+							style="font-size: 12px; color: #007bff; text-decoration: none"
+							>Forgot Password?</a
+						>
 					</div>
 				</div>
 				<button type="submit" class="submit-btn" data-key="loginButton">
@@ -194,78 +211,10 @@
 		<script src="/__/firebase/8.6.1/firebase-storage.js"></script>
 		<script src="/__/firebase/init.js"></script>
 		<script src="js/firebase-init.js"></script>
+		<script src="js/translations.js"></script>
 
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
-				const translations = {
-					id: {
-						loginTitle: "Masuk",
-						emailLabel: "Email",
-						passwordLabel: "Kata Sandi",
-						loginButton: "Masuk",
-						loginAs: "Masuk sebagai",
-						adminLink: "Admin",
-						noAccount: "Belum punya akun?",
-						registerLink: "Daftar di sini",
-						errorGeneric: "Terjadi kesalahan. Silakan coba lagi.",
-						loginError:
-							"Email atau kata sandi tidak sesuai, atau akun Anda belum disetujui oleh admin.",
-						errorEmailNotVerified:
-							"Email Anda belum diverifikasi. Silakan periksa kotak masuk Anda.",
-						errorPendingApproval: "Akun Anda menunggu persetujuan admin.",
-						errorInvalidRole:
-							"Akun Anda memiliki peran yang tidak valid. Silakan hubungi dukungan.",
-						errorNotRegistered:
-							"Pengguna tidak ditemukan. Silakan daftar atau hubungi dukungan.",
-						forgotPassword: "Lupa Password?",
-						resetPasswordTitle: "Atur Ulang Password",
-						resetPasswordDesc:
-							"Masukkan email Anda untuk menerima tautan atur ulang password.",
-						sendResetLink: "Kirim Tautan",
-						backToLogin: "Kembali ke Masuk",
-						resetPasswordSuccess:
-							"Tautan atur ulang password telah dikirim ke email Anda. Cek email Anda (termasuk folder Spam) untuk verifikasi.",
-						resetPasswordError:
-							"Gagal mengirim tautan atur ulang password. Silakan periksa email Anda.",
-						resetPasswordInstruction: "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk menyetel ulang kata sandi Anda.",
-                        cancelButton: "Batal",
-                        resetButton: "Setel Ulang Kata Sandi"
-					},
-					en: {
-						loginTitle: "Login",
-						emailLabel: "Email",
-						passwordLabel: "Password",
-						loginButton: "Login",
-						loginAs: "Login as",
-						adminLink: "Admin",
-						noAccount: "Don't have an account?",
-						registerLink: "Register here",
-						errorGeneric: "An error occurred. Please try again.",
-						loginError:
-							"Email or password is incorrect, or your account has not been approved by an admin.",
-						errorEmailNotVerified:
-							"Your email address is not verified. Please check your inbox.",
-						errorPendingApproval: "Your account is pending admin approval.",
-						errorInvalidRole:
-							"Your account has an invalid role. Please contact support.",
-						errorNotRegistered:
-							"User not found. Please register or contact support.",
-						forgotPassword: "Forgot Password?",
-						resetPasswordTitle: "Reset Password",
-						resetPasswordDesc:
-							"Enter your email to receive a password reset link.",
-						sendResetLink: "Send Reset Link",
-						backToLogin: "Back to Login",
-						resetPasswordSuccess:
-							"Password reset link sent to your email. Check your email (including Spam folder) for verification.",
-						resetPasswordError:
-							"Failed to send password reset link. Please check your email.",
-						resetPasswordInstruction: "Enter your email address and we will send you a link to reset your password.",
-                        cancelButton: "Cancel",
-                        resetButton: "Reset Password"
-					},
-				};
-
 				let currentLang = "en";
 				const langButtons = document.querySelectorAll(".language-button");
 
@@ -298,51 +247,61 @@
 				applyTranslation(currentLang); // Apply default language on load
 
 				// Load modal
-				fetch('modal.html')
-					.then(response => response.text())
-					.then(data => {
-						document.getElementById('modal-container').innerHTML = data;
-						const forgotPasswordModal = document.getElementById('forgotPasswordModal');
-						const closeModal = document.querySelector('.close-button');
-						const cancelReset = document.getElementById('cancelReset');
-						const forgotPasswordLink = document.getElementById('forgot-password-link');
+				fetch("modal.html")
+					.then((response) => response.text())
+					.then((data) => {
+						document.getElementById("modal-container").innerHTML = data;
+						const forgotPasswordModal = document.getElementById(
+							"forgotPasswordModal",
+						);
+						const closeModal = document.querySelector(".close-button");
+						const cancelReset = document.getElementById("cancelReset");
+						const forgotPasswordLink = document.getElementById(
+							"forgot-password-link",
+						);
 
-						forgotPasswordLink.addEventListener('click', (e) => {
+						forgotPasswordLink.addEventListener("click", (e) => {
 							e.preventDefault();
-							forgotPasswordModal.style.display = 'flex';
+							forgotPasswordModal.style.display = "flex";
 						});
 
-						closeModal.addEventListener('click', () => {
-							forgotPasswordModal.style.display = 'none';
+						closeModal.addEventListener("click", () => {
+							forgotPasswordModal.style.display = "none";
 						});
 
-						cancelReset.addEventListener('click', () => {
-							forgotPasswordModal.style.display = 'none';
+						cancelReset.addEventListener("click", () => {
+							forgotPasswordModal.style.display = "none";
 						});
 
-						window.addEventListener('click', (e) => {
+						window.addEventListener("click", (e) => {
 							if (e.target == forgotPasswordModal) {
-								forgotPasswordModal.style.display = 'none';
+								forgotPasswordModal.style.display = "none";
 							}
 						});
 
-						document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
-							event.preventDefault();
-							const email = document.getElementById('resetEmail').value;
-							const resetMessage = document.getElementById('resetMessage');
+						document
+							.getElementById("resetPasswordForm")
+							.addEventListener("submit", function (event) {
+								event.preventDefault();
+								const email = document.getElementById("resetEmail").value;
+								const resetMessage = document.getElementById("resetMessage");
 
-							firebase.auth().sendPasswordResetEmail(email)
-								.then(() => {
-									resetMessage.textContent = translations[currentLang].resetPasswordSuccess;
-									resetMessage.className = 'message success';
-									resetMessage.style.display = 'block';
-								})
-								.catch((error) => {
-									resetMessage.textContent = translations[currentLang].resetPasswordError;
-									resetMessage.className = 'message error';
-									resetMessage.style.display = 'block';
-								});
-						});
+								firebase
+									.auth()
+									.sendPasswordResetEmail(email)
+									.then(() => {
+										resetMessage.textContent =
+											translations[currentLang].resetPasswordSuccess;
+										resetMessage.className = "message success";
+										resetMessage.style.display = "block";
+									})
+									.catch((error) => {
+										resetMessage.textContent =
+											translations[currentLang].resetPasswordError;
+										resetMessage.className = "message error";
+										resetMessage.style.display = "block";
+									});
+							});
 						applyTranslation(currentLang);
 					});
 
@@ -369,15 +328,19 @@
 								if (doc.exists) {
 									const userData = doc.data();
 
-									if (userData.role === "admin") {
-										// Admins bypass email verification
+									if (
+										userData.role === "admin" ||
+										userData.role === "superadmin"
+									) {
+										// Admins and Superadmins bypass email verification
 										sessionStorage.setItem(
 											"adminUser",
 											JSON.stringify({
 												email: currentUser.email,
 												displayName: currentUser.displayName,
 												uid: currentUser.uid,
-											})
+												role: userData.role,
+											}),
 										);
 										sessionStorage.setItem(
 											"loggedInUser",
@@ -385,7 +348,8 @@
 												email: currentUser.email,
 												displayName: currentUser.displayName,
 												uid: currentUser.uid,
-											})
+												role: userData.role,
+											}),
 										);
 										window.location.href = "index.html";
 									} else if (userData.role === "user") {
@@ -400,7 +364,7 @@
 													email: currentUser.email,
 													displayName: currentUser.displayName,
 													uid: currentUser.uid,
-												})
+												}),
 											);
 											window.location.href = "index.html";
 										} else {

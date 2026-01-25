@@ -1,335 +1,351 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | Form Observasi Keselamatan</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
-            background-image: linear-gradient(to bottom right, #2c3e50, #34495e);
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 400px;
-            width: 100%;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        .language-buttons {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 10px;
-        }
-        .language-button {
-            cursor: pointer;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 2px solid transparent;
-        }
-        .language-button:hover {
-            transform: scale(1.1);
-        }
-        .language-button.active {
-            border-color: #3498db;
-        }
-        .language-button img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-size: 24px;
-            font-weight: 700;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dfe6e9;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 15px;
-            background-color: #fdfdfd;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-            outline: none;
-        }
-        .submit-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 15px;
-            background-image: linear-gradient(to right, #3498db, #2980b9);
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-        }
-        .submit-btn:hover {
-            background-image: linear-gradient(to right, #2980b9, #3498db);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
-        }
-        .message {
-            text-align: center;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-        .switch-form {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        .switch-form a {
-            color: #3498db; /* Blue color for admin theme */
-            text-decoration: none;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="language-buttons">
-            <div class="language-button" id="lang-id" data-lang="id">
-                <img src="img/ID.svg" alt="Bahasa Indonesia">
-            </div>
-            <div class="language-button active" id="lang-en" data-lang="en">
-                <img src="img/EN.svg" alt="English">
-            </div>
-        </div>
-        <form id="adminLoginForm">
-            <h1 data-key="adminLoginTitle">Admin Login</h1>
-            <div id="message" class="message"></div>
-            <div class="form-group">
-                <label for="email" data-key="emailLabel">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password" data-key="passwordLabel">Password</label>
-                <input type="password" id="password" name="password" required>
-                <div style="text-align: right; margin-top: 5px;">
-                    <a href="#" id="forgot-password-link" data-key="forgotPassword" style="font-size: 12px; color: #3498db; text-decoration: none;">Forgot Password?</a>
-                </div>
-            </div>
-            <button type="submit" class="submit-btn" data-key="loginButton">Login</button>
-        </form>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Admin Login | Form Observasi Keselamatan</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			body {
+				font-family:
+					"Inter",
+					-apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					Roboto,
+					Helvetica,
+					Arial,
+					sans-serif;
+				background-color: #f4f7f6;
+				background-image: linear-gradient(to bottom right, #2c3e50, #34495e);
+				margin: 0;
+				padding: 20px;
+				color: #333;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+			}
+			.container {
+				max-width: 400px;
+				width: 100%;
+				margin: 20px auto;
+				background-color: #ffffff;
+				padding: 40px;
+				border-radius: 12px;
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+				position: relative;
+			}
+			.language-buttons {
+				position: absolute;
+				top: 15px;
+				right: 15px;
+				display: flex;
+				gap: 10px;
+			}
+			.language-button {
+				cursor: pointer;
+				width: 28px;
+				height: 28px;
+				border-radius: 50%;
+				overflow: hidden;
+				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+				transition:
+					transform 0.2s ease,
+					box-shadow 0.2s ease;
+				border: 2px solid transparent;
+			}
+			.language-button:hover {
+				transform: scale(1.1);
+			}
+			.language-button.active {
+				border-color: #3498db;
+			}
+			.language-button img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+			h1 {
+				text-align: center;
+				color: #2c3e50;
+				margin-bottom: 25px;
+				font-size: 24px;
+				font-weight: 700;
+			}
+			.form-group {
+				margin-bottom: 15px;
+			}
+			label {
+				display: block;
+				font-weight: 600;
+				margin-bottom: 6px;
+				font-size: 14px;
+			}
+			input[type="email"],
+			input[type="password"] {
+				width: 100%;
+				padding: 10px 12px;
+				border: 1px solid #dfe6e9;
+				border-radius: 6px;
+				box-sizing: border-box;
+				font-size: 15px;
+				background-color: #fdfdfd;
+				transition:
+					border-color 0.3s ease,
+					box-shadow 0.3s ease;
+			}
+			input[type="email"]:focus,
+			input[type="password"]:focus {
+				border-color: #3498db;
+				box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+				outline: none;
+			}
+			.submit-btn {
+				display: block;
+				width: 100%;
+				padding: 12px 15px;
+				background-image: linear-gradient(to right, #3498db, #2980b9);
+				background-color: #3498db;
+				color: white;
+				border: none;
+				border-radius: 6px;
+				font-size: 16px;
+				font-weight: bold;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+			}
+			.submit-btn:hover {
+				background-image: linear-gradient(to right, #2980b9, #3498db);
+				transform: translateY(-2px);
+				box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+			}
+			.message {
+				text-align: center;
+				font-weight: bold;
+				padding: 10px;
+				border-radius: 5px;
+				margin-bottom: 15px;
+				display: none;
+			}
+			.message.error {
+				background-color: #f8d7da;
+				color: #721c24;
+				border: 1px solid #f5c6cb;
+				display: block;
+			}
+			.switch-form {
+				text-align: center;
+				margin-top: 20px;
+				font-size: 14px;
+			}
+			.switch-form a {
+				color: #3498db; /* Blue color for admin theme */
+				text-decoration: none;
+				font-weight: 600;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="language-buttons">
+				<div class="language-button" id="lang-id" data-lang="id">
+					<img src="img/ID.svg" alt="Bahasa Indonesia" />
+				</div>
+				<div class="language-button active" id="lang-en" data-lang="en">
+					<img src="img/EN.svg" alt="English" />
+				</div>
+			</div>
+			<form id="adminLoginForm">
+				<h1 data-key="adminLoginTitle">Admin Login</h1>
+				<div id="message" class="message"></div>
+				<div class="form-group">
+					<label for="email" data-key="emailLabel">Email</label>
+					<input type="email" id="email" name="email" required />
+				</div>
+				<div class="form-group">
+					<label for="password" data-key="passwordLabel">Password</label>
+					<input type="password" id="password" name="password" required />
+					<div style="text-align: right; margin-top: 5px">
+						<a
+							href="#"
+							id="forgot-password-link"
+							data-key="forgotPassword"
+							style="font-size: 12px; color: #3498db; text-decoration: none"
+							>Forgot Password?</a
+						>
+					</div>
+				</div>
+				<button type="submit" class="submit-btn" data-key="loginButton">
+					Login
+				</button>
+			</form>
 
-        <div class="switch-form">
-            <p><span data-key="loginAs">Login as</span> <a href="login.html" data-key="userLink">User</a></p>
-        </div>
-    </div>
+			<div class="switch-form">
+				<p>
+					<span data-key="loginAs">Login as</span>
+					<a href="login.html" data-key="userLink">User</a>
+				</p>
+			</div>
+		</div>
 
-    <div id="modal-container"></div>
+		<div id="modal-container"></div>
 
-    <!-- Firebase Scripts -->
-    <!-- These scripts are now served by Firebase Hosting -->
-    <script src="/__/firebase/8.6.1/firebase-app.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
-    <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
-    <script src="/__/firebase/init.js"></script>
-    <script src="js/firebase-init.js"></script>
+		<!-- Firebase Scripts -->
+		<!-- These scripts are now served by Firebase Hosting -->
+		<script src="/__/firebase/8.6.1/firebase-app.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+		<script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+		<script src="/__/firebase/init.js"></script>
+		<script src="js/firebase-init.js"></script>
+		<script src="js/translations.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const translations = {
-                'id': {
-                    adminLoginTitle: "Masuk Admin",
-                    emailLabel: "Email",
-                    passwordLabel: "Kata Sandi",
-                    loginButton: "Masuk",
-                    loginAs: "Masuk sebagai",
-                    userLink: "Pengguna",
-                    forgotPassword: "Lupa Kata Sandi?",
-                    resetPasswordTitle: "Setel Ulang Kata Sandi",
-                    resetPasswordInstruction: "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk menyetel ulang kata sandi Anda.",
-                    cancelButton: "Batal",
-                    resetButton: "Setel Ulang Kata Sandi",
-                    errorGeneric: "Terjadi kesalahan. Silakan coba lagi.",
-                    adminLoginError: "Email atau kata sandi tidak sesuai.",
-                    resetPasswordSuccess: "Tautan atur ulang password telah dikirim ke email Anda.",
-                    resetPasswordError: "Gagal mengirim tautan atur ulang password. Silakan periksa email Anda."
-                },
-                'en': {
-                    adminLoginTitle: "Admin Login",
-                    emailLabel: "Email",
-                    passwordLabel: "Password",
-                    loginButton: "Login",
-                    loginAs: "Login as",
-                    userLink: "User",
-                    forgotPassword: "Forgot Password?",
-                    resetPasswordTitle: "Reset Password",
-                    resetPasswordInstruction: "Enter your email address and we will send you a link to reset your password.",
-                    cancelButton: "Cancel",
-                    resetButton: "Reset Password",
-                    errorGeneric: "An error occurred. Please try again.",
-                    adminLoginError: "Email or password is incorrect.",
-                    resetPasswordSuccess: "Password reset link sent to your email.",
-                    resetPasswordError: "Failed to send password reset link. Please check your email."
-                }
-            };
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				let currentLang = 'en';
+				const langButtons = document.querySelectorAll(".language-button");
 
-            let currentLang = 'en';
-            const langButtons = document.querySelectorAll(".language-button");
+				function applyTranslation(lang) {
+					document.querySelectorAll("[data-key]").forEach((element) => {
+						const key = element.getAttribute("data-key");
+						if (translations[lang] && translations[lang][key]) {
+							element.textContent = translations[lang][key];
+						}
+					});
+					document.title =
+						lang === "id"
+							? "Masuk Admin | Form Observasi Keselamatan"
+							: "Admin Login | Safety Observation Form";
+					currentLang = lang;
+					langButtons.forEach((button) => {
+						button.classList.remove("active");
+						if (button.dataset.lang === lang) {
+							button.classList.add("active");
+						}
+					});
+				}
 
-            function applyTranslation(lang) {
-                document.querySelectorAll('[data-key]').forEach(element => {
-                    const key = element.getAttribute('data-key');
-                    if (translations[lang] && translations[lang][key]) {
-                        element.textContent = translations[lang][key];
-                    }
-                });
-                document.title = lang === 'id' ? 'Masuk Admin | Form Observasi Keselamatan' : 'Admin Login | Safety Observation Form';
-                currentLang = lang;
-                langButtons.forEach(button => {
-                    button.classList.remove('active');
-                    if (button.dataset.lang === lang) {
-                        button.classList.add('active');
-                    }
-                });
-            }
+				langButtons.forEach((button) => {
+					button.addEventListener("click", function () {
+						applyTranslation(this.dataset.lang);
+					});
+				});
 
-            langButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    applyTranslation(this.dataset.lang);
-                });
-            });
+				// Load modal
+				fetch("modal.html")
+					.then((response) => response.text())
+					.then((data) => {
+						document.getElementById("modal-container").innerHTML = data;
+						const forgotPasswordModal = document.getElementById(
+							"forgotPasswordModal",
+						);
+						const closeModal = document.querySelector(".close-button");
+						const cancelReset = document.getElementById("cancelReset");
+						const forgotPasswordLink = document.getElementById(
+							"forgot-password-link",
+						);
 
-            // Load modal
-            fetch('modal.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('modal-container').innerHTML = data;
-                    const forgotPasswordModal = document.getElementById('forgotPasswordModal');
-                    const closeModal = document.querySelector('.close-button');
-                    const cancelReset = document.getElementById('cancelReset');
-                    const forgotPasswordLink = document.getElementById('forgot-password-link');
+						forgotPasswordLink.addEventListener("click", (e) => {
+							e.preventDefault();
+							forgotPasswordModal.style.display = "flex";
+						});
 
-                    forgotPasswordLink.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        forgotPasswordModal.style.display = 'flex';
-                    });
+						closeModal.addEventListener("click", () => {
+							forgotPasswordModal.style.display = "none";
+						});
 
-                    closeModal.addEventListener('click', () => {
-                        forgotPasswordModal.style.display = 'none';
-                    });
+						cancelReset.addEventListener("click", () => {
+							forgotPasswordModal.style.display = "none";
+						});
 
-                    cancelReset.addEventListener('click', () => {
-                        forgotPasswordModal.style.display = 'none';
-                    });
+						window.addEventListener("click", (e) => {
+							if (e.target == forgotPasswordModal) {
+								forgotPasswordModal.style.display = "none";
+							}
+						});
 
-                    window.addEventListener('click', (e) => {
-                        if (e.target == forgotPasswordModal) {
-                            forgotPasswordModal.style.display = 'none';
-                        }
-                    });
+						document
+							.getElementById("resetPasswordForm")
+							.addEventListener("submit", function (event) {
+								event.preventDefault();
+								const email = document.getElementById("resetEmail").value;
+								const resetMessage = document.getElementById("resetMessage");
 
-                    document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
-                        event.preventDefault();
-                        const email = document.getElementById('resetEmail').value;
-                        const resetMessage = document.getElementById('resetMessage');
+								firebase
+									.auth()
+									.sendPasswordResetEmail(email)
+									.then(() => {
+										resetMessage.textContent =
+											translations[currentLang].resetPasswordSuccess;
+										resetMessage.className = "message success";
+										resetMessage.style.display = "block";
+									})
+									.catch((error) => {
+										resetMessage.textContent =
+											translations[currentLang].resetPasswordError;
+										resetMessage.className = "message error";
+										resetMessage.style.display = "block";
+									});
+							});
+						applyTranslation(currentLang);
+					});
 
-                        firebase.auth().sendPasswordResetEmail(email)
-                            .then(() => {
-                                resetMessage.textContent = translations[currentLang].resetPasswordSuccess;
-                                resetMessage.className = 'message success';
-                                resetMessage.style.display = 'block';
-                            })
-                            .catch((error) => {
-                                resetMessage.textContent = translations[currentLang].resetPasswordError;
-                                resetMessage.className = 'message error';
-                                resetMessage.style.display = 'block';
-                            });
-                    });
-                    applyTranslation(currentLang);
-                });
+				applyTranslation(currentLang);
 
-            applyTranslation(currentLang);
+				document
+					.getElementById("adminLoginForm")
+					.addEventListener("submit", function (event) {
+						event.preventDefault();
 
-            document.getElementById('adminLoginForm').addEventListener('submit', function(event) {
-                event.preventDefault();
+						const email = document.getElementById("email").value;
+						const password = document.getElementById("password").value;
+						const messageDiv = document.getElementById("message");
+						messageDiv.style.display = "none";
 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const messageDiv = document.getElementById('message');
-                messageDiv.style.display = 'none';
-
-                firebase.auth().signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        const user = userCredential.user;
-                        const userDocRef = db.collection('users').doc(user.uid);
-                        return userDocRef.get();
-                    })
-                    .then((doc) => {
-                        const role = doc.data().role;
-                        if (doc.exists && (role === 'admin' || role === 'superadmin')) {
-                            sessionStorage.setItem('adminUser', JSON.stringify({ email: doc.data().email, uid: doc.id, role: role }));
-                            window.location.href = 'dashboard.html';
-                        } else {
-                            messageDiv.textContent = translations[currentLang].errorAccessDenied; // Note: errorAccessDenied might need addition to translations or defaults
-                            messageDiv.className = 'message error';
-                            messageDiv.style.display = 'block'; // Ensure it's shown
-                            return firebase.auth().signOut();
-                        }
-                    })
-                    .catch((error) => {
-                        messageDiv.textContent = translations[currentLang].adminLoginError;
-                        messageDiv.className = 'message error';
-                        messageDiv.style.display = 'block';
-                        firebase.auth().signOut(); // Ensure user is signed out on any login failure
-                    });
-            });
-        });
-    </script>
-</body>
+						firebase
+							.auth()
+							.signInWithEmailAndPassword(email, password)
+							.then((userCredential) => {
+								const user = userCredential.user;
+								const userDocRef = db.collection("users").doc(user.uid);
+								return userDocRef.get();
+							})
+							.then((doc) => {
+								const role = doc.data().role;
+								if (doc.exists && (role === "admin" || role === "superadmin")) {
+									sessionStorage.setItem(
+										"adminUser",
+										JSON.stringify({
+											email: doc.data().email,
+											uid: doc.id,
+											role: role,
+										}),
+									);
+									window.location.href = "dashboard.html";
+								} else {
+									messageDiv.textContent =
+										translations[currentLang].errorAccessDenied; // Note: errorAccessDenied might need addition to translations or defaults
+									messageDiv.className = "message error";
+									messageDiv.style.display = "block"; // Ensure it's shown
+									return firebase.auth().signOut();
+								}
+							})
+							.catch((error) => {
+								messageDiv.textContent =
+									translations[currentLang].adminLoginError;
+								messageDiv.className = "message error";
+								messageDiv.style.display = "block";
+								firebase.auth().signOut(); // Ensure user is signed out on any login failure
+							});
+					});
+			});
+		</script>
+	</body>
 </html>

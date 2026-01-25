@@ -1,0 +1,135 @@
+<!-- Edit User Modal -->
+<div id="editUserModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2 data-key="editUserTitle">Edit User</h2>
+        <form id="editUserForm">
+            <div class="filter-group" style="display: block; margin-bottom: 10px">
+                <label for="editDisplayName" data-key="labelDisplayName">Full Name</label>
+                <input
+                    type="text"
+                    id="editDisplayName"
+                    required
+                />
+            </div>
+            <div class="filter-group" style="display: block; margin-bottom: 10px">
+                <label for="editEmail" data-key="labelEmail">Email</label>
+                <input
+                    type="email"
+                    id="editEmail"
+                    style="background-color: #f0f0f0;"
+                    readonly
+                />
+            </div>
+            <div class="filter-group" style="display: block; margin-bottom: 10px">
+                <label for="editCompany" data-key="labelCompany">Company</label>
+                <input
+                    type="text"
+                    id="editCompany"
+                    required
+                />
+            </div>
+            <div class="filter-group" style="display: block; margin-bottom: 10px">
+                <label for="editPosition" data-key="labelPosition">Position</label>
+                <select id="editPosition">
+                    <option value="Construction Manager">Construction Manager</option>
+                    <option value="Site Manager">Site Manager</option>
+                    <option value="Construction Supervisor">
+                        Construction Supervisor
+                    </option>
+                    <option value="Safety Supervisor">Safety Supervisor</option>
+                    <option value="Safety Manager">Safety Manager</option>
+                    <option value="Worker">Worker</option>
+                </select>
+            </div>
+            <div class="filter-group" style="display: block; margin-bottom: 10px">
+                <label for="editStatus" data-key="labelStatus">Status</label>
+                <select id="editStatus">
+                    <option value="approved" data-key="statusApproved">
+                        Approved
+                    </option>
+                    <option value="pending" data-key="statusPending">Pending</option>
+                    <option value="unverified" data-key="statusUnverified">
+                        Unverified
+                    </option>
+                </select>
+            </div>
+            <div
+                id="editRoleWrapper"
+                class="filter-group"
+                style="display: none; margin-bottom: 10px"
+            >
+                <label for="editRole" data-key="labelRole">Role</label>
+                <select id="editRole">
+                    <option value="user" data-key="roleUser">User</option>
+                    <option value="admin" data-key="roleAdmin">Admin</option>
+                </select>
+            </div>
+            <div class="filter-group" style="display: block; margin-bottom: 10px">
+                <label for="editCreatedAt" data-key="labelCreatedAt">Registered At</label>
+                <input
+                    type="text"
+                    id="editCreatedAt"
+                    style="background-color: #f0f0f0;"
+                    readonly
+                />
+            </div>
+
+            <div
+                style="
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                    margin-top: 20px;
+                "
+            >
+                <button
+                    type="button"
+                    id="editUserCancelBtn"
+                    class="approve-btn"
+                    style="background-color: #95a5a6"
+                    data-key="cancelButton"
+                >
+                    Cancel
+                </button>
+                <button type="submit" class="approve-btn" data-key="saveButton">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Save Confirmation Modal -->
+<div id="saveUserConfirmModal" class="modal-overlay" style="z-index: 1001">
+    <div class="modal-content" style="max-width: 400px; text-align: center">
+        <h3 data-key="confirmSaveTitle">Save Changes</h3>
+        <p data-key="confirmSaveMessage">
+            Are you sure you want to save changes for this user?
+        </p>
+        <div
+            style="
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-top: 20px;
+            "
+        >
+            <button
+                id="confirmSaveNoBtn"
+                class="approve-btn"
+                style="background-color: #95a5a6"
+                data-key="confirmNo"
+            >
+                Cancel
+            </button>
+            <button
+                id="confirmSaveYesBtn"
+                class="approve-btn"
+                data-key="confirmYes"
+            >
+                Yes, Save
+            </button>
+        </div>
+    </div>
+</div>
