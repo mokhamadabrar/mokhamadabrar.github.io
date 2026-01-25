@@ -595,6 +595,31 @@
 							/>
 						</div>
 					</div>
+					<div class="form-group" style="margin-top: 15px; margin-bottom: 0;">
+						<label for="phaseOfConstruction" data-key="phaseOfConstructionLabel">Phase of Construction:</label>
+						<select id="phaseOfConstruction" name="phaseOfConstruction" required>
+							<option value="" disabled selected data-key="selectOption">Select...</option>
+							<option value="Cladding Building Envelope">Cladding Building Envelope</option>
+							<option value="Commissioning">Commissioning</option>
+							<option value="Early Works">Early Works</option>
+							<option value="Exterior Slabs & Equipment">Exterior Slabs & Equipment</option>
+							<option value="Foundations">Foundations</option>
+							<option value="Integration">Integration</option>
+							<option value="Interior Fit-out - CSA">Interior Fit-out - CSA</option>
+							<option value="Interior Fit-out - Electrical">Interior Fit-out - Electrical</option>
+							<option value="Interior Fit-out - Mechanical">Interior Fit-out - Mechanical</option>
+							<option value="Interior Slabs">Interior Slabs</option>
+							<option value="Interior Underground Services">Interior Underground Services</option>
+							<option value="Network Fit-out">Network Fit-out</option>
+							<option value="On-Pause">On-Pause</option>
+							<option value="Roofing">Roofing</option>
+							<option value="Security">Security</option>
+							<option value="Site Clearing & Preparation">Site Clearing & Preparation</option>
+							<option value="Site Utility Services">Site Utility Services</option>
+							<option value="Steel Erection">Steel Erection</option>
+							<option value="Tilt Wall Construction">Tilt Wall Construction</option>
+						</select>
+					</div>
 				</div>
 
 				<div class="form-card">
@@ -1520,6 +1545,7 @@
 					message += `*Position:* ${data.observerPosition || "N/A"}\n`;
 					message += `*Room/Area:* ${data.roomArea || "N/A"}\n`;
 					message += `*Location:* ${data.obsLocation || "N/A"}\n`;
+					message += `*Phase of Construction:* ${data.phaseOfConstruction || "N/A"}\n`;
 					message += `*Date:* ${data.obsDate || "N/A"}\n\n`;
 					message += `*--- Observation Details ---*\n`;
 					message += `*Category:* ${data.category || "N/A"}\n`;

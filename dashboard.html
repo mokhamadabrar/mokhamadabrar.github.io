@@ -367,6 +367,69 @@
 				word-wrap: break-word;
 				overflow-wrap: break-word;
 			}
+			/* Mobile Responsiveness */
+			@media (max-width: 900px) {
+				.header {
+					flex-direction: column;
+					gap: 15px;
+				}
+				.header-controls {
+					width: 100%;
+					justify-content: center;
+					margin-left: 0;
+					flex-wrap: wrap;
+				}
+				.filter-container {
+					flex-direction: column;
+					align-items: stretch;
+				}
+				.filter-container button {
+					margin-left: 0 !important;
+					width: 100%;
+					margin-top: 10px;
+				}
+				.dashboard-grid {
+					flex-direction: column;
+				}
+				.chart-col-left,
+				.chart-col-right {
+					width: 100%;
+					flex: none;
+					min-width: 0;
+				}
+				.chart-row {
+					flex-direction: column;
+				}
+				.pie-chart-wrapper {
+					flex-direction: column !important;
+					text-align: center;
+				}
+				.chart-legend {
+					width: 100%;
+					padding-left: 0;
+					margin-top: 15px;
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: center;
+					gap: 10px;
+					max-height: none;
+				}
+				.chart-col-left .chart-canvas-container {
+					min-height: 300px;
+				}
+				#table-container {
+					overflow-x: auto;
+				}
+				.modal-content {
+					width: 95%;
+					margin: 10% auto;
+				}
+				.modal-photo-container {
+					width: 100%;
+					height: auto;
+					max-height: 300px;
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -482,7 +545,7 @@
 					</div>
 					<div class="chart-col-right">
 						<div class="chart-box">
-							<div style="display: flex; width: 100%; flex: 1; align-items: center;">
+							<div class="pie-chart-wrapper" style="display: flex; width: 100%; flex: 1; align-items: center;">
 								<div class="chart-canvas-container">
 									<canvas id="positionChart"></canvas>
 								</div>
@@ -490,7 +553,7 @@
 							</div>
 						</div>
 						<div class="chart-box">
-							<div style="display: flex; width: 100%; flex: 1; align-items: center;">
+							<div class="pie-chart-wrapper" style="display: flex; width: 100%; flex: 1; align-items: center;">
 								<div class="chart-canvas-container">
 									<canvas id="typeChart"></canvas>
 								</div>
@@ -1347,6 +1410,9 @@
 						<p><strong>${translations[currentLang].modalLocation}:</strong> ${
 							report.obsLocation || "N/A"
 						}</p>
+						<p><strong><span data-key="modalPhaseOfConstruction">Phase of Construction</span>:</strong> ${
+							report.phaseOfConstruction || "N/A"
+						}</p>
 						<h3>${translations[currentLang].modalHeaderObservation}</h3>
 						<p><strong>${translations[currentLang].modalCategory}:</strong> ${
 							report.category || "N/A"
@@ -1478,7 +1544,7 @@
 									 "", // Interim Corrective Actions
 									 escapeCsv(report.immediateAction), // Final Corrective Actions
 									 escapeCsv(categoryType), // Category Type
-									 "Steel Erection", // CS \ Phase of Contruction
+									 escapeCsv(report.phaseOfConstruction || "Steel Erection"), // CS \ Phase of Contruction
 									 "", // Notification Date
 									 escapeCsv(highRisk), // High Risk + Significant Exposure
 									 escapeCsv(generalCategory), // General Category
