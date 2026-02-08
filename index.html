@@ -248,7 +248,7 @@
 				box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 				outline: none;
 			}
-			
+
 			select:hover {
 				border-color: #b2bec3;
 			}
@@ -486,7 +486,11 @@
 						class="header-banner"
 						style="margin: -25px -25px 25px -25px; border-radius: 12px 12px 0 0"
 					>
-						<img src="img/logo.webp" alt="Company Logo" class="header-logo" />
+						<img
+							src="img/virsim_red.webp"
+							alt="Company Logo"
+							class="header-logo"
+						/>
 						<button id="logout-btn">Logout</button>
 						<button
 							id="admin-dashboard-btn"
@@ -572,16 +576,24 @@
 					<h2 class="card-title" data-key="observationDetails">
 						Observation Details
 					</h2>
-					<div style="display: flex; gap: 15px; flex-wrap: wrap;">
-						<div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+					<div style="display: flex; gap: 15px; flex-wrap: wrap">
+						<div
+							class="form-group"
+							style="flex: 1; min-width: 150px; margin-bottom: 0"
+						>
 							<label for="roomArea" data-key="roomAreaLabel">Room/Area:</label>
 							<select id="roomArea" name="roomArea" required>
-								<option value="" disabled selected data-key="selectOption">Select...</option>
+								<option value="" disabled selected data-key="selectOption">
+									Select...
+								</option>
 								<option value="COLO or AZ">COLO or AZ</option>
 								<option value="External Area">External Area</option>
 							</select>
 						</div>
-						<div class="form-group" style="flex: 2; min-width: 250px; margin-bottom: 0;">
+						<div
+							class="form-group"
+							style="flex: 2; min-width: 250px; margin-bottom: 0"
+						>
 							<label for="obsLocation" data-key="obsLocationLabel"
 								>Lokasi Observasi:</label
 							>
@@ -595,29 +607,55 @@
 							/>
 						</div>
 					</div>
-					<div class="form-group" style="margin-top: 15px; margin-bottom: 0;">
-						<label for="phaseOfConstruction" data-key="phaseOfConstructionLabel">Phase of Construction:</label>
-						<select id="phaseOfConstruction" name="phaseOfConstruction" required>
-							<option value="" disabled selected data-key="selectOption">Select...</option>
-							<option value="Cladding Building Envelope">Cladding Building Envelope</option>
+					<div class="form-group" style="margin-top: 15px; margin-bottom: 0">
+						<label for="phaseOfConstruction" data-key="phaseOfConstructionLabel"
+							>Phase of Construction:</label
+						>
+						<select
+							id="phaseOfConstruction"
+							name="phaseOfConstruction"
+							required
+						>
+							<option value="" disabled selected data-key="selectOption">
+								Select...
+							</option>
+							<option value="Cladding Building Envelope">
+								Cladding Building Envelope
+							</option>
 							<option value="Commissioning">Commissioning</option>
 							<option value="Early Works">Early Works</option>
-							<option value="Exterior Slabs & Equipment">Exterior Slabs & Equipment</option>
+							<option value="Exterior Slabs & Equipment">
+								Exterior Slabs & Equipment
+							</option>
 							<option value="Foundations">Foundations</option>
 							<option value="Integration">Integration</option>
-							<option value="Interior Fit-out - CSA">Interior Fit-out - CSA</option>
-							<option value="Interior Fit-out - Electrical">Interior Fit-out - Electrical</option>
-							<option value="Interior Fit-out - Mechanical">Interior Fit-out - Mechanical</option>
+							<option value="Interior Fit-out - CSA">
+								Interior Fit-out - CSA
+							</option>
+							<option value="Interior Fit-out - Electrical">
+								Interior Fit-out - Electrical
+							</option>
+							<option value="Interior Fit-out - Mechanical">
+								Interior Fit-out - Mechanical
+							</option>
 							<option value="Interior Slabs">Interior Slabs</option>
-							<option value="Interior Underground Services">Interior Underground Services</option>
+							<option value="Interior Underground Services">
+								Interior Underground Services
+							</option>
 							<option value="Network Fit-out">Network Fit-out</option>
 							<option value="On-Pause">On-Pause</option>
 							<option value="Roofing">Roofing</option>
 							<option value="Security">Security</option>
-							<option value="Site Clearing & Preparation">Site Clearing & Preparation</option>
-							<option value="Site Utility Services">Site Utility Services</option>
+							<option value="Site Clearing & Preparation">
+								Site Clearing & Preparation
+							</option>
+							<option value="Site Utility Services">
+								Site Utility Services
+							</option>
 							<option value="Steel Erection">Steel Erection</option>
-							<option value="Tilt Wall Construction">Tilt Wall Construction</option>
+							<option value="Tilt Wall Construction">
+								Tilt Wall Construction
+							</option>
 						</select>
 					</div>
 				</div>
@@ -757,7 +795,7 @@
 								>
 							</div>
 						</div>
-						<div id="nonHraSection" style="display: none;">
+						<div id="nonHraSection" style="display: none">
 							<div class="category-subtitle" data-key="nonHraTitle">
 								Non HRA/Other
 							</div>
@@ -838,7 +876,9 @@
 										id="cat-fatigue"
 										name="category"
 										value="Fatigue"
-									/><label for="cat-fatigue" data-key="catFatigue">Fatigue</label>
+									/><label for="cat-fatigue" data-key="catFatigue"
+										>Fatigue</label
+									>
 								</div>
 								<div>
 									<input
@@ -1023,7 +1063,9 @@
 									value="New Positive Observation"
 									required
 								/>
-								<label for="newPositiveObservation" data-key="NewPositiveObservation"
+								<label
+									for="newPositiveObservation"
+									data-key="NewPositiveObservation"
 									>New Positive Observation</label
 								>
 							</div>
@@ -1034,7 +1076,9 @@
 									name="obsType"
 									value="New At Risk Observation"
 								/>
-								<label for="newAtRiskObservation" data-key="NewAtRiskObservation"
+								<label
+									for="newAtRiskObservation"
+									data-key="NewAtRiskObservation"
 									>New At Risk Observation</label
 								>
 							</div>
@@ -1124,7 +1168,7 @@
 							></textarea>
 						</div>
 						<!-- Akan digunakan di masa mendatang -->
-						<div class="form-group" style="margin-bottom: 0; display: none;">
+						<div class="form-group" style="margin-bottom: 0; display: none">
 							<label for="unsafeEmail" data-key="unsafeEmailLabel"
 								>Email Address:</label
 							>
@@ -1145,21 +1189,41 @@
 						<div class="photo-upload-container">
 							<div class="photo-buttons">
 								<button type="button" class="photo-btn" id="galleryBtn">
-									<i class="fa fa-image"></i> <span data-key="galleryButton">Gallery</span>
+									<i class="fa fa-image"></i>
+									<span data-key="galleryButton">Gallery</span>
 								</button>
 								<button type="button" class="photo-btn" id="cameraBtn">
-									<i class="fa fa-camera"></i> <span data-key="cameraButton">Camera</span>
+									<i class="fa fa-camera"></i>
+									<span data-key="cameraButton">Camera</span>
 								</button>
 							</div>
-							
+
 							<!-- Hidden inputs -->
-							<input type="file" id="uploadPhotoGallery" accept="image/*" style="display: none;">
-							<input type="file" id="uploadPhotoCamera" accept="image/*" capture="environment" style="display: none;">
-							
+							<input
+								type="file"
+								id="uploadPhotoGallery"
+								accept="image/*"
+								style="display: none"
+							/>
+							<input
+								type="file"
+								id="uploadPhotoCamera"
+								accept="image/*"
+								capture="environment"
+								style="display: none"
+							/>
+
 							<!-- Preview -->
 							<div id="previewContainer" class="photo-preview-container">
-								<img id="photoPreview" src="" alt="Preview">
-								<button type="button" id="removePhotoBtn" class="remove-photo-btn" data-key="removePhotoButton">Remove Photo</button>
+								<img id="photoPreview" src="" alt="Preview" />
+								<button
+									type="button"
+									id="removePhotoBtn"
+									class="remove-photo-btn"
+									data-key="removePhotoButton"
+								>
+									Remove Photo
+								</button>
 							</div>
 						</div>
 					</div>
@@ -1189,24 +1253,112 @@
 		</div>
 
 		<!-- Confirmation Modal -->
-		<div id="confirmSubmitModal" class="modal-overlay" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
-			<div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; border-radius: 8px; text-align: center;">
+		<div
+			id="confirmSubmitModal"
+			class="modal-overlay"
+			style="
+				display: none;
+				position: fixed;
+				z-index: 1000;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+				background-color: rgba(0, 0, 0, 0.5);
+				justify-content: center;
+				align-items: center;
+			"
+		>
+			<div
+				class="modal-content"
+				style="
+					background-color: #fefefe;
+					margin: auto;
+					padding: 20px;
+					border: 1px solid #888;
+					width: 80%;
+					max-width: 400px;
+					border-radius: 8px;
+					text-align: center;
+				"
+			>
 				<h3 data-key="confirmSubmitTitle">Konfirmasi Pengiriman</h3>
-				<p data-key="confirmSubmitMessage">Apakah Anda yakin ingin mengirim laporan ini?</p>
-				<div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
-					<button id="cancelSubmitBtn" class="submit-btn" style="background-color: #95a5a6; width: auto;" data-key="cancelButton">Batal</button>
-					<button id="confirmSubmitBtn" class="submit-btn" style="width: auto;" data-key="confirmYesButton">Ya, Kirim</button>
+				<p data-key="confirmSubmitMessage">
+					Apakah Anda yakin ingin mengirim laporan ini?
+				</p>
+				<div
+					style="
+						display: flex;
+						justify-content: center;
+						gap: 10px;
+						margin-top: 20px;
+					"
+				>
+					<button
+						id="cancelSubmitBtn"
+						class="submit-btn"
+						style="background-color: #95a5a6; width: auto"
+						data-key="cancelButton"
+					>
+						Batal
+					</button>
+					<button
+						id="confirmSubmitBtn"
+						class="submit-btn"
+						style="width: auto"
+						data-key="confirmYesButton"
+					>
+						Ya, Kirim
+					</button>
 				</div>
 			</div>
 		</div>
 
 		<!-- Success Modal -->
-		<div id="successSubmitModal" class="modal-overlay" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
-			<div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; border-radius: 8px; text-align: center;">
+		<div
+			id="successSubmitModal"
+			class="modal-overlay"
+			style="
+				display: none;
+				position: fixed;
+				z-index: 1000;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+				background-color: rgba(0, 0, 0, 0.5);
+				justify-content: center;
+				align-items: center;
+			"
+		>
+			<div
+				class="modal-content"
+				style="
+					background-color: #fefefe;
+					margin: auto;
+					padding: 20px;
+					border: 1px solid #888;
+					width: 80%;
+					max-width: 400px;
+					border-radius: 8px;
+					text-align: center;
+				"
+			>
 				<h3 data-key="successSubmitTitle">Berhasil!</h3>
-				<p data-key="successSubmitMessage">Laporan Anda telah berhasil dikirim.</p>
-				<div style="display: flex; justify-content: center; margin-top: 20px;">
-					<button id="closeSuccessBtn" class="submit-btn" style="width: auto;" data-key="closeButton">Tutup</button>
+				<p data-key="successSubmitMessage">
+					Laporan Anda telah berhasil dikirim.
+				</p>
+				<div style="display: flex; justify-content: center; margin-top: 20px">
+					<button
+						id="closeSuccessBtn"
+						class="submit-btn"
+						style="width: auto"
+						data-key="closeButton"
+					>
+						Tutup
+					</button>
 				</div>
 			</div>
 		</div>
@@ -1286,9 +1438,7 @@
 					const location = localStorage.getItem(
 						`${loggedInUser.uid}_reporterLocation`,
 					);
-					const roomArea = localStorage.getItem(
-						`${loggedInUser.uid}_roomArea`,
-					);
+					const roomArea = localStorage.getItem(`${loggedInUser.uid}_roomArea`);
 
 					nameSpan.textContent = name;
 					companySpan.textContent = company;
@@ -1390,28 +1540,32 @@
 				});
 
 				// --- CATEGORY TOGGLE LOGIC ---
-				const categoryRadios = document.querySelectorAll('input[name="category"]');
-				const nonHraSection = document.getElementById('nonHraSection');
-				
+				const categoryRadios = document.querySelectorAll(
+					'input[name="category"]',
+				);
+				const nonHraSection = document.getElementById("nonHraSection");
+
 				function updateCategoryVisibility() {
-					const checkedRadio = document.querySelector('input[name="category"]:checked');
+					const checkedRadio = document.querySelector(
+						'input[name="category"]:checked',
+					);
 					if (!checkedRadio) return;
 
-					if (checkedRadio.value === 'Other') {
-						nonHraSection.style.display = 'block';
-					} else if (checkedRadio.closest('#nonHraSection')) {
+					if (checkedRadio.value === "Other") {
+						nonHraSection.style.display = "block";
+					} else if (checkedRadio.closest("#nonHraSection")) {
 						// Selected item is inside the Non-HRA section, do nothing (keep visible)
-						nonHraSection.style.display = 'block';
+						nonHraSection.style.display = "block";
 					} else {
 						// Selected item is a standard HRA category
-						nonHraSection.style.display = 'none';
+						nonHraSection.style.display = "none";
 					}
 				}
 
-				categoryRadios.forEach(radio => {
-					radio.addEventListener('change', updateCategoryVisibility);
+				categoryRadios.forEach((radio) => {
+					radio.addEventListener("change", updateCategoryVisibility);
 				});
-				
+
 				// Run on load
 				updateCategoryVisibility();
 
@@ -1487,7 +1641,7 @@
 					if (file) {
 						selectedFile = file;
 						const reader = new FileReader();
-						reader.onload = function(event) {
+						reader.onload = function (event) {
 							photoPreview.src = event.target.result;
 							previewContainer.style.display = "block";
 						};
@@ -1507,8 +1661,10 @@
 				});
 
 				// --- MODAL ELEMENTS ---
-				const confirmSubmitModal = document.getElementById("confirmSubmitModal");
-				const successSubmitModal = document.getElementById("successSubmitModal");
+				const confirmSubmitModal =
+					document.getElementById("confirmSubmitModal");
+				const successSubmitModal =
+					document.getElementById("successSubmitModal");
 				const confirmSubmitBtn = document.getElementById("confirmSubmitBtn");
 				const cancelSubmitBtn = document.getElementById("cancelSubmitBtn");
 				const closeSuccessBtn = document.getElementById("closeSuccessBtn");
@@ -1516,8 +1672,10 @@
 
 				// Close modals on outside click
 				window.addEventListener("click", (event) => {
-					if (event.target == confirmSubmitModal) confirmSubmitModal.style.display = "none";
-					if (event.target == successSubmitModal) successSubmitModal.style.display = "none";
+					if (event.target == confirmSubmitModal)
+						confirmSubmitModal.style.display = "none";
+					if (event.target == successSubmitModal)
+						successSubmitModal.style.display = "none";
 				});
 
 				cancelSubmitBtn.addEventListener("click", () => {
@@ -1566,7 +1724,9 @@
 
 				safetyForm.addEventListener("submit", async function (event) {
 					event.preventDefault();
-					pendingSubmitAction = event.submitter ? event.submitter.value : "submit";
+					pendingSubmitAction = event.submitter
+						? event.submitter.value
+						: "submit";
 
 					const obsDateInput = document.getElementById("obsDate");
 					const dateValue = obsDateInput.value;
@@ -1591,14 +1751,16 @@
 					}
 
 					// Category Validation: Cannot be "Other"
-					const selectedCategory = document.querySelector('input[name="category"]:checked');
-					if (selectedCategory && selectedCategory.value === 'Other') {
+					const selectedCategory = document.querySelector(
+						'input[name="category"]:checked',
+					);
+					if (selectedCategory && selectedCategory.value === "Other") {
 						messageDiv.innerHTML = translations[currentLang].errorOtherCategory;
 						messageDiv.className = "form-message error";
 						messageDiv.style.display = "block";
 						// Scroll to category section
 						const nonHraSection = document.getElementById("nonHraSection");
-						if(nonHraSection) {
+						if (nonHraSection) {
 							nonHraSection.style.display = "block"; // Ensure it's visible
 							nonHraSection.scrollIntoView({ behavior: "smooth" });
 						}
@@ -1635,7 +1797,7 @@
 					submitButtons.forEach((btn) => (btn.disabled = true));
 
 					// Use the "Submit" button for text feedback, or default if whatsapp was clicked
-					const originalButton = document.querySelector(".submit-btn"); 
+					const originalButton = document.querySelector(".submit-btn");
 					const originalButtonText = originalButton.textContent;
 					originalButton.textContent =
 						translations[currentLang].submittingButton;
@@ -1747,7 +1909,6 @@
 
 						// 7. Show Success Modal
 						successSubmitModal.style.display = "flex";
-						
 					} catch (error) {
 						// 8. Error Feedback
 						console.error("Error submitting report: ", error);

@@ -246,7 +246,7 @@
 				font-size: 13px;
 				cursor: pointer;
 				transition: background 0.2s;
-				box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 				height: 38px;
 				display: inline-flex;
 				align-items: center;
@@ -274,42 +274,42 @@
 				display: flex;
 				flex-direction: column;
 			}
-									.chart-col-right {
-										flex: 1; /* Narrower column for Pie Charts */
-										display: flex;
-										flex-direction: column;
-										gap: 20px;
-										min-width: 350px; /* Ensure pie charts aren't too squashed */
-									}
-									.chart-box {
-										width: 100%;
-										display: flex;
-										flex-direction: column; /* Changed to column to allow canvas to grow */
-										align-items: center;
-										background: #fff;
-										padding: 15px;
-										border-radius: 8px;
-										box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-										flex: 1; /* Expand to fill parent */
-										min-height: 0; /* Allow flex shrinking if needed */
-									}
-									.chart-col-left .chart-box {
-										flex-direction: column; /* Bar chart stack */
-									}
-									.chart-col-right .chart-box {
-										/* flex-direction: row;  Removed to allow vertical stretch */
-									}
-									.chart-canvas-container {
-										flex: 1;
-										position: relative;
-										width: 100%;
-										min-height: 200px; /* Reduced base min-height */
-									}
-															/* Specific height override for the left bar chart to ensure it's tall enough */
-															.chart-col-left .chart-canvas-container {
-																min-height: 400px; 
-															}
-															.chart-row {
+			.chart-col-right {
+				flex: 1; /* Narrower column for Pie Charts */
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+				min-width: 350px; /* Ensure pie charts aren't too squashed */
+			}
+			.chart-box {
+				width: 100%;
+				display: flex;
+				flex-direction: column; /* Changed to column to allow canvas to grow */
+				align-items: center;
+				background: #fff;
+				padding: 15px;
+				border-radius: 8px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+				flex: 1; /* Expand to fill parent */
+				min-height: 0; /* Allow flex shrinking if needed */
+			}
+			.chart-col-left .chart-box {
+				flex-direction: column; /* Bar chart stack */
+			}
+			.chart-col-right .chart-box {
+				/* flex-direction: row;  Removed to allow vertical stretch */
+			}
+			.chart-canvas-container {
+				flex: 1;
+				position: relative;
+				width: 100%;
+				min-height: 200px; /* Reduced base min-height */
+			}
+			/* Specific height override for the left bar chart to ensure it's tall enough */
+			.chart-col-left .chart-canvas-container {
+				min-height: 400px;
+			}
+			.chart-row {
 				display: flex;
 				gap: 10px;
 				width: 100%;
@@ -535,7 +535,7 @@
 	</head>
 	<body>
 		<div class="header">
-			<img src="img/logo.webp" alt="Company Logo" class="header-logo" />
+			<img src="img/virsim_red.webp" alt="Company Logo" class="header-logo" />
 			<h1 data-key="dashboardTitle">Admin Dashboard</h1>
 			<div class="header-controls">
 				<button
@@ -591,27 +591,39 @@
 						<label for="endDate" data-key="endDateLabel">End Date:</label>
 						<input type="date" id="endDate" />
 					</div>
-					<button id="applyDateFilter" class="btn-filter" data-key="applyFilterButton">
+					<button
+						id="applyDateFilter"
+						class="btn-filter"
+						data-key="applyFilterButton"
+					>
 						Apply Filter
 					</button>
-					<button id="todayDateFilter" class="btn-filter" data-key="todayFilterButton">
+					<button
+						id="todayDateFilter"
+						class="btn-filter"
+						data-key="todayFilterButton"
+					>
 						Today
 					</button>
-					<button id="resetDateFilter" class="btn-filter" data-key="resetFilterButton">
+					<button
+						id="resetDateFilter"
+						class="btn-filter"
+						data-key="resetFilterButton"
+					>
 						Reset
 					</button>
 					<button
 						id="exportPdfBtn"
 						class="btn-export"
 						data-key="exportPdfButton"
-						style="margin-left: auto;"
+						style="margin-left: auto"
 					>
 						Export PDF
 					</button>
 					<button
 						id="exportCsvBtn"
 						class="btn-export"
-						style="margin-left: 10px;"
+						style="margin-left: 10px"
 					>
 						Export CSV
 					</button>
@@ -633,7 +645,10 @@
 					</div>
 					<div class="chart-col-right">
 						<div class="chart-box">
-							<div class="pie-chart-wrapper" style="display: flex; width: 100%; flex: 1; align-items: center;">
+							<div
+								class="pie-chart-wrapper"
+								style="display: flex; width: 100%; flex: 1; align-items: center"
+							>
 								<div class="chart-canvas-container">
 									<canvas id="positionChart"></canvas>
 								</div>
@@ -641,7 +656,10 @@
 							</div>
 						</div>
 						<div class="chart-box">
-							<div class="pie-chart-wrapper" style="display: flex; width: 100%; flex: 1; align-items: center;">
+							<div
+								class="pie-chart-wrapper"
+								style="display: flex; width: 100%; flex: 1; align-items: center"
+							>
 								<div class="chart-canvas-container">
 									<canvas id="typeChart"></canvas>
 								</div>
@@ -1426,12 +1444,14 @@
 					"click",
 					updateObservationsDashboard,
 				);
-				document.getElementById("todayDateFilter").addEventListener("click", () => {
-					const today = getLocalToday();
-					startDateInput.value = today;
-					endDateInput.value = today;
-					updateObservationsDashboard();
-				});
+				document
+					.getElementById("todayDateFilter")
+					.addEventListener("click", () => {
+						const today = getLocalToday();
+						startDateInput.value = today;
+						endDateInput.value = today;
+						updateObservationsDashboard();
+					});
 				resetDateFilterBtn.addEventListener("click", () => {
 					startDateInput.value = "";
 					endDateInput.value = "";
@@ -1546,7 +1566,7 @@
 				document
 					.getElementById("exportPdfBtn")
 					.addEventListener("click", exportToPDF);
-				
+
 				document
 					.getElementById("exportCsvBtn")
 					.addEventListener("click", exportToCSV);
@@ -1571,17 +1591,42 @@
 						}
 
 						const headers = [
-							"CS \\ ID", "CS \\ Project", "Project Category", "Room/Area", "Prepared On", 
-							"Comments", "General Contractors", "Lease Providers", "Observation Category", 
-							"Observation Description", "CS \\ Responsible Party", "Interim Corrective Actions", 
-							"Final Corrective Actions", "Category Type", "CS \\ Phase of Contruction", 
-							"Notification Date", "High Risk + Significant Exposure", "General Category", 
-							"Worst Potential Severity", "CS1 \\ Person Notified", "Record Type", 
-							"Created On", "Attachments", "ID", "Link to Records \\ ", 
-							"Link to Event records for reports", "Responsible Party USER", "AKA MS", 
-							"Country", "Metro", "Region", "Person Notified users", 
-							"Privacy Data Notice for Rules \\ ", "Microsoft Data Privacy Notice", 
-							"Trail \\ ", "Created by"
+							"CS \\ ID",
+							"CS \\ Project",
+							"Project Category",
+							"Room/Area",
+							"Prepared On",
+							"Comments",
+							"General Contractors",
+							"Lease Providers",
+							"Observation Category",
+							"Observation Description",
+							"CS \\ Responsible Party",
+							"Interim Corrective Actions",
+							"Final Corrective Actions",
+							"Category Type",
+							"CS \\ Phase of Contruction",
+							"Notification Date",
+							"High Risk + Significant Exposure",
+							"General Category",
+							"Worst Potential Severity",
+							"CS1 \\ Person Notified",
+							"Record Type",
+							"Created On",
+							"Attachments",
+							"ID",
+							"Link to Records \\ ",
+							"Link to Event records for reports",
+							"Responsible Party USER",
+							"AKA MS",
+							"Country",
+							"Metro",
+							"Region",
+							"Person Notified users",
+							"Privacy Data Notice for Rules \\ ",
+							"Microsoft Data Privacy Notice",
+							"Trail \\ ",
+							"Created by",
 						];
 
 						// Helper to escape CSV fields
@@ -1589,98 +1634,136 @@
 							if (str === null || str === undefined) return "";
 							const stringValue = String(str);
 							// If contains comma, quote, or newline, wrap in quotes and escape internal quotes
-							if (stringValue.includes(",") || stringValue.includes("\"") || stringValue.includes("\n")) {
+							if (
+								stringValue.includes(",") ||
+								stringValue.includes('"') ||
+								stringValue.includes("\n")
+							) {
 								return `"${stringValue.replace(/"/g, '""')}"`;
 							}
 							return stringValue;
 						};
 
 						const formatDate = (dateString, includeTime = false) => {
-							 if (!dateString) return "";
-							 // Handle YYYY-MM-DD
-							 const parts = dateString.split("-");
-							 if (parts.length === 3) {
+							if (!dateString) return "";
+							// Handle YYYY-MM-DD
+							const parts = dateString.split("-");
+							if (parts.length === 3) {
 								const date = new Date(parts[0], parts[1] - 1, parts[2]);
-								const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+								const months = [
+									"Jan",
+									"Feb",
+									"Mar",
+									"Apr",
+									"May",
+									"Jun",
+									"Jul",
+									"Aug",
+									"Sep",
+									"Oct",
+									"Nov",
+									"Dec",
+								];
 								const m = months[date.getMonth()];
-								const d = String(date.getDate()).padStart(2, '0');
+								const d = String(date.getDate()).padStart(2, "0");
 								const y = date.getFullYear();
-								
+
 								if (includeTime) {
 									return `${m}-${d}-${y} 00:00`;
 								}
 								return `${m}-${d}-${y}`;
-							 }
-							 return dateString;
+							}
+							return dateString;
 						};
-						
+
 						// Format today's date for "Created On"
 						const today = new Date();
-						const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-						const createdOnStr = `${months[today.getMonth()]}-${String(today.getDate()).padStart(2, '0')}-${today.getFullYear()}`;
+						const months = [
+							"Jan",
+							"Feb",
+							"Mar",
+							"Apr",
+							"May",
+							"Jun",
+							"Jul",
+							"Aug",
+							"Sep",
+							"Oct",
+							"Nov",
+							"Dec",
+						];
+						const createdOnStr = `${months[today.getMonth()]}-${String(today.getDate()).padStart(2, "0")}-${today.getFullYear()}`;
 
 						const csvContent = [
 							headers.join(","),
-							...reportsToExport.map(report => {
+							...reportsToExport.map((report) => {
 								const isHRA = hraCategories.includes(report.category);
-								
+
 								const preparedOn = formatDate(report.obsDate, true);
-								const categoryType = isHRA ? "HRA (High-Risk Activity)" : "General Category";
+								const categoryType = isHRA
+									? "HRA (High-Risk Activity)"
+									: "General Category";
 								const highRisk = isHRA ? report.category : "";
 								const generalCategory = !isHRA ? report.category : "";
-								const worstSeverity = isHRA ? "Major (1 Day)" : "Minor (7 Days)";
+								const worstSeverity = isHRA
+									? "Major (1 Day)"
+									: "Minor (7 Days)";
 
 								return [
-									 "", // CS \ ID
-									 "", // CS \ Project
-									 "", // Project Category
-									 escapeCsv(report.roomArea), // Room/Area
-									 escapeCsv(preparedOn), // Prepared On
-									 "JKT09", // Comments
-									 "Jaya Obayashi", // General Contractors
-									 "", // Lease Providers
-									 escapeCsv(report.obsType), // Observation Category
-									 escapeCsv(report.description), // Observation Description
-									 "", // CS \ Responsible Party
-									 "", // Interim Corrective Actions
-									 escapeCsv(report.immediateAction), // Final Corrective Actions
-									 escapeCsv(categoryType), // Category Type
-									 escapeCsv(report.phaseOfConstruction || "Steel Erection"), // CS \ Phase of Contruction
-									 "", // Notification Date
-									 escapeCsv(highRisk), // High Risk + Significant Exposure
-									 escapeCsv(generalCategory), // General Category
-									 escapeCsv(worstSeverity), // Worst Potential Severity
-									 "", // CS1 \ Person Notified
-									 "", // Record Type
-									 escapeCsv(createdOnStr), // Created On
-									 "", // Attachments
-									 "", // ID
-									 "", // Link to Records \ 
-									 "", // Link to Event records for reports
-									 "", // Responsible Party USER
-									 "", // AKA MS
-									 "Indonesia", // Country
-									 "Jakarta JKT", // Metro
-									 "APAC", // Region
-									 "", // Person Notified users
-									 "", // Privacy Data Notice for Rules \ 
-									 "", // Microsoft Data Privacy Notice
-									 "", // Trail \ 
-									 "EHS Form" // Created by
+									"", // CS \ ID
+									"", // CS \ Project
+									"", // Project Category
+									escapeCsv(report.roomArea), // Room/Area
+									escapeCsv(preparedOn), // Prepared On
+									"JKT09", // Comments
+									"Jaya Obayashi", // General Contractors
+									"", // Lease Providers
+									escapeCsv(report.obsType), // Observation Category
+									escapeCsv(report.description), // Observation Description
+									"", // CS \ Responsible Party
+									"", // Interim Corrective Actions
+									escapeCsv(report.immediateAction), // Final Corrective Actions
+									escapeCsv(categoryType), // Category Type
+									escapeCsv(report.phaseOfConstruction || "Steel Erection"), // CS \ Phase of Contruction
+									"", // Notification Date
+									escapeCsv(highRisk), // High Risk + Significant Exposure
+									escapeCsv(generalCategory), // General Category
+									escapeCsv(worstSeverity), // Worst Potential Severity
+									"", // CS1 \ Person Notified
+									"", // Record Type
+									escapeCsv(createdOnStr), // Created On
+									"", // Attachments
+									"", // ID
+									"", // Link to Records \
+									"", // Link to Event records for reports
+									"", // Responsible Party USER
+									"", // AKA MS
+									"Indonesia", // Country
+									"Jakarta JKT", // Metro
+									"APAC", // Region
+									"", // Person Notified users
+									"", // Privacy Data Notice for Rules \
+									"", // Microsoft Data Privacy Notice
+									"", // Trail \
+									"EHS Form", // Created by
 								].join(",");
-							})
+							}),
 						].join("\n");
 
-						const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+						const blob = new Blob([csvContent], {
+							type: "text/csv;charset=utf-8;",
+						});
 						const link = document.createElement("a");
 						const url = URL.createObjectURL(blob);
 						link.setAttribute("href", url);
-						link.setAttribute("download", `Observation_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-						link.style.visibility = 'hidden';
+						link.setAttribute(
+							"download",
+							`Observation_Report_${new Date().toISOString().slice(0, 10)}.csv`,
+						);
+						link.style.visibility = "hidden";
 						document.body.appendChild(link);
 						link.click();
 						document.body.removeChild(link);
-
 					} catch (error) {
 						console.error("Export CSV failed:", error);
 						alert("Failed to export CSV.");
@@ -1712,7 +1795,7 @@
 							// Header
 							doc.setFontSize(16);
 							doc.setFont("helvetica", "bold");
-							doc.text("JKT 09 GOLDEN HOURS OBSERVATION", pageWidth / 2, 15, {
+							doc.text("GOLDEN HOURS OBSERVATION", pageWidth / 2, 15, {
 								align: "center",
 							});
 
@@ -1767,7 +1850,7 @@
 
 						const startY = 30;
 						const chartGap = 10;
-						const availableWidth = pageWidth - (margin * 2);
+						const availableWidth = pageWidth - margin * 2;
 						const colWidth = (availableWidth - chartGap) / 2;
 
 						// Define layout areas
@@ -1787,8 +1870,8 @@
 							// Chart Image
 							const imgData = chart.toBase64Image();
 							// Add some spacing below title
-							const imgY = y + 2; 
-							
+							const imgY = y + 2;
+
 							// For pie charts, we need to handle the custom legend manually drawn
 							doc.addImage(imgData, "PNG", x, imgY, width, height);
 
@@ -1796,31 +1879,31 @@
 						};
 
 						const drawLegend = (chart, x, y, width) => {
-							if (!chart || chart.config.type === 'bar') return 0;
-							
+							if (!chart || chart.config.type === "bar") return 0;
+
 							const labels = chart.data.labels;
 							const dataValues = chart.data.datasets[0].data;
 							const colors = chart.data.datasets[0].backgroundColor;
-							
+
 							doc.setFontSize(8);
 							doc.setFont("helvetica", "normal");
-							
+
 							let legendY = y;
 							const boxSize = 3;
-							
+
 							labels.forEach((label, idx) => {
 								if (dataValues[idx] === 0) return;
-								
+
 								const translatedLabel =
 									translations[currentLang][`cat${label.replace(/\s/g, "")}`] ||
 									translations[currentLang][label.replace(/\s/g, "")] ||
 									label;
 								const text = `${translatedLabel}: ${dataValues[idx]}`;
-								
+
 								doc.setFillColor(colors[idx]);
 								doc.rect(x, legendY - boxSize, boxSize, boxSize, "F");
 								doc.text(text, x + 5, legendY);
-								
+
 								legendY += 4;
 							});
 							return legendY - y;
@@ -1829,71 +1912,71 @@
 						// --- ROW 1: BAR CHARTS ---
 						const row1Y = startY;
 						const barHeight = 60; // Increased height for bar charts
-						
+
 						// HRA Chart (Top Left)
 						if (hraChart) {
 							drawChart(
-								hraChart, 
-								translations[currentLang].hraTitle || "HRA", 
-								margin, 
-								row1Y, 
-								colWidth, 
-								barHeight
+								hraChart,
+								translations[currentLang].hraTitle || "HRA",
+								margin,
+								row1Y,
+								colWidth,
+								barHeight,
 							);
 						}
 
 						// Non-HRA Chart (Top Right)
 						if (nonHraChart) {
 							drawChart(
-								nonHraChart, 
-								translations[currentLang].nonHraTitle || "Non-HRA", 
-								margin + colWidth + chartGap, 
-								row1Y, 
-								colWidth, 
-								barHeight
+								nonHraChart,
+								translations[currentLang].nonHraTitle || "Non-HRA",
+								margin + colWidth + chartGap,
+								row1Y,
+								colWidth,
+								barHeight,
 							);
 						}
 
 						// --- ROW 2: PIE CHARTS ---
 						const row2Y = row1Y + barHeight + 15;
-						const pieDiameter = 45; 
+						const pieDiameter = 45;
 						const legendWidth = 60;
-						
+
 						// Position Chart (Bottom Left)
 						if (positionChart) {
 							drawChart(
-								positionChart, 
-								translations[currentLang].chartTitlePosition, 
-								margin, 
-								row2Y, 
-								pieDiameter, 
-								pieDiameter
+								positionChart,
+								translations[currentLang].chartTitlePosition,
+								margin,
+								row2Y,
+								pieDiameter,
+								pieDiameter,
 							);
 							// Draw Legend next to pie
 							drawLegend(
-								positionChart, 
-								margin + pieDiameter + 5, 
-								row2Y + 5, 
-								legendWidth
+								positionChart,
+								margin + pieDiameter + 5,
+								row2Y + 5,
+								legendWidth,
 							);
 						}
 
 						// Type Chart (Bottom Right) - Positioned under Non-HRA chart
 						if (typeChart) {
 							drawChart(
-								typeChart, 
-								translations[currentLang].chartTitleType, 
-								margin + colWidth + chartGap, 
-								row2Y, 
-								pieDiameter, 
-								pieDiameter
+								typeChart,
+								translations[currentLang].chartTitleType,
+								margin + colWidth + chartGap,
+								row2Y,
+								pieDiameter,
+								pieDiameter,
 							);
 							// Draw Legend next to pie
 							drawLegend(
-								typeChart, 
-								margin + colWidth + chartGap + pieDiameter + 5, 
-								row2Y + 5, 
-								legendWidth
+								typeChart,
+								margin + colWidth + chartGap + pieDiameter + 5,
+								row2Y + 5,
+								legendWidth,
 							);
 						}
 
